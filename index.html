@@ -44,6 +44,18 @@
                 radial-gradient(at 0% 0%, hsla(273, 67%, 15%, 1) 0, transparent 50%), 
                 radial-gradient(at 100% 100%, hsla(273, 67%, 10%, 1) 0, transparent 50%);
         }
+        .img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        #members { 
+            text-align: left;
+            margin-bottom: 40px;
+            align-items: end;
+            justify-content: end;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center py-16 px-6">
@@ -54,9 +66,18 @@
         <h1 class="text-6xl font-extrabold tracking-tighter italic">
             EPSILON<span class="text-purple-500">.</span>
         </h1>
-        <p class="text-gray-400 font-light tracking-widest uppercase text-sm">Next Gen Digital Ecosystem</p>
+        <p class="text-gray-400 font-light tracking-widest uppercase text-sm">-BY warren adrian and epsilon team</p>
     </header>
-
+<section id="members">
+    <img src="./warren img.jpeg" class="img">
+    <p >name: warren</p>
+    <p>age: 13</p>
+    <p>role: owner,founder</p>
+    <img src="./ethan image.jpeg" class="img">
+    <p>name: ethan</p>
+    <p>age: 13</p>
+    <p>role: co-owner,co-founder</p>
+</section>
     <!-- Main Grid -->
     <div class="max-w-6xl w-full space-y-20">
         
@@ -170,8 +191,10 @@
     </footer>
 
     <script>
+      
         // Initialize Lucide Icons
         lucide.createIcons();
+        
     </script>
 </body>
 </html>
