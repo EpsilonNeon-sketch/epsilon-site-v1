@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epsilon | The Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon"  href="./epsilon logo.png">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050505;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .purple-glow {
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.15);
+        }
+
+        .card-gradient:hover {
+            background: linear-gradient(145deg, #121212 0%, #1a1025 100%);
+            border-color: rgba(168, 85, 247, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .glass {
+            background: rgba(18, 18, 18, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .bg-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(273, 67%, 15%, 1) 0, transparent 50%), 
+                radial-gradient(at 100% 100%, hsla(273, 67%, 10%, 1) 0, transparent 50%);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-16 px-6">
+    <div class="bg-mesh"></div>
+
+    <!-- Header Section -->
+    <header class="text-center mb-16 space-y-4">
+        <h1 class="text-6xl font-extrabold tracking-tighter italic">
+            EPSILON<span class="text-purple-500">.</span>
+        </h1>
+        <p class="text-gray-400 font-light tracking-widest uppercase text-sm">Next Gen Digital Ecosystem</p>
+    </header>
+
+    <!-- Main Grid -->
+    <div class="max-w-6xl w-full space-y-20">
+        
+        <!-- Primary Ecosystem -->
+        <section>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Epsilon Aproxi -->
+                <a href="https://epsilonneon-sketch.github.io/epsilon-aproxi-v2/" class="group">
+                    <div class="glass p-8 rounded-3xl transition-all duration-300 card-gradient border border-white/5 h-full flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 bg-purple-600/20 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                                <i data-lucide="database"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold mb-2">Epsilon Aproxi</h2>
+                            <p class="text-gray-400 text-sm leading-relaxed">High-performance BMS (Business Management System) built for scale and speed.</p>
+                        </div>
+                        <div class="mt-8 flex items-center text-purple-400 font-semibold text-sm group-hover:translate-x-2 transition-transform">
+                            Launch System <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Epsilon Heckle -->
+                <a href="https://epsilonneon-sketch.github.io/epsilon-heckle-v1/" class="group">
+                    <div class="glass p-8 rounded-3xl transition-all duration-300 card-gradient border border-white/5 h-full flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 bg-purple-600/20 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                                <i data-lucide="gamepad-2"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold mb-2">Epsilon Heckle</h2>
+                            <p class="text-gray-400 text-sm leading-relaxed">The ultimate gaming destination. Competitive, fast, and optimized for performance.</p>
+                        </div>
+                        <div class="mt-8 flex items-center text-purple-400 font-semibold text-sm group-hover:translate-x-2 transition-transform">
+                            Enter Arena <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Epsilon Editz -->
+                <a href="https://epsilonneon-sketch.github.io/epsilon-editz-v2/" class="group">
+                    <div class="glass p-8 rounded-3xl transition-all duration-300 card-gradient border border-white/5 h-full flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 bg-purple-600/20 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                                <i data-lucide="clapperboard"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold mb-2">Epsilon Editz</h2>
+                            <p class="text-gray-400 text-sm leading-relaxed">Professional-grade editing tools and creative resources for modern creators.</p>
+                        </div>
+                        <div class="mt-8 flex items-center text-purple-400 font-semibold text-sm group-hover:translate-x-2 transition-transform">
+                            Open Studio <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Partners Section -->
+        <section class="space-y-8">
+            <div class="flex items-center gap-4">
+                <div class="h-px flex-1 bg-gradient-to-r from-transparent to-purple-500/30"></div>
+                <h3 class="text-gray-500 uppercase tracking-[0.3em] text-xs font-bold">Strategic Partners</h3>
+                <div class="h-px flex-1 bg-gradient-to-l from-transparent to-purple-500/30"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- NTK Services -->
+                <a href="https://epsilonneon-sketch.github.io/NTK-MOVERS-AND-SERVICES/" class="group">
+                    <div class="glass p-8 rounded-3xl transition-all duration-300 card-gradient border border-white/5 h-full flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 bg-blue-600/20 rounded-2xl flex items-center justify-center mb-6 text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                <i data-lucide="briefcase"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold mb-2">NTK Services</h2>
+                            <p class="text-gray-400 text-sm leading-relaxed">Premium movers and professional logistics services delivered with precision.</p>
+                        </div>
+                        <div class="mt-8 flex items-center text-blue-400 font-semibold text-sm group-hover:translate-x-2 transition-transform">
+                            View Services <i data-lucide="external-link" class="ml-2 w-4 h-4"></i>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- Placeholder for future partners (Empty Glass Card) -->
+                <div class="glass p-8 rounded-3xl border border-dashed border-white/10 flex items-center justify-center text-gray-600 italic text-sm">
+                    New Partners Coming Soon...
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-20 text-gray-600 text-xs flex gap-6">
+        <p>&copy; 2024 EPSILON LABS</p>
+        <a href="#" class="hover:text-purple-400 transition-colors">TERMS</a>
+        <a href="#" class="hover:text-purple-400 transition-colors">PRIVACY</a>
+    </footer>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
