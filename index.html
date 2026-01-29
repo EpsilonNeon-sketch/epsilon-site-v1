@@ -51,55 +51,59 @@
             object-fit: cover;
         }
         #members { 
-            text-align: left;
             margin-bottom: 40px;
-            align-items: end;
-            justify-content: end;
         }
         .mb {
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center py-16 px-6">
+<body class="min-h-screen flex flex-col items-center py-12 px-6">
     <div class="bg-mesh"></div>
 
     <!-- Header Section -->
-    <header class="text-center mb-16 space-y-4">
-        <h1 class="text-6xl font-extrabold tracking-tighter italic">
+    <header class="text-center mb-12 space-y-4">
+        <h1 class="text-4xl md:text-6xl font-extrabold tracking-tighter italic">
             EPSILON<span class="text-purple-500">.</span>
         </h1>
-        <p class="text-gray-400 font-light tracking-widest uppercase text-sm">-BY warren adrian and epsilon team</p>
+        <p class="text-gray-400 font-light tracking-widest uppercase text-[10px] md:text-sm">-BY warren adrian and epsilon team</p>
     </header>
-<section id="members">
-    <div id="warren" class="mb" style="position: absolute; left:100px;">
-    <img src="./warren img.jpeg" class="img">
-    <p >name: warren</p>
-    <p>age: 13</p>
-    <p>role: owner,founder</p>
-    </div>
-    <div id="ethan" class="mb">
-    <img src="./ethan image.jpeg" class="img">
-    <p>name: ethan</p>
-    <p>age: 13</p>
-    <p>role: co-owner,co-founder</p>
-    </div>
-    <div id="richard" class="mb" style="position: absolute; right:100px; top: 220px;">
-        <img src="./richard image.jpeg" class="img">
-        <p>name: richard</p>
-        <p>age: 13</p>
-        <p>role: expirenmentor</p>
-    </div>
-</section>
+
+    <section id="members" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 w-full max-w-6xl mb-16">
+        <div id="warren" class="flex flex-col items-center text-center md:items-start md:text-left">
+            <img src="./warren img.jpeg" class="img mb-4">
+            <div class="space-y-1">
+                <p class="text-sm font-medium"><span class="text-purple-500 font-bold uppercase text-xs tracking-wider">Name:</span> Warren</p>
+                <p class="text-sm font-medium"><span class="text-purple-500 font-bold uppercase text-xs tracking-wider">Age:</span> 13</p>
+                <p class="text-sm font-medium"><span class="text-purple-500 font-bold uppercase text-xs tracking-wider">Role:</span> Owner, Founder</p>
+            </div>
+        </div>
+        <div id="ethan" class="flex flex-col items-center text-center md:items-start md:text-left">
+            <img src="./ethan image.jpeg" class="img mb-4">
+            <div class="space-y-1">
+                <p class="text-sm font-medium"><span class="text-purple-500 font-bold uppercase text-xs tracking-wider">Name:</span> Ethan</p>
+                <p class="text-sm font-medium"><span class="text-purple-500 font-bold uppercase text-xs tracking-wider">Age:</span> 13</p>
+                <p class="text-sm font-medium"><span class="text-purple-500 font-bold uppercase text-xs tracking-wider">Role:</span> Co-Owner, Co-Founder</p>
+            </div>
+        </div>
+        <div id="richard" class="flex flex-col items-center text-center md:items-start md:text-left">
+            <img src="./richard image.jpeg" class="img mb-4">
+            <div class="space-y-1">
+                <p class="text-sm font-medium"><span class="text-purple-500 font-bold uppercase text-xs tracking-wider">Name:</span> Richard</p>
+                <p class="text-sm font-medium"><span class="text-purple-500 font-bold uppercase text-xs tracking-wider">Age:</span> 13</p>
+                <p class="text-sm font-medium"><span class="text-purple-500 font-bold uppercase text-xs tracking-wider">Role:</span> Experimentor</p>
+            </div>
+        </div>
+    </section>
     <!-- Main Grid -->
-    <div class="max-w-6xl w-full space-y-20">
+    <div class="max-w-6xl w-full space-y-12 md:space-y-20">
         
         <!-- Primary Ecosystem -->
         <section>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Epsilon Aproxi -->
                 <a href="https://epsilonneon-sketch.github.io/epsilon-aproxi-v2/" class="group">
-                    <div class="glass p-8 rounded-3xl transition-all duration-300 card-gradient border border-white/5 h-full flex flex-col justify-between">
+                    <div class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-white/5 h-full flex flex-col justify-between">
                         <div>
                             <div class="w-12 h-12 bg-purple-600/20 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
                                 <i data-lucide="database"></i>
@@ -115,7 +119,7 @@
 
                 <!-- Epsilon Heckle -->
                 <a href="https://epsilonneon-sketch.github.io/epsilon-heckle-v1/" class="group">
-                    <div class="glass p-8 rounded-3xl transition-all duration-300 card-gradient border border-white/5 h-full flex flex-col justify-between">
+                    <div class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-white/5 h-full flex flex-col justify-between">
                         <div>
                             <div class="w-12 h-12 bg-purple-600/20 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
                                 <i data-lucide="gamepad-2"></i>
@@ -131,7 +135,7 @@
 
                 <!-- Epsilon Editz -->
                 <a href="https://epsilonneon-sketch.github.io/epsilon-editz-v2/" class="group">
-                    <div class="glass p-8 rounded-3xl transition-all duration-300 card-gradient border border-white/5 h-full flex flex-col justify-between">
+                    <div class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-white/5 h-full flex flex-col justify-between">
                         <div>
                             <div class="w-12 h-12 bg-purple-600/20 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
                                 <i data-lucide="clapperboard"></i>
@@ -158,7 +162,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- NTK Services -->
                 <a href="https://epsilonneon-sketch.github.io/NTK-MOVERS-AND-SERVICES/" class="group">
-                    <div class="glass p-8 rounded-3xl transition-all duration-300 card-gradient border border-white/5 h-full flex flex-col justify-between">
+                    <div class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-white/5 h-full flex flex-col justify-between">
                         <div>
                             <div class="w-12 h-12 bg-blue-600/20 rounded-2xl flex items-center justify-center mb-6 text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                                 <i data-lucide="briefcase"></i>
@@ -173,7 +177,7 @@
                 </a>
                 <!--Zerah-->
                  <a href="https://epsilonneon-sketch.github.io/zerah-v1/" class="group">
-                    <div class="glass p-8 rounded-3xl transition-all duration-300 card-gradient border border-white/5 h-full flex flex-col justify-between">
+                    <div class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-white/5 h-full flex flex-col justify-between">
                         <div>
                             <div class="w-12 h-12 bg-blue-600/20 rounded-2xl flex items-center justify-center mb-6 text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                                 <i data-lucide="sparkles"></i>
@@ -188,7 +192,7 @@
                 </a>
                 
                 <!-- Placeholder for future partners (Empty Glass Card) -->
-                <div class="glass p-8 rounded-3xl border border-dashed border-white/10 flex items-center justify-center text-gray-600 italic text-sm">
+                <div class="glass p-6 md:p-8 rounded-3xl border border-dashed border-white/10 flex items-center justify-center text-gray-600 italic text-sm">
                     New Partners Coming Soon...
                 </div>
             </div>
@@ -201,7 +205,7 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <a href="https://epsilonneon-sketch.github.io/epsilon-neote-v1/" class="group">
-                    <div class="glass p-8 rounded-3xl transition-all duration-300 card-gradient border border-white/5 h-full flex flex-col justify-between">
+                    <div class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-white/5 h-full flex flex-col justify-between">
                         <div>
                             <div class="w-12 h-12 bg-purple-600/20 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
                                 <i data-lucide="terminal"></i>
