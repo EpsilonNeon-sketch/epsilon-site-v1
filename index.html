@@ -56,6 +56,11 @@
         .mb {
             margin-bottom: 20px;
         }
+        .inpu-s {
+            height: 30px;
+            width: 600px;
+            margin-bottom: 40px;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center py-12 px-6">
@@ -79,7 +84,7 @@
             </div>
         </div>
         <div id="ethan" class="flex flex-col items-center text-center md:items-start md:text-left">
-            <img src="./ethan img.png" class="img mb-4">
+            <img src="./ethan image.png" class="img mb-4">
             <div class="space-y-1">
                 <p class="text-sm font-medium"><span class="text-purple-500 font-bold uppercase text-xs tracking-wider">Name:</span> Ethan</p>
                 <p class="text-sm font-medium"><span class="text-purple-500 font-bold uppercase text-xs tracking-wider">Age:</span> 13</p>
@@ -87,7 +92,7 @@
             </div>
         </div>
         <div id="richard" class="flex flex-col items-center text-center md:items-start md:text-left">
-            <img src="./richard img.png" class="img mb-4">
+            <img src="./richard image.png" class="img mb-4">
             <div class="space-y-1">
                 <p class="text-sm font-medium"><span class="text-purple-500 font-bold uppercase text-xs tracking-wider">Name:</span> Richard</p>
                 <p class="text-sm font-medium"><span class="text-purple-500 font-bold uppercase text-xs tracking-wider">Age:</span> 13</p>
@@ -96,6 +101,7 @@
         </div>
     </section>
     <!-- Main Grid -->
+     <input type="text" id="search" placeholder="search..." class="inpu-s">
     <div class="max-w-6xl w-full space-y-12 md:space-y-20">
         
         <!-- Primary Ecosystem -->
@@ -218,6 +224,21 @@
                         </div>
                     </div>
                 </a>
+            
+                <a href="https://epsilonneon-sketch.github.io/epsilon-academics/" class="group">
+                    <div class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-white/5 h-full flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 bg-purple-600/20 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                                <i data-lucide="terminal"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold mb-2">Epsilon Academics</h2>
+                            <p class="text-gray-400 text-sm leading-relaxed">Learn and grow all for free no costs.</p>
+                        </div>
+                        <div class="mt-8 flex items-center text-purple-400 font-semibold text-sm group-hover:translate-x-2 transition-transform">
+                            Open learning place <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                        </div>
+                    </div>
+                </a>
             </div>
         </section>
     </div>
@@ -269,6 +290,8 @@
                 const adminCancel = document.getElementById('adminCancel');
                 const adminPanel = document.getElementById('adminPanel');
                 const adminPanelClose = document.getElementById('adminPanelClose');
+                const searchInput = document.getElementById('search').value.trim;
+                
 
                 adminBtn.addEventListener('click', () => {
                         adminDialog.showModal();
@@ -304,4 +327,3 @@
         </script>
 </body>
 </html>
-
