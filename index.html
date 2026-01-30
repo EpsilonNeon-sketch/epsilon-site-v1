@@ -71,7 +71,7 @@
 
     <section id="members" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 w-full max-w-6xl mb-16">
         <div id="warren" class="flex flex-col items-center text-center md:items-start md:text-left">
-            <img src="./warren img.jpeg" class="img mb-4">
+            <img src="./warren img.png" class="img mb-4">
             <div class="space-y-1">
                 <p class="text-sm font-medium"><span class="text-purple-500 font-bold uppercase text-xs tracking-wider">Name:</span> Warren</p>
                 <p class="text-sm font-medium"><span class="text-purple-500 font-bold uppercase text-xs tracking-wider">Age:</span> 13</p>
@@ -79,7 +79,7 @@
             </div>
         </div>
         <div id="ethan" class="flex flex-col items-center text-center md:items-start md:text-left">
-            <img src="./ethan image.jpeg" class="img mb-4">
+            <img src="./ethan image.png" class="img mb-4">
             <div class="space-y-1">
                 <p class="text-sm font-medium"><span class="text-purple-500 font-bold uppercase text-xs tracking-wider">Name:</span> Ethan</p>
                 <p class="text-sm font-medium"><span class="text-purple-500 font-bold uppercase text-xs tracking-wider">Age:</span> 13</p>
@@ -87,7 +87,7 @@
             </div>
         </div>
         <div id="richard" class="flex flex-col items-center text-center md:items-start md:text-left">
-            <img src="./richard image.jpeg" class="img mb-4">
+            <img src="./richard image.png" class="img mb-4">
             <div class="space-y-1">
                 <p class="text-sm font-medium"><span class="text-purple-500 font-bold uppercase text-xs tracking-wider">Name:</span> Richard</p>
                 <p class="text-sm font-medium"><span class="text-purple-500 font-bold uppercase text-xs tracking-wider">Age:</span> 13</p>
@@ -227,13 +227,80 @@
         <p>&copy; 2024 EPSILON LABS</p>
         <a href="#" class="hover:text-purple-400 transition-colors">TERMS</a>
         <a href="#" class="hover:text-purple-400 transition-colors">PRIVACY</a>
+        <button id="adminBtn" class="ml-6 px-4 py-1 rounded bg-purple-700 text-white hover:bg-purple-800 transition-colors">Admin</button>
     </footer>
 
-    <script>
-      
-        // Initialize Lucide Icons
-        lucide.createIcons();
-        
-    </script>
+        <dialog id="adminDialog" class="rounded-xl p-0 border-0 shadow-2xl" style="max-width: 90vw;">
+            <form id="adminForm" method="dialog" class="bg-[#18181b] text-white rounded-xl p-8 flex flex-col gap-4 min-w-[300px]">
+                <h2 class="text-lg font-bold mb-2">Admin Login</h2>
+                <input id="adminPassword" type="password" placeholder="Enter admin password" class="rounded px-3 py-2 bg-[#23232b] border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                <div class="flex gap-2 mt-2">
+                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">Login</button>
+                    <button type="button" id="adminCancel" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">Cancel</button>
+                </div>
+                <p id="adminError" class="text-red-500 text-xs hidden">Incorrect password.</p>
+            </form>
+        </dialog>
+
+        <dialog id="adminPanel" class="rounded-xl p-0 border-0 shadow-2xl" style="max-width: 90vw;">
+            <div class="bg-[#18181b] text-white rounded-xl p-8 flex flex-col gap-4 min-w-[300px]">
+                <h2 class="text-lg font-bold mb-4">Admin Panel</h2>
+                <p class="mb-2">Select a site to view its documentation:</p>
+                <div class="flex flex-col gap-3">
+                    <button class="admin-doc-btn bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded" data-doc-link="https://epsilonneon-sketch.github.io/epsilon-docs-neote/">Epsilon Neote</button>
+                    <button class="admin-doc-btn bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded" data-doc-link="https://epsilonneon-sketch.github.io/epsilon-docs-editz/">Epsilon Editz</button>
+                    <button class="admin-doc-btn bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded" data-doc-link="https://epsilonneon-sketch.github.io/epsilon-doc-aproxi/">Epsilon Aproxi</button>
+                    <button class="admin-doc-btn bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded" data-doc-link="https://epsilonneon-sketch.github.io/epsilon-docs-heckle/">Epsilon Heckle</button>
+                </div>
+                <button id="adminPanelClose" class="mt-6 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">Close</button>
+            </div>
+        </dialog>
+
+        <script>
+                // Initialize Lucide Icons
+                lucide.createIcons();
+
+                // Admin button and dialogs
+                const adminBtn = document.getElementById('adminBtn');
+                const adminDialog = document.getElementById('adminDialog');
+                const adminForm = document.getElementById('adminForm');
+                const adminPassword = document.getElementById('adminPassword');
+                const adminError = document.getElementById('adminError');
+                const adminCancel = document.getElementById('adminCancel');
+                const adminPanel = document.getElementById('adminPanel');
+                const adminPanelClose = document.getElementById('adminPanelClose');
+
+                adminBtn.addEventListener('click', () => {
+                        adminDialog.showModal();
+                        adminPassword.value = '';
+                        adminError.classList.add('hidden');
+                });
+
+                adminCancel.addEventListener('click', () => {
+                        adminDialog.close();
+                });
+
+                adminForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        if (adminPassword.value === '#15452575-ep') {
+                                adminDialog.close();
+                                adminPanel.showModal();
+                        } else {
+                                adminError.classList.remove('hidden');
+                        }
+                });
+
+                adminPanelClose.addEventListener('click', () => {
+                        adminPanel.close();
+                });
+
+                // Open docs in new tab
+                adminPanel.addEventListener('click', (e) => {
+                        if (e.target.classList.contains('admin-doc-btn')) {
+                                const link = e.target.getAttribute('data-doc-link');
+                                window.open(link, '_blank');
+                        }
+                });
+        </script>
 </body>
 </html>
