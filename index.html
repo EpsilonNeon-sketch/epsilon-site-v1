@@ -122,6 +122,136 @@
                 opacity: 1;
             }
         }
+        /* Mobile Optimizations */
+@media (max-width: 768px) {
+    /* Navigation adjustments */
+    .fixed.top-6.right-6 {
+        top: 1rem;
+        right: 1rem;
+        flex-wrap: wrap;
+        max-width: calc(100% - 2rem);
+        justify-content: flex-end;
+    }
+    
+    .fixed.top-6.right-6 button {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+    }
+    
+    .fixed.top-6.right-6 button span {
+        display: none;
+    }
+    
+    /* Search input */
+    .inpu-s {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    /* Card adjustments */
+    .glass.p-6.md\:p-8 {
+        padding: 1.5rem;
+    }
+    
+    /* Profile images */
+    .img {
+        width: 120px;
+        height: 120px;
+    }
+    
+    /* Dialogs for mobile */
+    dialog {
+        width: 95vw;
+        max-width: 95vw;
+        margin: auto;
+    }
+    
+    /* Post cards */
+    .post-card {
+        margin-bottom: 1rem;
+    }
+    
+    /* Form inputs */
+    input, textarea, select {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    /* Footer */
+    footer {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    /* Settings page */
+    #settingsPage .flex-col.md\:flex-row {
+        flex-direction: column;
+    }
+    
+    /* Admin panel */
+    #adminPanel {
+        width: 95vw;
+    }
+    
+    /* Modal content */
+    .bg-\[\#18181b\].text-white.rounded-xl.p-8 {
+        padding: 1.5rem;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+}
+
+/* Touch-friendly tap targets */
+@media (pointer: coarse) {
+    button, a {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+/* Prevent horizontal scroll */
+body {
+    overflow-x: hidden;
+    width: 100%;
+}
+
+/* Better mobile typography */
+@media (max-width: 640px) {
+    h1 {
+        font-size: 2.5rem;
+        line-height: 1.2;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+        line-height: 1.3;
+    }
+    
+    p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+}
+
+/* Mobile-safe dialog positioning */
+dialog[open] {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+/* Better mobile form experience */
+@media (max-width: 768px) {
+    .grid.grid-cols-1.md\:grid-cols-2.gap-4 {
+        grid-template-columns: 1fr;
+    }
+}
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center py-12 px-6">
