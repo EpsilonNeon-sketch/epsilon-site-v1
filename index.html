@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Epsilon | The Hub</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Epsilon Hub">
+<link rel="apple-touch-icon" href="./epsilon logo.png">
     <link rel="icon"  href="./epsilon logo.png">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -60,6 +65,7 @@
             height: 30px;
             width: 600px;
             margin-bottom: 40px;
+            color: black;
         }
     </style>
 </head>
@@ -229,7 +235,7 @@
                     <div class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-white/5 h-full flex flex-col justify-between">
                         <div>
                             <div class="w-12 h-12 bg-purple-600/20 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                                <i data-lucide="terminal"></i>
+                                <i data-lucide="graduation-cap"></i>
                             </div>
                             <h2 class="text-2xl font-bold mb-2">Epsilon Academics</h2>
                             <p class="text-gray-400 text-sm leading-relaxed">Learn and grow all for free no costs.</p>
@@ -272,6 +278,7 @@
                     <button class="admin-doc-btn bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded" data-doc-link="https://epsilonneon-sketch.github.io/epsilon-docs-editz/">Epsilon Editz</button>
                     <button class="admin-doc-btn bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded" data-doc-link="https://epsilonneon-sketch.github.io/epsilon-doc-aproxi/">Epsilon Aproxi</button>
                     <button class="admin-doc-btn bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded" data-doc-link="https://epsilonneon-sketch.github.io/epsilon-docs-heckle/">Epsilon Heckle</button>
+                    <button class="admin-doc-btn bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded" data-doc-link="https://epsilonneon-sketch.github.io/epsilon-docs-academics/">Epsilon Academics</button>
                 </div>
                 <button id="adminPanelClose" class="mt-6 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">Close</button>
             </div>
@@ -290,9 +297,25 @@
                 const adminCancel = document.getElementById('adminCancel');
                 const adminPanel = document.getElementById('adminPanel');
                 const adminPanelClose = document.getElementById('adminPanelClose');
-                const searchInput = document.getElementById('search').value.trim;
-                
+         const searchInput = document.getElementById('search');
 
+searchInput.addEventListener('input', () => {
+    const query = searchInput.value.toLowerCase();
+    // Targeting all project cards across the Ecosystem, Partners, and Labs sections
+    const projects = document.querySelectorAll('section .grid a.group');
+    
+    projects.forEach(project => {
+        const title = project.querySelector('h2').textContent.toLowerCase();
+        const description = project.querySelector('p').textContent.toLowerCase();
+        
+        // Match if the query is in the title OR the description
+        if (title.includes(query) || description.includes(query)) {
+            project.style.display = ''; // Restore original display (usually block/flex)
+        } else {
+            project.style.display = 'none';
+        }
+    });
+});
                 adminBtn.addEventListener('click', () => {
                         adminDialog.showModal();
                         adminPassword.value = '';
@@ -324,7 +347,14 @@
                                 window.open(link, '_blank');
                         }
                 });
+              // Register the Service Worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('Epsilon SW Registered!', reg))
+            .catch(err => console.log('SW Registration Failed:', err));
+    });
+}
         </script>
 </body>
 </html>
-
