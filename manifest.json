@@ -1,0 +1,19 @@
+{
+  "name": "Epsilon | The Hub",
+  "short_name": "Epsilon",
+  "description": "The central terminal for Epsilon's ecosystem, featuring Aproxi, Heckle, and Editz.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#050505",
+  "theme_color": "#a855f7",
+  "icons": [
+    {
+      "src": "./epsilon logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "developer tools", "games"]
+}
