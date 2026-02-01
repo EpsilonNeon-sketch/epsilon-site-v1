@@ -439,6 +439,121 @@ dialog[open] {
     font-size: 0.85rem !important;
   }
 }
+
+/* Mobile-specific styles for Users Page */
+@media (max-width: 768px) {
+  /* Users container adjustments */
+  #usersPage .grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3 {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  /* User cards optimization */
+  .user-card {
+    padding: 1rem !important;
+    border-radius: 1.5rem !important;
+  }
+  
+  .user-card .w-16.h-16 {
+    width: 4rem !important;
+    height: 4rem !important;
+  }
+  
+  /* User name and username */
+  .user-card h3 {
+    font-size: 1.1rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+  
+  .user-card .text-gray-400 {
+    font-size: 0.8rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  /* User bio */
+  .user-card .text-gray-300 {
+    font-size: 0.85rem !important;
+    line-height: 1.4 !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  /* View profile button */
+  .user-card .view-profile-btn {
+    padding: 0.5rem !important;
+    font-size: 0.8rem !important;
+  }
+  
+  /* Search and filter section */
+  #usersPage .flex.gap-4.mb-6 {
+    flex-direction: column;
+    gap: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  #usersPage .search-input {
+    width: 100% !important;
+  }
+  
+  #usersPage .flex.gap-2 {
+    flex-wrap: wrap;
+    gap: 0.5rem !important;
+  }
+  
+  #usersPage .filter-btn {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.75rem !important;
+  }
+  
+  /* Empty state */
+  #usersEmptyState {
+    padding: 2rem 1rem !important;
+  }
+  
+  #usersEmptyState h3 {
+    font-size: 1.25rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  #usersEmptyState p {
+    font-size: 0.9rem !important;
+  }
+  
+  /* User profile modal */
+  #userProfileModal .bg-\[\#18181b\] {
+    padding: 1.5rem !important;
+    max-width: 95vw !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+  }
+  
+  #userProfileModal .w-20.h-20 {
+    width: 5rem !important;
+    height: 5rem !important;
+  }
+  
+  #userProfileModal h2 {
+    font-size: 1.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  #userProfileModal .text-gray-400 {
+    font-size: 0.9rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  #userProfileModal .text-gray-300 {
+    font-size: 0.9rem !important;
+    line-height: 1.5 !important;
+  }
+  
+  #userProfileModal .space-y-4 > div {
+    margin-bottom: 0.75rem !important;
+  }
+  
+  #userProfileModal .grid.grid-cols-1.md\\:grid-cols-2 {
+    grid-template-columns: 1fr !important;
+  }
+}
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center py-12 px-6">
@@ -451,6 +566,9 @@ dialog[open] {
         </button>
         <button id="postsBtn" class="glass px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-purple-600 transition-all flex items-center gap-2">
             <i data-lucide="book-open" class="w-4 h-4"></i> <span>Stories</span>
+        </button>
+        <button id="usersBtn" class="glass px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-purple-600 transition-all flex items-center gap-2">
+            <i data-lucide="users" class="w-4 h-4"></i> <span>Community</span>
         </button>
         <button id="authBtn" class="glass px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-purple-600 transition-all flex items-center gap-2">
             <i data-lucide="user" class="w-4 h-4"></i> <span id="authBtnText">Join Epsilon</span>
@@ -719,6 +837,42 @@ dialog[open] {
         </div>
     </div>
 
+    <!-- Users Page -->
+    <div id="usersPage" class="page">
+        <div class="max-w-6xl w-full">
+            <header class="text-center mb-12 space-y-4">
+                <h1 class="text-4xl md:text-6xl font-extrabold tracking-tighter italic">
+                    EPSILON<span class="text-purple-500"> COMMUNITY</span>
+                </h1>
+                <p class="text-gray-400 font-light tracking-widest uppercase text-[10px] md:text-sm">Connect with creators and innovators</p>
+            </header>
+
+            <!-- Search and Filter Section -->
+            <div class="flex gap-4 mb-6">
+                <div class="flex-1">
+                    <input id="usersSearch" type="text" placeholder="Search users by name or username..." class="search-input w-full rounded-lg px-4 py-3 bg-[#0a0a0a] border border-white/5 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all">
+                </div>
+                <div class="flex gap-2">
+                    <button class="user-filter-btn glass px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-purple-600 transition-all active" data-filter="all">All</button>
+                    <button class="user-filter-btn glass px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-purple-600 transition-all" data-filter="recent">Recent</button>
+                    <button class="user-filter-btn glass px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-purple-600 transition-all" data-filter="active">Active</button>
+                </div>
+            </div>
+
+            <!-- Users Container -->
+            <div id="usersContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Users will be dynamically added here -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="usersEmptyState" class="text-center py-12 hidden">
+                <i data-lucide="users" class="w-16 h-16 mx-auto text-gray-600 mb-4"></i>
+                <h3 class="text-xl font-semibold mb-2">No users found</h3>
+                <p class="text-gray-400">Try adjusting your search or filter criteria</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Settings Page -->
     <div id="settingsPage" class="page">
         <div class="max-w-4xl w-full">
@@ -846,6 +1000,57 @@ dialog[open] {
         </div>
     </div>
 
+    <!-- User Profile Modal -->
+    <dialog id="userProfileModal" class="rounded-xl p-0 border-0 shadow-2xl bg-transparent" style="max-width: 90vw;">
+        <div class="bg-[#18181b] text-white rounded-xl p-8 max-w-3xl glass border border-white/10">
+            <div class="flex justify-between items-start mb-6">
+                <div class="flex items-center">
+                    <img id="modalProfilePic" src="" alt="Profile Picture" class="w-20 h-20 rounded-full mr-4">
+                    <div>
+                        <h2 id="modalDisplayName" class="text-2xl font-bold"></h2>
+                        <p id="modalUsername" class="text-gray-400"></p>
+                    </div>
+                </div>
+                <button type="button" id="closeUserProfileModal" class="text-gray-400 hover:text-white">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div id="modalBio" class="text-gray-300"></div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div id="modalLocationContainer" class="hidden">
+                        <h3 class="text-sm font-semibold text-gray-400 mb-1">Location</h3>
+                        <p id="modalLocation" class="text-gray-300"></p>
+                    </div>
+                    <div id="modalWebsiteContainer" class="hidden">
+                        <h3 class="text-sm font-semibold text-gray-400 mb-1">Website</h3>
+                        <a id="modalWebsite" href="" target="_blank" class="text-purple-400 hover:underline"></a>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-400 mb-1">Member Since</h3>
+                        <p id="modalJoinDate" class="text-gray-300"></p>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-400 mb-1">Posts</h3>
+                        <p id="modalPostCount" class="text-gray-300"></p>
+                    </div>
+                </div>
+                
+                <div id="modalUserPosts" class="mt-6">
+                    <h3 class="text-lg font-semibold mb-4">Recent Stories</h3>
+                    <div id="modalPostsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- User posts will be dynamically added here -->
+                    </div>
+                    <div id="modalNoPosts" class="text-center py-8 hidden">
+                        <p class="text-gray-400">This user hasn't published any stories yet.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
     <!-- Admin Dialog -->
     <dialog id="adminDialog" class="rounded-xl p-0 border-0 shadow-2xl" style="max-width: 90vw;">
         <form id="adminForm" method="dialog" class="bg-[#18181b] text-white rounded-xl p-8 flex flex-col gap-4 min-w-[300px]">
@@ -935,18 +1140,23 @@ dialog[open] {
         // Global variables
         let currentUser = null;
         let currentFilter = 'all';
+        let currentUserFilter = 'all';
+        let usersSearchQuery = '';
 
         // Page Navigation
         const homePage = document.getElementById('homePage');
         const postsPage = document.getElementById('postsPage');
+        const usersPage = document.getElementById('usersPage');
         const settingsPage = document.getElementById('settingsPage');
         const homeBtn = document.getElementById('homeBtn');
         const postsBtn = document.getElementById('postsBtn');
+        const usersBtn = document.getElementById('usersBtn');
         const backToHomeBtn = document.getElementById('backToHomeBtn');
 
         function showPage(page) {
             homePage.classList.remove('active');
             postsPage.classList.remove('active');
+            usersPage.classList.remove('active');
             settingsPage.classList.remove('active');
             
             page.classList.add('active');
@@ -957,11 +1167,14 @@ dialog[open] {
             // If showing posts page, load posts
             if (page === postsPage) {
                 loadPosts();
+            } else if (page === usersPage) {
+                loadUsers();
             }
         }
 
         homeBtn.addEventListener('click', () => showPage(homePage));
         postsBtn.addEventListener('click', () => showPage(postsPage));
+        usersBtn.addEventListener('click', () => showPage(usersPage));
         backToHomeBtn.addEventListener('click', () => showPage(homePage));
 
         // Notification helper
@@ -1006,6 +1219,22 @@ dialog[open] {
         const profilePicPreview = document.getElementById('profilePicPreview');
         const changeProfilePicBtn = document.getElementById('changeProfilePicBtn');
         const profilePicInput = document.getElementById('profilePicInput');
+
+        // User Profile Modal
+        const userProfileModal = document.getElementById('userProfileModal');
+        const closeUserProfileModal = document.getElementById('closeUserProfileModal');
+        const modalProfilePic = document.getElementById('modalProfilePic');
+        const modalDisplayName = document.getElementById('modalDisplayName');
+        const modalUsername = document.getElementById('modalUsername');
+        const modalBio = document.getElementById('modalBio');
+        const modalLocation = document.getElementById('modalLocation');
+        const modalLocationContainer = document.getElementById('modalLocationContainer');
+        const modalWebsite = document.getElementById('modalWebsite');
+        const modalWebsiteContainer = document.getElementById('modalWebsiteContainer');
+        const modalJoinDate = document.getElementById('modalJoinDate');
+        const modalPostCount = document.getElementById('modalPostCount');
+        const modalPostsContainer = document.getElementById('modalPostsContainer');
+        const modalNoPosts = document.getElementById('modalNoPosts');
 
         let isLoginMode = false;
 
@@ -1784,6 +2013,236 @@ dialog[open] {
             }
         }
 
+        // Users page functionality
+        const usersContainer = document.getElementById('usersContainer');
+        const usersEmptyState = document.getElementById('usersEmptyState');
+        const usersSearch = document.getElementById('usersSearch');
+        const userFilterBtns = document.querySelectorAll('.user-filter-btn');
+
+        // Search users
+        usersSearch.addEventListener('input', (e) => {
+            usersSearchQuery = e.target.value.toLowerCase();
+            loadUsers();
+        });
+
+        // Filter users
+        userFilterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active state
+                userFilterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Update filter and reload users
+                currentUserFilter = btn.getAttribute('data-filter');
+                loadUsers();
+            });
+        });
+
+        // Load users
+        async function loadUsers() {
+            try {
+                let query = supabaseClient
+                    .from('profiles')
+                    .select('*');
+                
+                // Apply filter
+                if (currentUserFilter === 'recent') {
+                    query = query.order('created_at', { ascending: false }).limit(20);
+                } else if (currentUserFilter === 'active') {
+                    // Get users with recent posts
+                    const { data: activeUsers } = await supabaseClient
+                        .from('posts')
+                        .select('user_id')
+                        .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()); // Last 30 days
+                    
+                    if (activeUsers && activeUsers.length > 0) {
+                        const userIds = [...new Set(activeUsers.map(post => post.user_id))];
+                        query = query.in('id', userIds);
+                    } else {
+                        // No active users in the last 30 days
+                        usersContainer.innerHTML = '';
+                        usersEmptyState.classList.remove('hidden');
+                        return;
+                    }
+                } else {
+                    query = query.order('username', { ascending: true });
+                }
+                
+                const { data: users, error } = await query;
+                
+                if (error) {
+                    console.error('Error loading users:', error);
+                    showNotification('Error loading users. Please try again.', 'error');
+                    return;
+                }
+                
+                // Filter by search query
+                let filteredUsers = users;
+                if (usersSearchQuery) {
+                    filteredUsers = users.filter(user => 
+                        user.username.toLowerCase().includes(usersSearchQuery) ||
+                        (user.display_name && user.display_name.toLowerCase().includes(usersSearchQuery))
+                    );
+                }
+                
+                // Clear container
+                usersContainer.innerHTML = '';
+                
+                // Show/hide empty state
+                if (filteredUsers.length === 0) {
+                    usersEmptyState.classList.remove('hidden');
+                    return;
+                } else {
+                    usersEmptyState.classList.add('hidden');
+                }
+                
+                // Create user cards
+                filteredUsers.forEach(user => {
+                    const userCard = document.createElement('div');
+                    userCard.className = 'glass p-6 rounded-3xl user-card';
+                    
+                    userCard.innerHTML = `
+                        <div class="flex flex-col items-center text-center">
+                            <img src="${user.profile_pic || `https://picsum.photos/seed/${user.id}/200/200.jpg`}" alt="${user.display_name}" class="w-16 h-16 rounded-full mb-4">
+                            <h3 class="font-semibold text-lg">${user.display_name || user.username}</h3>
+                            <p class="text-gray-400 mb-3">@${user.username}</p>
+                            <p class="text-gray-300 mb-4 line-clamp-2">${user.bio || 'No bio available'}</p>
+                            <button class="view-profile-btn glass px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-purple-600 transition-all" data-user-id="${user.id}">
+                                View Profile
+                            </button>
+                        </div>
+                    `;
+                    
+                    usersContainer.appendChild(userCard);
+                });
+                
+                // Re-initialize Lucide icons
+                lucide.createIcons();
+                
+                // Add event listeners to view profile buttons
+                document.querySelectorAll('.view-profile-btn').forEach(btn => {
+                    btn.addEventListener('click', handleViewProfile);
+                });
+            } catch (error) {
+                console.error('Users loading error:', error);
+                showNotification('An unexpected error occurred. Please try again.', 'error');
+            }
+        }
+
+        // Handle view profile
+        async function handleViewProfile(e) {
+            const userId = e.currentTarget.getAttribute('data-user-id');
+            
+            try {
+                // Get user profile
+                const { data: user, error: userError } = await supabaseClient
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
+                
+                if (userError) {
+                    console.error('Error fetching user:', userError);
+                    showNotification('Error loading user profile. Please try again.', 'error');
+                    return;
+                }
+                
+                // Get user's posts
+                const { data: posts, error: postsError } = await supabaseClient
+                    .from('posts')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: false })
+                    .limit(3); // Show only 3 most recent posts
+                
+                if (postsError) {
+                    console.error('Error fetching user posts:', postsError);
+                    showNotification('Error loading user posts. Please try again.', 'error');
+                    return;
+                }
+                
+                // Format join date
+                const joinDate = new Date(user.created_at);
+                const formattedJoinDate = joinDate.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                
+                // Update modal content
+                modalProfilePic.src = user.profile_pic || `https://picsum.photos/seed/${user.id}/200/200.jpg`;
+                modalDisplayName.textContent = user.display_name || user.username;
+                modalUsername.textContent = `@${user.username}`;
+                modalBio.textContent = user.bio || 'No bio available';
+                modalJoinDate.textContent = formattedJoinDate;
+                modalPostCount.textContent = posts.length;
+                
+                // Show/hide location
+                if (user.location) {
+                    modalLocation.textContent = user.location;
+                    modalLocationContainer.classList.remove('hidden');
+                } else {
+                    modalLocationContainer.classList.add('hidden');
+                }
+                
+                // Show/hide website
+                if (user.website) {
+                    modalWebsite.textContent = user.website;
+                    modalWebsite.href = user.website;
+                    modalWebsiteContainer.classList.remove('hidden');
+                } else {
+                    modalWebsiteContainer.classList.add('hidden');
+                }
+                
+                // Clear and populate posts container
+                modalPostsContainer.innerHTML = '';
+                
+                if (posts.length === 0) {
+                    modalNoPosts.classList.remove('hidden');
+                } else {
+                    modalNoPosts.classList.add('hidden');
+                    
+                    posts.forEach(post => {
+                        const postCard = document.createElement('div');
+                        postCard.className = 'glass p-4 rounded-xl';
+                        
+                        // Format date
+                        const postDate = new Date(post.created_at);
+                        const formattedDate = postDate.toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'short', 
+                            day: 'numeric' 
+                        });
+                        
+                        postCard.innerHTML = `
+                            <h4 class="font-semibold mb-2">${post.title}</h4>
+                            <div class="mb-2">
+                                <span class="text-xs px-2 py-1 bg-purple-600/20 text-purple-400 rounded-full">${post.category}</span>
+                            </div>
+                            <p class="text-gray-300 text-sm line-clamp-2 mb-2">${post.content}</p>
+                            <p class="text-xs text-gray-400">${formattedDate}</p>
+                        `;
+                        
+                        modalPostsContainer.appendChild(postCard);
+                    });
+                }
+                
+                // Show modal
+                userProfileModal.showModal();
+                
+                // Re-initialize Lucide icons
+                lucide.createIcons();
+            } catch (error) {
+                console.error('Profile view error:', error);
+                showNotification('An unexpected error occurred. Please try again.', 'error');
+            }
+        }
+
+        // Close user profile modal
+        closeUserProfileModal.addEventListener('click', () => {
+            userProfileModal.close();
+        });
+
         // Admin button and dialogs
         const adminBtn = document.getElementById('adminBtn');
         const adminDialog = document.getElementById('adminDialog');
@@ -1860,4 +2319,4 @@ dialog[open] {
         });
     </script>
 </body>
-</html> 
+</html>
