@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Epsilon | The Future of Connection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;800&display=swap');
+        
+        :root {
+            --accent: #a855f7;
+            --bg: #050505;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .glow-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(273, 67%, 15%, 1) 0, transparent 50%), 
+                radial-gradient(at 100% 100%, hsla(273, 67%, 10%, 1) 0, transparent 50%),
+                radial-gradient(at 50% 50%, hsla(273, 67%, 5%, 1) 0, transparent 80%);
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(168, 85, 247, 0.4);
+            transform: translateY(-4px);
+        }
+
+        .hero-title {
+            background: linear-gradient(to bottom right, #fff 30%, #a855f7 100%);
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: revealIn 0.8s forwards;
+        }
+
+        @keyframes revealIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+
+        .btn-primary {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            transform: scale(0);
+            transition: transform 0.6s ease-out;
+        }
+
+        .btn-primary:hover::after {
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="glow-mesh"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 px-6 py-8">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center rotate-12">
+                    <span class="text-white font-bold -rotate-12 text-xl">E</span>
+                </div>
+                <span class="text-xl font-extrabold tracking-tighter italic">EPSILON<span class="text-purple-500">.</span></span>
+            </div>
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium tracking-widest uppercase text-gray-400">
+                <a href="#" class="hover:text-purple-400 transition-colors">Ecosystem</a>
+                <a href="#" class="hover:text-purple-400 transition-colors">Stories</a>
+                <a href="#" class="hover:text-purple-400 transition-colors">Labs</a>
+            </div>
+            <a href="https://epsilonneon-sketch.github.io/epsilon-site-v1/" class="glass px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-purple-600 transition-all">
+                Enter Hub
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <main class="relative min-h-screen flex flex-col items-center justify-center px-6 pt-20">
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-purple-600/20 blur-[120px] rounded-full -z-10"></div>
+        
+        <div class="text-center max-w-4xl mx-auto reveal">
+            <span class="inline-block py-1 px-4 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-6">
+                Now Live: The Epsilon Ecosystem
+            </span>
+            <h1 class="hero-title text-6xl md:text-8xl font-extrabold tracking-tighter mb-8 leading-[0.9]">
+                THINK BEYOND <br/>THE ORDINARY.
+            </h1>
+            <p class="text-gray-400 text-lg md:text-xl font-light max-w-2xl mx-auto mb-10 leading-relaxed">
+                A collaborative digital sanctuary for creators, experimenters, and storytellers. Explore the hub where innovation meets community.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a href="#" class="btn-primary bg-white text-black px-10 py-4 rounded-full font-bold text-sm uppercase tracking-widest hover:scale-105 transition-transform">
+                    Get Started
+                </a>
+                <a href="#" class="glass px-10 py-4 rounded-full font-bold text-sm uppercase tracking-widest flex items-center gap-2">
+                    <i data-lucide="play-circle" class="w-5 h-5"></i> Watch Intro
+                </a>
+            </div>
+        </div>
+
+        <!-- Floating Elements -->
+        <div class="absolute bottom-10 left-10 hidden lg:block float-animation stagger-1">
+            <div class="glass p-4 rounded-2xl flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center">
+                    <i data-lucide="users" class="text-purple-400 w-5 h-5"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 font-bold uppercase tracking-tighter">Community</p>
+                    <p class="text-sm font-semibold">12+ Members</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute top-1/3 right-10 hidden lg:block float-animation stagger-2">
+            <div class="glass p-4 rounded-2xl flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+                    <i data-lucide="zap" class="text-blue-400 w-5 h-5"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 font-bold uppercase tracking-tighter">Velocity</p>
+                    <p class="text-sm font-semibold">New Labs Daily</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Content Preview Section -->
+    <section class="py-24 px-6 max-w-7xl mx-auto">
+        <div class="text-center mb-16 reveal">
+            <h2 class="text-3xl md:text-5xl font-bold tracking-tight mb-4">Inside the Hub</h2>
+            <p class="text-gray-500 uppercase tracking-[0.3em] text-xs">Explore our primary sectors</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Feature 1 -->
+            <div class="glass p-8 rounded-[2rem] reveal stagger-1">
+                <div class="w-12 h-12 bg-purple-600/20 rounded-xl flex items-center justify-center mb-6">
+                    <i data-lucide="book-open" class="text-purple-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-3 italic">Stories</h3>
+                <p class="text-gray-400 leading-relaxed mb-6">
+                    Dive into a collection of shared experiences, experiments, and narratives written by our core team and community members.
+                </p>
+                <a href="#" class="text-purple-400 font-bold text-sm uppercase tracking-widest flex items-center gap-2 group">
+                    Read More <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-2 transition-transform"></i>
+                </a>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="glass p-8 rounded-[2rem] reveal stagger-2">
+                <div class="w-12 h-12 bg-indigo-600/20 rounded-xl flex items-center justify-center mb-6">
+                    <i data-lucide="users" class="text-indigo-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-3 italic">Community</h3>
+                <p class="text-gray-400 leading-relaxed mb-6">
+                    Connect with like-minded individuals. Our ecosystem is built on the collective intelligence of creators like Ethan and Richard.
+                </p>
+                <a href="#" class="text-indigo-400 font-bold text-sm uppercase tracking-widest flex items-center gap-2 group">
+                    Join Us <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-2 transition-transform"></i>
+                </a>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="glass p-8 rounded-[2rem] reveal stagger-3">
+                <div class="w-12 h-12 bg-pink-600/20 rounded-xl flex items-center justify-center mb-6">
+                    <i data-lucide="flask-conical" class="text-pink-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-3 italic">Labs</h3>
+                <p class="text-gray-400 leading-relaxed mb-6">
+                    Experimental projects and digital tools developed by the Epsilon Team. Where the future is built, one line of code at a time.
+                </p>
+                <a href="#" class="text-pink-400 font-bold text-sm uppercase tracking-widest flex items-center gap-2 group">
+                    Explore Labs <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-2 transition-transform"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-20 px-6 border-t border-white/5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="text-center md:text-left">
+                <h1 class="text-2xl font-extrabold tracking-tighter italic mb-2">
+                    EPSILON<span class="text-purple-500">.</span>
+                </h1>
+                <p class="text-gray-500 text-xs uppercase tracking-widest">© 2026 Warren Adrian & Epsilon Team</p>
+            </div>
+            
+            <div class="flex gap-6">
+                <a href="#" class="w-10 h-10 glass rounded-full flex items-center justify-center hover:bg-purple-600 transition-colors">
+                    <i data-lucide="github" class="w-5 h-5"></i>
+                </a>
+                <a href="#" class="w-10 h-10 glass rounded-full flex items-center justify-center hover:bg-purple-600 transition-colors">
+                    <i data-lucide="twitter" class="w-5 h-5"></i>
+                </a>
+                <a href="#" class="w-10 h-10 glass rounded-full flex items-center justify-center hover:bg-purple-600 transition-colors">
+                    <i data-lucide="instagram" class="w-5 h-5"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Simple scroll reveal
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('reveal');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
