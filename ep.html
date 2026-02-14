@@ -994,6 +994,53 @@
         </div>
     </div>
 
+    <!-- Messages Page -->
+    <div id="messagesPage" class="page">
+        <div class="max-w-7xl w-full">
+            <header class="text-center mb-12 space-y-4">
+                <h1 class="text-4xl md:text-6xl font-extrabold tracking-tighter italic">
+                    EPSILON<span class="text-pink-500"> MESSAGES</span>
+                </h1>
+                <p class="text-pink-600 font-light tracking-widest uppercase text-[10px] md:text-sm">Connect with the community</p>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass p-6 rounded-3xl">
+                    <h2 class="text-xl font-bold mb-4">Conversations</h2>
+                    <input id="searchUsers" type="text" placeholder="Search users..." class="w-full rounded-lg px-4 py-2 mb-4 border border-pink-200">
+                    <div id="usersList" class="space-y-2"></div>
+                </div>
+
+                <div class="md:col-span-2 glass p-6 rounded-3xl flex flex-col" style="min-height: 500px;">
+                    <div id="chatHeader" class="border-b border-pink-300 pb-4 mb-4 hidden">
+                        <div class="flex items-center gap-3">
+                            <img id="chatUserPic" class="w-12 h-12 rounded-full">
+                            <div>
+                                <h3 id="chatUserName" class="font-bold"></h3>
+                                <p id="chatUserStatus" class="text-xs text-pink-600">Online</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="emptyChat" class="flex-1 flex items-center justify-center text-pink-600">
+                        <div class="text-center">
+                            <i data-lucide="message-circle" class="w-16 h-16 mx-auto mb-4"></i>
+                            <p>Select a user to start messaging</p>
+                        </div>
+                    </div>
+
+                    <div id="chatArea" class="hidden flex flex-col flex-1">
+                        <div id="messagesContainer" class="flex-1 mb-4 space-y-3" style="max-height: 400px; overflow-y: auto;"></div>
+                        <form id="messageForm" class="flex gap-2">
+                            <input id="messageInput" type="text" placeholder="Type a message..." class="flex-1 rounded-lg px-4 py-3 border border-pink-200" required>
+                            <button type="submit" class="bg-pink-600 hover:bg-pink-700 text-white px-6 py-3 rounded-lg">Send</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Events Page -->
     <div id="eventsPage" class="page">
         <div class="max-w-6xl w-full">
@@ -1430,18 +1477,22 @@
         const postsPage = document.getElementById('postsPage');
         const usersPage = document.getElementById('usersPage');
         const eventsPage = document.getElementById('eventsPage');
+        const messagesPage = document.getElementById('messagesPage');
         const settingsPage = document.getElementById('settingsPage');
         const homeBtn = document.getElementById('homeBtn');
         const postsBtn = document.getElementById('postsBtn');
         const usersBtn = document.getElementById('usersBtn');
         const eventsBtn = document.getElementById('eventsBtn');
         const backToHomeBtn = document.getElementById('backToHomeBtn');
+        let selectedUser = null;
+        let messageSubscription = null;
 
         function showPage(page) {
             homePage.classList.remove('active');
             postsPage.classList.remove('active');
             usersPage.classList.remove('active');
             eventsPage.classList.remove('active');
+            messagesPage.classList.remove('active');
             settingsPage.classList.remove('active');
 
             page.classList.add('active');
@@ -1456,6 +1507,8 @@
                 loadUsers();
             } else if (page === eventsPage) {
                 loadEvents();
+            } else if (page === messagesPage) {
+                loadMessagesUsers();
             }
         }
 
@@ -1627,7 +1680,7 @@
         });
 
         document.getElementById('messagesBtn').addEventListener('click', () => {
-            window.location.href = 'messages.html';
+            showPage(messagesPage);
         });
 
         authClose.addEventListener('click', () => authDialog.close());
@@ -3166,6 +3219,101 @@
                 });
             });
         }
+
+        // Messages functionality
+        async function loadMessagesUsers() {
+            const { data: users } = await supabaseClient.from('profiles').select('*').neq('id', currentUser.id).order('username');
+            const usersList = document.getElementById('usersList');
+            usersList.innerHTML = '';
+
+            users?.forEach(user => {
+                const userDiv = document.createElement('div');
+                userDiv.className = 'flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-pink-100 transition';
+                userDiv.innerHTML = `
+                    <img src="${user.profile_pic || 'https://picsum.photos/200'}" class="w-10 h-10 rounded-full">
+                    <div class="flex-1">
+                        <p class="font-semibold">${user.display_name || user.username}</p>
+                        <p class="text-xs text-pink-600">@${user.username}</p>
+                    </div>
+                `;
+                userDiv.onclick = () => openChat(user);
+                usersList.appendChild(userDiv);
+            });
+        }
+
+        async function openChat(user) {
+            selectedUser = user;
+            document.getElementById('emptyChat').classList.add('hidden');
+            document.getElementById('chatHeader').classList.remove('hidden');
+            document.getElementById('chatArea').classList.remove('hidden');
+            document.getElementById('chatUserPic').src = user.profile_pic || 'https://picsum.photos/200';
+            document.getElementById('chatUserName').textContent = user.display_name || user.username;
+            loadChatMessages();
+            subscribeToMessages();
+        }
+
+        async function loadChatMessages() {
+            const { data: messages } = await supabaseClient
+                .from('messages')
+                .select('*')
+                .or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${selectedUser.id}),and(sender_id.eq.${selectedUser.id},receiver_id.eq.${currentUser.id})`)
+                .order('created_at', { ascending: true });
+
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = '';
+
+            messages?.forEach(msg => {
+                const isOwn = msg.sender_id === currentUser.id;
+                const div = document.createElement('div');
+                div.className = `flex ${isOwn ? 'justify-end' : 'justify-start'}`;
+                div.innerHTML = `
+                    <div style="max-width: 70%;" class="${isOwn ? 'bg-pink-500 text-white' : 'bg-gray-200 text-gray-900'} px-4 py-2 rounded-2xl">
+                        <p>${msg.content}</p>
+                        <p class="text-xs opacity-70 mt-1">${new Date(msg.created_at).toLocaleTimeString()}</p>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function subscribeToMessages() {
+            if (messageSubscription) messageSubscription.unsubscribe();
+            messageSubscription = supabaseClient
+                .channel('messages')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+                    if ((payload.new.sender_id === selectedUser.id && payload.new.receiver_id === currentUser.id) ||
+                        (payload.new.sender_id === currentUser.id && payload.new.receiver_id === selectedUser.id)) {
+                        loadChatMessages();
+                    }
+                })
+                .subscribe();
+        }
+
+        document.getElementById('messageForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('messageInput');
+            const content = input.value.trim();
+            if (!content) return;
+
+            await supabaseClient.from('messages').insert([{
+                sender_id: currentUser.id,
+                receiver_id: selectedUser.id,
+                content: content
+            }]);
+
+            input.value = '';
+            loadChatMessages();
+        });
+
+        document.getElementById('searchUsers').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            document.querySelectorAll('#usersList > div').forEach(div => {
+                const text = div.textContent.toLowerCase();
+                div.style.display = text.includes(query) ? 'flex' : 'none';
+            });
+        });
     </script>
 </body>
 
