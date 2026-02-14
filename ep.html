@@ -1001,17 +1001,19 @@
                 <h1 class="text-4xl md:text-6xl font-extrabold tracking-tighter italic">
                     EPSILON<span class="text-pink-500"> MESSAGES</span>
                 </h1>
-                <p class="text-pink-600 font-light tracking-widest uppercase text-[10px] md:text-sm">Connect with the community</p>
+                <p class="text-pink-600 font-light tracking-widest uppercase text-[10px] md:text-sm">Connect with the
+                    community</p>
             </header>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="glass p-6 rounded-3xl">
                     <h2 class="text-xl font-bold mb-4">Conversations</h2>
-                    <input id="searchUsers" type="text" placeholder="Search users..." class="w-full rounded-lg px-4 py-2 mb-4 border border-pink-200">
+                    <input id="searchUsers" type="text" placeholder="Search users..."
+                        class="w-full rounded-lg px-4 py-2 mb-4 border border-pink-200">
                     <div id="usersList" class="space-y-2"></div>
                 </div>
 
-                <div class="md:col-span-2 glass p-6 rounded-3xl flex flex-col" style="min-height: 500px;">
+                <div class="md:col-span-2 glass p-6 rounded-3xl flex flex-col" style="max-height: 600px;">
                     <div id="chatHeader" class="border-b border-pink-300 pb-4 mb-4 hidden">
                         <div class="flex items-center gap-3">
                             <img id="chatUserPic" class="w-12 h-12 rounded-full">
@@ -1022,7 +1024,8 @@
                         </div>
                     </div>
 
-                    <div id="emptyChat" class="flex-1 flex items-center justify-center text-pink-600">
+                    <div id="emptyChat" class="flex-1 flex items-center justify-center text-pink-600"
+                        style="height: 400px;">
                         <div class="text-center">
                             <i data-lucide="message-circle" class="w-16 h-16 mx-auto mb-4"></i>
                             <p>Select a user to start messaging</p>
@@ -1030,10 +1033,13 @@
                     </div>
 
                     <div id="chatArea" class="hidden flex flex-col flex-1">
-                        <div id="messagesContainer" class="flex-1 mb-4 space-y-3" style="max-height: 400px; overflow-y: auto;"></div>
+                        <div id="messagesContainer" class="flex-1 mb-4 space-y-3"
+                            style="max-height: 400px; overflow-y: auto; height: 400px;"></div>
                         <form id="messageForm" class="flex gap-2">
-                            <input id="messageInput" type="text" placeholder="Type a message..." class="flex-1 rounded-lg px-4 py-3 border border-pink-200" required>
-                            <button type="submit" class="bg-pink-600 hover:bg-pink-700 text-white px-6 py-3 rounded-lg">Send</button>
+                            <input id="messageInput" type="text" placeholder="Type a message..."
+                                class="flex-1 rounded-lg px-4 py-3 border border-pink-200" required>
+                            <button type="submit"
+                                class="bg-pink-600 hover:bg-pink-700 text-white px-6 py-3 rounded-lg">Send</button>
                         </form>
                     </div>
                 </div>
