@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,16 +10,16 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;800&display=swap');
-        
+
         :root {
-            --accent: #a855f7;
-            --bg: #050505;
+            --accent: #ff69b4;
+            --bg: #ffffff;
         }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg);
-            color: #ffffff;
+            color: #333333;
             overflow-x: hidden;
         }
 
@@ -29,34 +30,41 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background-image: 
-                radial-gradient(at 0% 0%, hsla(273, 67%, 15%, 1) 0, transparent 50%), 
-                radial-gradient(at 100% 100%, hsla(273, 67%, 10%, 1) 0, transparent 50%),
-                radial-gradient(at 50% 50%, hsla(273, 67%, 5%, 1) 0, transparent 80%);
+            background-image:
+                radial-gradient(at 0% 0%, hsla(330, 100%, 95%, 1) 0, transparent 50%),
+                radial-gradient(at 100% 100%, hsla(330, 100%, 90%, 1) 0, transparent 50%),
+                radial-gradient(at 50% 50%, hsla(330, 100%, 97%, 1) 0, transparent 80%);
         }
 
         .glass {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 182, 193, 0.15);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 105, 180, 0.3);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .glass:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(168, 85, 247, 0.4);
+            background: rgba(255, 182, 193, 0.25);
+            border-color: rgba(255, 105, 180, 0.6);
             transform: translateY(-4px);
         }
 
         .hero-title {
-            background: linear-gradient(to bottom right, #fff 30%, #a855f7 100%);
+            background: linear-gradient(to bottom right, #ff69b4 30%, #ff1493 100%);
             background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
         }
 
         .float-animation {
@@ -76,9 +84,17 @@
             }
         }
 
-        .stagger-1 { animation-delay: 0.1s; }
-        .stagger-2 { animation-delay: 0.2s; }
-        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-1 {
+            animation-delay: 0.1s;
+        }
+
+        .stagger-2 {
+            animation-delay: 0.2s;
+        }
+
+        .stagger-3 {
+            animation-delay: 0.3s;
+        }
 
         .btn-primary {
             position: relative;
@@ -92,7 +108,7 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255, 105, 180, 0.3) 0%, transparent 70%);
             transform: scale(0);
             transition: transform 0.6s ease-out;
         }
@@ -102,6 +118,7 @@
         }
     </style>
 </head>
+
 <body class="antialiased">
     <div class="glow-mesh"></div>
 
@@ -112,14 +129,16 @@
                 <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center rotate-12">
                     <span class="text-white font-bold -rotate-12 text-xl">E</span>
                 </div>
-                <span class="text-xl font-extrabold tracking-tighter italic">EPSILON<span class="text-purple-500">.</span></span>
+                <span class="text-xl font-extrabold tracking-tighter italic">EPSILON<span
+                        class="text-purple-500">.</span></span>
             </div>
             <div class="hidden md:flex items-center gap-8 text-sm font-medium tracking-widest uppercase text-gray-400">
                 <a href="#" class="hover:text-purple-400 transition-colors">Ecosystem</a>
                 <a href="#" class="hover:text-purple-400 transition-colors">Stories</a>
                 <a href="#" class="hover:text-purple-400 transition-colors">Labs</a>
             </div>
-            <a href="./ep.html" class="glass px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-purple-600 transition-all">
+            <a href="./ep.html"
+                class="glass px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-purple-600 transition-all">
                 Enter Hub
             </a>
         </div>
@@ -127,23 +146,29 @@
 
     <!-- Hero Section -->
     <main class="relative min-h-screen flex flex-col items-center justify-center px-6 pt-20">
-        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-purple-600/20 blur-[120px] rounded-full -z-10"></div>
-        
+        <div
+            class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-purple-600/20 blur-[120px] rounded-full -z-10">
+        </div>
+
         <div class="text-center max-w-4xl mx-auto reveal">
-            <span class="inline-block py-1 px-4 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-6">
+            <span
+                class="inline-block py-1 px-4 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-6">
                 Now Live: The Epsilon Ecosystem
             </span>
             <h1 class="hero-title text-6xl md:text-8xl font-extrabold tracking-tighter mb-8 leading-[0.9]">
-                THINK BEYOND <br/>THE ORDINARY.
+                THINK BEYOND <br />THE ORDINARY.
             </h1>
             <p class="text-gray-400 text-lg md:text-xl font-light max-w-2xl mx-auto mb-10 leading-relaxed">
-                A collaborative digital sanctuary for creators, experimenters, and storytellers. Explore the hub where innovation meets community.
+                A collaborative digital sanctuary for creators, experimenters, and storytellers. Explore the hub where
+                innovation meets community.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <a href="./ep.html" class="btn-primary bg-white text-black px-10 py-4 rounded-full font-bold text-sm uppercase tracking-widest hover:scale-105 transition-transform">
+                <a href="#"
+                    class="btn-primary bg-white text-black px-10 py-4 rounded-full font-bold text-sm uppercase tracking-widest hover:scale-105 transition-transform">
                     Get Started
                 </a>
-                <a href="#" class="glass px-10 py-4 rounded-full font-bold text-sm uppercase tracking-widest flex items-center gap-2">
+                <a href="#"
+                    class="glass px-10 py-4 rounded-full font-bold text-sm uppercase tracking-widest flex items-center gap-2">
                     <i data-lucide="play-circle" class="w-5 h-5"></i> Watch Intro
                 </a>
             </div>
@@ -190,10 +215,13 @@
                 </div>
                 <h3 class="text-2xl font-bold mb-3 italic">Stories</h3>
                 <p class="text-gray-400 leading-relaxed mb-6">
-                    Dive into a collection of shared experiences, experiments, and narratives written by our core team and community members.
+                    Dive into a collection of shared experiences, experiments, and narratives written by our core team
+                    and community members.
                 </p>
-                <a href="#" class="text-purple-400 font-bold text-sm uppercase tracking-widest flex items-center gap-2 group">
-                    Read More <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-2 transition-transform"></i>
+                <a href="#"
+                    class="text-purple-400 font-bold text-sm uppercase tracking-widest flex items-center gap-2 group">
+                    Read More <i data-lucide="arrow-right"
+                        class="w-4 h-4 group-hover:translate-x-2 transition-transform"></i>
                 </a>
             </div>
 
@@ -204,10 +232,13 @@
                 </div>
                 <h3 class="text-2xl font-bold mb-3 italic">Community</h3>
                 <p class="text-gray-400 leading-relaxed mb-6">
-                    Connect with like-minded individuals. Our ecosystem is built on the collective intelligence of creators like Ethan and Richard.
+                    Connect with like-minded individuals. Our ecosystem is built on the collective intelligence of
+                    creators like Ethan and Richard.
                 </p>
-                <a href="#" class="text-indigo-400 font-bold text-sm uppercase tracking-widest flex items-center gap-2 group">
-                    Join Us <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-2 transition-transform"></i>
+                <a href="#"
+                    class="text-indigo-400 font-bold text-sm uppercase tracking-widest flex items-center gap-2 group">
+                    Join Us <i data-lucide="arrow-right"
+                        class="w-4 h-4 group-hover:translate-x-2 transition-transform"></i>
                 </a>
             </div>
 
@@ -218,10 +249,13 @@
                 </div>
                 <h3 class="text-2xl font-bold mb-3 italic">Labs</h3>
                 <p class="text-gray-400 leading-relaxed mb-6">
-                    Experimental projects and digital tools developed by the Epsilon Team. Where the future is built, one line of code at a time.
+                    Experimental projects and digital tools developed by the Epsilon Team. Where the future is built,
+                    one line of code at a time.
                 </p>
-                <a href="#" class="text-pink-400 font-bold text-sm uppercase tracking-widest flex items-center gap-2 group">
-                    Explore Labs <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-2 transition-transform"></i>
+                <a href="#"
+                    class="text-pink-400 font-bold text-sm uppercase tracking-widest flex items-center gap-2 group">
+                    Explore Labs <i data-lucide="arrow-right"
+                        class="w-4 h-4 group-hover:translate-x-2 transition-transform"></i>
                 </a>
             </div>
         </div>
@@ -236,15 +270,18 @@
                 </h1>
                 <p class="text-gray-500 text-xs uppercase tracking-widest">© 2026 Warren Adrian & Epsilon Team</p>
             </div>
-            
+
             <div class="flex gap-6">
-                <a href="#" class="w-10 h-10 glass rounded-full flex items-center justify-center hover:bg-purple-600 transition-colors">
+                <a href="#"
+                    class="w-10 h-10 glass rounded-full flex items-center justify-center hover:bg-purple-600 transition-colors">
                     <i data-lucide="github" class="w-5 h-5"></i>
                 </a>
-                <a href="#" class="w-10 h-10 glass rounded-full flex items-center justify-center hover:bg-purple-600 transition-colors">
+                <a href="#"
+                    class="w-10 h-10 glass rounded-full flex items-center justify-center hover:bg-purple-600 transition-colors">
                     <i data-lucide="twitter" class="w-5 h-5"></i>
                 </a>
-                <a href="#" class="w-10 h-10 glass rounded-full flex items-center justify-center hover:bg-purple-600 transition-colors">
+                <a href="#"
+                    class="w-10 h-10 glass rounded-full flex items-center justify-center hover:bg-purple-600 transition-colors">
                     <i data-lucide="instagram" class="w-5 h-5"></i>
                 </a>
             </div>
@@ -271,6 +308,5 @@
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     </script>
 </body>
+
 </html>
-
-
