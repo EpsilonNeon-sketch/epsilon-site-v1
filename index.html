@@ -9,17 +9,17 @@
     <link rel="icon" href="./epsilon logo.png">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600;800&display=swap');
 
         :root {
-            --accent: #ff69b4;
-            --bg: #ffffff;
+            --accent: #a855f7;
+            --bg: #000000;
         }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--bg);
-            color: #333333;
+            color: #f3e8ff;
             overflow-x: hidden;
         }
 
@@ -31,26 +31,25 @@
             height: 100%;
             z-index: -1;
             background-image:
-                radial-gradient(at 0% 0%, hsla(330, 100%, 95%, 1) 0, transparent 50%),
-                radial-gradient(at 100% 100%, hsla(330, 100%, 90%, 1) 0, transparent 50%),
-                radial-gradient(at 50% 50%, hsla(330, 100%, 97%, 1) 0, transparent 80%);
+                radial-gradient(at 0% 0%, #1e1b4b 0, transparent 50%),
+                radial-gradient(at 100% 100%, #312e81 0, transparent 50%);
         }
 
         .glass {
-            background: rgba(255, 182, 193, 0.15);
+            background: rgba(17, 24, 39, 0.7);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 105, 180, 0.3);
+            border: 1px solid rgba(168, 85, 247, 0.2);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .glass:hover {
-            background: rgba(255, 182, 193, 0.25);
-            border-color: rgba(255, 105, 180, 0.6);
+            background: rgba(30, 27, 75, 0.8);
+            border-color: rgba(168, 85, 247, 0.5);
             transform: translateY(-4px);
         }
 
         .hero-title {
-            background: linear-gradient(to bottom right, #ff69b4 30%, #ff1493 100%);
+            background: linear-gradient(to bottom right, #a855f7 30%, #7c3aed 100%);
             background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -108,7 +107,7 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255, 105, 180, 0.3) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, transparent 70%);
             transform: scale(0);
             transition: transform 0.6s ease-out;
         }
