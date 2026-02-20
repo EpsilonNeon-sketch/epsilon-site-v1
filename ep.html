@@ -587,6 +587,19 @@
                 grid-template-columns: 1fr !important;
             }
         }
+
+        /* Fix for Epsilon Spark image being a total unit */
+        #homePage .group img[src*="epsilonsparkimg.png"] {
+            width: 400px;
+            max-width: 400px;
+            /* Adjust this if you want it even smaller */
+            height: auto;
+            border-radius: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
     </style>
 </head>
 
@@ -595,25 +608,39 @@
 
     <!-- Sidebar Navigation -->
     <div class="fixed left-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-50">
-        <button id="homeBtn" class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all" title="Home">
+        <button id="homeBtn"
+            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            title="Home">
             <i data-lucide="home" class="w-5 h-5"></i>
         </button>
-        <button id="postsBtn" class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all" title="Stories">
+        <button id="postsBtn"
+            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            title="Stories">
             <i data-lucide="book-open" class="w-5 h-5"></i>
         </button>
-        <button id="usersBtn" class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all" title="Community">
+        <button id="usersBtn"
+            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            title="Community">
             <i data-lucide="users" class="w-5 h-5"></i>
         </button>
-        <button id="eventsBtn" class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all" title="Events">
+        <button id="eventsBtn"
+            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            title="Events">
             <i data-lucide="calendar" class="w-5 h-5"></i>
         </button>
-        <button id="messagesBtn" class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all hidden" title="Messages">
+        <button id="messagesBtn"
+            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all hidden"
+            title="Messages">
             <i data-lucide="message-circle" class="w-5 h-5"></i>
         </button>
-        <button id="authBtn" class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all" title="Account">
+        <button id="authBtn"
+            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            title="Account">
             <i data-lucide="user" class="w-5 h-5"></i>
         </button>
-        <button id="settingsBtn" class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all hidden" title="Settings">
+        <button id="settingsBtn"
+            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all hidden"
+            title="Settings">
             <i data-lucide="settings" class="w-5 h-5"></i>
         </button>
     </div>
@@ -638,7 +665,8 @@
                     <p class="text-sm font-medium"><span
                             class="text-purple-600 font-bold uppercase text-xs tracking-wider">Age:</span> 13</p>
                     <p class="text-sm font-medium"><span
-                            class="text-purple-600 font-bold uppercase text-xs tracking-wider">Role:</span> Owner, Founder
+                            class="text-purple-600 font-bold uppercase text-xs tracking-wider">Role:</span> Owner,
+                        Founder
                     </p>
                 </div>
             </div>
@@ -673,30 +701,33 @@
 
             <!-- Primary Ecosystem -->
             <section>
-               <div class="flex items-center gap-4">
+                <div class="flex items-center gap-4">
                     <div class="h-px flex-1 bg-gradient-to-r from-transparent to-purple-600/30"></div>
-                    <h3 class="text-purple-300 uppercase tracking-[0.3em] text-xs font-bold">Epsilon Events(special drops)</h3>
+                    <h3 class="text-purple-300 uppercase tracking-[0.3em] text-xs font-bold">Epsilon Events(special
+                        drops)</h3>
                     <div class="h-px flex-1 bg-gradient-to-l from-transparent to-purple-600/30"></div>
                 </div>
                 <a href="https://epsilonneon-sketch.github.io/epsilon-spark-v1/" class="group">
-                        <div
-                            class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-purple-900 h-full flex flex-col justify-between">
-                            <div>
-                              <img stlye="width: ;" src="https://epsilonneon-sketch.github.io/epsilon-spark-v1/epsilonsparkimg.png">
-                                <div
-                                    class="w-12 h-12 bg-purple-900/50 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                                    <i data-lucide="sparkle"></i>
-                                </div>
-                                <h2 class="text-2xl font-bold mb-2">Epsilon Spark</h2>
-                                <p class="text-purple-400 text-sm leading-relaxed">Activness and imagination coming to life in a neet way.</p>
-                            </div>
+                    <div
+                        class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-purple-900 h-full flex flex-col justify-between">
+                        <div>
+                            <img stlye="width: ;"
+                                src="https://epsilonneon-sketch.github.io/epsilon-spark-v1/epsilonsparkimg.png">
                             <div
-                                class="mt-8 flex items-center text-purple-400 font-semibold text-sm group-hover:translate-x-2 transition-transform">
-                                Open Studio <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                                class="w-12 h-12 bg-purple-900/50 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                                <i data-lucide="sparkle"></i>
                             </div>
+                            <h2 class="text-2xl font-bold mb-2">Epsilon Spark</h2>
+                            <p class="text-purple-400 text-sm leading-relaxed">Activness and imagination coming to life
+                                in a neet way.</p>
                         </div>
-                    </a>
-               <div class="flex items-center gap-4">
+                        <div
+                            class="mt-8 flex items-center text-purple-400 font-semibold text-sm group-hover:translate-x-2 transition-transform">
+                            Open Studio <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                        </div>
+                    </div>
+                </a>
+                <div class="flex items-center gap-4">
                     <div class="h-px flex-1 bg-gradient-to-r from-transparent to-purple-600/30"></div>
                     <h3 class="text-purple-300 uppercase tracking-[0.3em] text-xs font-bold">Epsilon Sites</h3>
                     <div class="h-px flex-1 bg-gradient-to-l from-transparent to-purple-600/30"></div>
@@ -802,7 +833,8 @@
                                     <i data-lucide="sparkles"></i>
                                 </div>
                                 <h2 class="text-2xl font-bold mb-2">Zerah</h2>
-                                <p class="text-purple-400 text-sm leading-relaxed">Premium stationary and clothing items.
+                                <p class="text-purple-400 text-sm leading-relaxed">Premium stationary and clothing
+                                    items.
                                 </p>
                             </div>
                             <div
@@ -863,18 +895,69 @@
                             </div>
                         </div>
                     </a>
+
                 </div>
-            </section>
+
+                <div class="flex items-center gap-4">
+                    <div class="h-px flex-1 bg-gradient-to-r from-transparent to-purple-600/30"></div>
+                    <h3 class="text-purple-300 uppercase tracking-[0.3em] text-xs font-bold">Life and growth</h3>
+                    <div class="h-px flex-1 bg-gradient-to-l from-transparent to-purple-600/30"></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8" style="margin-bottom: 30px;">
+                    <a href="https://epsilonneon-sketch.github.io/epsilon-sport/" class="group">
+                        <div
+                            class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-purple-900 h-full flex flex-col justify-between">
+                            <div>
+                                <div
+                                    class="w-12 h-12 bg-purple-900/50 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                                    <i data-lucide="medal"></i>
+                                </div>
+                                <h2 class="text-2xl font-bold mb-2">Epsilon Sport</h2>
+                                <p class="text-purple-400 text-sm leading-relaxed">Workout and fitness racker perfect
+                                    for
+                                    all the sport lovers
+                                    .</p>
+                            </div>
+                            <div
+                                class="mt-8 flex items-center text-purple-400 font-semibold text-sm group-hover:translate-x-2 transition-transform">
+                                Open tracker <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="https://epsilonneon-sketch.github.io/epsilon-earth/" class="group">
+                        <div
+                            class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-purple-900 h-full flex flex-col justify-between">
+                            <div>
+                                <div
+                                    class="w-12 h-12 bg-purple-900/50 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                                    <i data-lucide="earth"></i>
+                                </div>
+                                <h2 class="text-2xl font-bold mb-2">Epsilon Earth</h2>
+                                <p class="text-purple-400 text-sm leading-relaxed">Earth dashboard and site for earth
+                                    learning and growing
+                                    .</p>
+                            </div>
+                        </div>
+                        <div
+                            class="mt-8 flex items-center text-purple-400 font-semibold text-sm group-hover:translate-x-2 transition-transform">
+                            Open Dasboard <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                        </div>
+                    </a>
+                </div>
         </div>
 
-        <!-- Footer -->
-        <footer class="mt-20 text-gray-600 text-xs flex gap-6">
-            <p>&copy; 2024 EPSILON LABS</p>
-            <a href="#" class="hover:text-purple-400 transition-colors">TERMS</a>
-            <a href="#" class="hover:text-purple-400 transition-colors">PRIVACY</a>
-            <button id="adminBtn"
-                class="ml-6 px-4 py-1 rounded bg-purple-800 text-white hover:bg-pink-800 transition-colors">Admin</button>
-        </footer>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-20 text-gray-600 text-xs flex gap-6">
+        <p>&copy; 2024 EPSILON LABS</p>
+        <a href="#" class="hover:text-purple-400 transition-colors">TERMS</a>
+        <a href="#" class="hover:text-purple-400 transition-colors">PRIVACY</a>
+        <button id="adminBtn"
+            class="ml-6 px-4 py-1 rounded bg-purple-800 text-white hover:bg-pink-800 transition-colors">Admin</button>
+    </footer>
     </div>
 
     <!-- Posts Page -->
@@ -912,7 +995,8 @@
                         </select>
                     </div>
                     <div>
-                        <label class="text-xs uppercase tracking-widest text-purple-400 block mb-2">Story Content</label>
+                        <label class="text-xs uppercase tracking-widest text-purple-400 block mb-2">Story
+                            Content</label>
                         <textarea id="postContent" placeholder="Share your story..."
                             class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 transition-all story-textarea"
                             required></textarea>
@@ -921,7 +1005,8 @@
                         <button type="button" id="cancelPost"
                             class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">Cancel</button>
                         <button type="submit"
-                            class="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg">Publish Story</button>
+                            class="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg">Publish
+                            Story</button>
                     </div>
                 </form>
             </div>
@@ -1121,7 +1206,8 @@
                         <button type="button" id="cancelEvent"
                             class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">Cancel</button>
                         <button type="submit"
-                            class="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg">Create Event</button>
+                            class="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg">Create
+                            Event</button>
                     </div>
                 </form>
             </div>
@@ -1157,7 +1243,8 @@
                 <h1 class="text-4xl md:text-6xl font-extrabold tracking-tighter italic">
                     SETTINGS<span class="text-purple-600">.</span>
                 </h1>
-                <p class="text-purple-400 font-light tracking-widest uppercase text-[10px] md:text-sm">Manage your account
+                <p class="text-purple-400 font-light tracking-widest uppercase text-[10px] md:text-sm">Manage your
+                    account
                     and preferences</p>
             </header>
 
@@ -1388,7 +1475,8 @@
                 class="rounded px-3 py-2 bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-600"
                 required>
             <div class="flex gap-2 mt-2">
-                <button type="submit" class="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded">Login</button>
+                <button type="submit"
+                    class="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded">Login</button>
                 <button type="button" id="adminCancel"
                     class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">Cancel</button>
             </div>
@@ -1475,7 +1563,8 @@
 
                 <p class="text-center text-sm text-purple-400">
                     <span id="authToggleText">Already have an account?</span>
-                    <button type="button" id="authToggleBtn" class="text-purple-400 hover:underline ml-1">Log In</button>
+                    <button type="button" id="authToggleBtn" class="text-purple-400 hover:underline ml-1">Log
+                        In</button>
                 </p>
                 <p id="authError" class="text-red-500 text-xs text-center hidden"></p>
             </form>
