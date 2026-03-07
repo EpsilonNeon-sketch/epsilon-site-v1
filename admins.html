@@ -168,31 +168,42 @@
             <div class="glass p-6 rounded-3xl mb-6">
                 <h2 class="text-2xl font-bold mb-4">Block Epsilon Sites</h2>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <button onclick="toggleSiteBlock('aproxi')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="aproxi">
+                    <button onclick="blockAllSites()"
+                        class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition">
+                        <p class="font-bold">Toggle All</p>
+                    </button>
+                    <button onclick="toggleSiteBlock('aproxi')"
+                        class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="aproxi">
                         <p class="font-bold">Aproxi</p>
                         <p class="text-xs text-purple-400 mt-1" id="status-aproxi">Active</p>
                     </button>
-                    <button onclick="toggleSiteBlock('neote')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="neote">
+                    <button onclick="toggleSiteBlock('neote')"
+                        class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="neote">
                         <p class="font-bold">Neote</p>
                         <p class="text-xs text-purple-400 mt-1" id="status-neote">Active</p>
                     </button>
-                    <button onclick="toggleSiteBlock('edits')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="edits">
+                    <button onclick="toggleSiteBlock('edits')"
+                        class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="edits">
                         <p class="font-bold">Edits</p>
                         <p class="text-xs text-purple-400 mt-1" id="status-edits">Active</p>
                     </button>
-                    <button onclick="toggleSiteBlock('academics')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="academics">
+                    <button onclick="toggleSiteBlock('academics')"
+                        class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="academics">
                         <p class="font-bold">Academics</p>
                         <p class="text-xs text-purple-400 mt-1" id="status-academics">Active</p>
                     </button>
-                    <button onclick="toggleSiteBlock('sports')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="sports">
+                    <button onclick="toggleSiteBlock('sports')"
+                        class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="sports">
                         <p class="font-bold">Sports</p>
                         <p class="text-xs text-purple-400 mt-1" id="status-sports">Active</p>
                     </button>
-                    <button onclick="toggleSiteBlock('earth')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="earth">
+                    <button onclick="toggleSiteBlock('earth')"
+                        class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="earth">
                         <p class="font-bold">Earth</p>
                         <p class="text-xs text-purple-400 mt-1" id="status-earth">Active</p>
                     </button>
-                    <button onclick="toggleSiteBlock('heckle')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="heckle">
+                    <button onclick="toggleSiteBlock('heckle')"
+                        class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="heckle">
                         <p class="font-bold">Heckle</p>
                         <p class="text-xs text-purple-400 mt-1" id="status-heckle">Active</p>
                     </button>
@@ -459,7 +470,7 @@
         async function loadBlockedSites() {
             const { data: blocked } = await supabaseClient.from('blocked_sites').select('site_name');
             const blockedNames = blocked?.map(b => b.site_name) || [];
-            
+
             ['aproxi', 'neote', 'edits', 'academics', 'sports', 'earth', 'heckle'].forEach(site => {
                 const btn = document.querySelector(`[data-site="${site}"]`);
                 const status = document.getElementById(`status-${site}`);
@@ -477,14 +488,17 @@
 
         async function toggleSiteBlock(siteName) {
             const { data: existing } = await supabaseClient.from('blocked_sites').select('*').eq('site_name', siteName).single();
-            
+
             if (existing) {
                 await supabaseClient.from('blocked_sites').delete().eq('site_name', siteName);
             } else {
                 await supabaseClient.from('blocked_sites').insert([{ site_name: siteName, blocked_by: currentAdmin.id }]);
             }
-            
+
             loadBlockedSites();
+        }
+        function blockAllSites() {
+            ['aproxi', 'neote', 'edits', 'academics', 'sports', 'earth', 'heckle'].forEach(site => toggleSiteBlock(site));
         }
     </script>
 </body>
