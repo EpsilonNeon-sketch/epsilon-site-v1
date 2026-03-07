@@ -168,9 +168,10 @@
             <div class="glass p-6 rounded-3xl mb-6">
                 <h2 class="text-2xl font-bold mb-4">Block Epsilon Sites</h2>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <button onclick="blockAllSites()"
-                        class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition">
-                        <p class="font-bold">Toggle All</p>
+                    <button onclick="toggleSiteBlock('epsilon')"
+                        class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition col-span-2" data-site="epsilon">
+                        <p class="font-bold text-lg">🚨 Epsilon Main Site</p>
+                        <p class="text-xs text-purple-400 mt-1" id="status-epsilon">Active</p>
                     </button>
                     <button onclick="toggleSiteBlock('aproxi')"
                         class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="aproxi">
@@ -471,7 +472,7 @@
             const { data: blocked } = await supabaseClient.from('blocked_sites').select('site_name');
             const blockedNames = blocked?.map(b => b.site_name) || [];
 
-            ['aproxi', 'neote', 'edits', 'academics', 'sports', 'earth', 'heckle'].forEach(site => {
+            ['epsilon', 'aproxi', 'neote', 'edits', 'academics', 'sports', 'earth', 'heckle'].forEach(site => {
                 const btn = document.querySelector(`[data-site="${site}"]`);
                 const status = document.getElementById(`status-${site}`);
                 if (blockedNames.includes(site)) {
