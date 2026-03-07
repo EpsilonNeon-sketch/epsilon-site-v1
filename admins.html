@@ -94,6 +94,10 @@
                 <i data-lucide="pie-chart" class="w-8 h-8 mx-auto mb-2"></i>
                 <p class="font-bold">Charts</p>
             </button>
+            <button class="nav-btn glass p-6 rounded-3xl hover:bg-purple-600 transition" data-page="servers">
+                <i data-lucide="shield-off" class="w-8 h-8 mx-auto mb-2"></i>
+                <p class="font-bold">Block Servers</p>
+            </button>
         </div>
 
         <!-- Chat Section -->
@@ -155,6 +159,43 @@
                 <div class="glass p-6 rounded-3xl">
                     <h3 class="text-lg font-bold mb-2">Active Projects</h3>
                     <p id="activeProjects" class="text-4xl font-bold text-purple-400">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Server Blocking Section -->
+        <div id="serversSection" class="section hidden">
+            <div class="glass p-6 rounded-3xl mb-6">
+                <h2 class="text-2xl font-bold mb-4">Block Epsilon Sites</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <button onclick="toggleSiteBlock('aproxi')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="aproxi">
+                        <p class="font-bold">Aproxi</p>
+                        <p class="text-xs text-purple-400 mt-1" id="status-aproxi">Active</p>
+                    </button>
+                    <button onclick="toggleSiteBlock('neote')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="neote">
+                        <p class="font-bold">Neote</p>
+                        <p class="text-xs text-purple-400 mt-1" id="status-neote">Active</p>
+                    </button>
+                    <button onclick="toggleSiteBlock('edits')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="edits">
+                        <p class="font-bold">Edits</p>
+                        <p class="text-xs text-purple-400 mt-1" id="status-edits">Active</p>
+                    </button>
+                    <button onclick="toggleSiteBlock('academics')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="academics">
+                        <p class="font-bold">Academics</p>
+                        <p class="text-xs text-purple-400 mt-1" id="status-academics">Active</p>
+                    </button>
+                    <button onclick="toggleSiteBlock('sports')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="sports">
+                        <p class="font-bold">Sports</p>
+                        <p class="text-xs text-purple-400 mt-1" id="status-sports">Active</p>
+                    </button>
+                    <button onclick="toggleSiteBlock('earth')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="earth">
+                        <p class="font-bold">Earth</p>
+                        <p class="text-xs text-purple-400 mt-1" id="status-earth">Active</p>
+                    </button>
+                    <button onclick="toggleSiteBlock('heckle')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="heckle">
+                        <p class="font-bold">Heckle</p>
+                        <p class="text-xs text-purple-400 mt-1" id="status-heckle">Active</p>
+                    </button>
                 </div>
             </div>
         </div>
@@ -250,6 +291,7 @@
                 if (page === 'users') loadUsers();
                 if (page === 'analytics') loadAnalytics();
                 if (page === 'charts') loadCharts();
+                if (page === 'servers') loadBlockedSites();
             });
         });
 
@@ -411,6 +453,38 @@
                 data: { labels: ['Users', 'Posts', 'Likes', 'Comments', 'Projects'], datasets: [{ label: 'Total Count', data: [users?.length || 0, posts?.length || 0, likesCount || 0, commentsCount || 0, projects?.length || 0], backgroundColor: ['#8b5cf6', '#a855f7', '#c084fc', '#d8b4fe', '#e9d5ff'] }] },
                 options: { ...chartConfig, indexAxis: 'y' }
             });
+        }
+
+        // Server Blocking
+        async function loadBlockedSites() {
+            const { data: blocked } = await supabaseClient.from('blocked_sites').select('site_name');
+            const blockedNames = blocked?.map(b => b.site_name) || [];
+            
+            ['aproxi', 'neote', 'edits', 'academics', 'sports', 'earth', 'heckle'].forEach(site => {
+                const btn = document.querySelector(`[data-site="${site}"]`);
+                const status = document.getElementById(`status-${site}`);
+                if (blockedNames.includes(site)) {
+                    btn.classList.add('bg-red-600');
+                    status.textContent = 'BLOCKED';
+                    status.classList.add('text-red-400');
+                } else {
+                    btn.classList.remove('bg-red-600');
+                    status.textContent = 'Active';
+                    status.classList.remove('text-red-400');
+                }
+            });
+        }
+
+        async function toggleSiteBlock(siteName) {
+            const { data: existing } = await supabaseClient.from('blocked_sites').select('*').eq('site_name', siteName).single();
+            
+            if (existing) {
+                await supabaseClient.from('blocked_sites').delete().eq('site_name', siteName);
+            } else {
+                await supabaseClient.from('blocked_sites').insert([{ site_name: siteName, blocked_by: currentAdmin.id }]);
+            }
+            
+            loadBlockedSites();
         }
     </script>
 </body>
