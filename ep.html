@@ -721,7 +721,8 @@
                     <div
                         class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-purple-900 h-full flex flex-col justify-between">
                         <div>
-                            
+                            <img stlye="width: ;"
+                                src="https://epsilonneon-sketch.github.io/epsilon-spark-v1/epsilonsparkimg.png">
                             <div
                                 class="w-12 h-12 bg-purple-900/50 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
                                 <i data-lucide="sparkle"></i>
@@ -1484,6 +1485,25 @@
 
                         <div class="border-t border-purple-800 pt-6">
                             <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                                <i data-lucide="palette" class="text-purple-600"></i> Theme Color
+                            </h2>
+                            <div class="space-y-3">
+                                <label class="text-xs uppercase tracking-widest text-purple-400 block mb-2">Choose your theme color</label>
+                                <div class="grid grid-cols-4 gap-3">
+                                    <button type="button" class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all" style="background-color: #a855f7;" data-theme="purple" title="Purple"></button>
+                                    <button type="button" class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all" style="background-color: #ec4899;" data-theme="pink" title="Pink"></button>
+                                    <button type="button" class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all" style="background-color: #ef4444;" data-theme="red" title="Red"></button>
+                                    <button type="button" class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all" style="background-color: #f97316;" data-theme="orange" title="Orange"></button>
+                                    <button type="button" class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all" style="background-color: #eab308;" data-theme="yellow" title="Yellow"></button>
+                                    <button type="button" class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all" style="background-color: #3b82f6;" data-theme="blue" title="Blue"></button>
+                                    <button type="button" class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all" style="background-color: #22c55e;" data-theme="green" title="Green"></button>
+                                    <button type="button" class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all" style="background-color: #f3f4f6;" data-theme="white" title="White"></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-purple-800 pt-6">
+                            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
                                 <i data-lucide="bell" class="text-purple-600"></i> Notification Preferences
                             </h2>
                             <div class="space-y-3">
@@ -1500,6 +1520,11 @@
                                 <label class="flex items-center justify-between">
                                     <span class="text-sm">New story alerts</span>
                                     <input type="checkbox" id="storyAlerts"
+                                        class="w-4 h-4 text-purple-600 bg-gray-800 border-gray-600 rounded focus:ring-purple-600">
+                                </label>
+                                <label class="flex items-center justify-between">
+                                    <span class="text-sm">Sound notifications</span>
+                                    <input type="checkbox" id="soundNotifications" checked
                                         class="w-4 h-4 text-purple-600 bg-gray-800 border-gray-600 rounded focus:ring-purple-600">
                                 </label>
                             </div>
@@ -1583,11 +1608,24 @@
                     <div>
                         <h2 id="modalDisplayName" class="text-2xl font-bold"></h2>
                         <p id="modalUsername" class="text-purple-400"></p>
+                        <div class="flex gap-4 mt-2">
+                            <button id="modalFollowersBtn" class="text-sm text-purple-300 hover:underline">
+                                <span id="modalFollowersCount">0</span> Followers
+                            </button>
+                            <button id="modalFollowingBtn" class="text-sm text-purple-300 hover:underline">
+                                <span id="modalFollowingCount">0</span> Following
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <button type="button" id="closeUserProfileModal" class="text-purple-400 hover:text-white">
-                    <i data-lucide="x"></i>
-                </button>
+                <div class="flex flex-col gap-2 items-end">
+                    <button type="button" id="closeUserProfileModal" class="text-purple-400 hover:text-white">
+                        <i data-lucide="x"></i>
+                    </button>
+                    <button id="modalFollowBtn" class="hidden bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg text-sm">
+                        Follow
+                    </button>
+                </div>
             </div>
 
             <div class="space-y-4">
@@ -1746,6 +1784,20 @@
         let currentUserFilter = 'all';
         let usersSearchQuery = '';
         let eventImageFile = null;
+        let currentTheme = 'purple';
+        let soundEnabled = true;
+
+        // Theme colors mapping
+        const themeColors = {
+            purple: { primary: '#a855f7', secondary: '#9333ea', light: '#c084fc', dark: '#7e22ce' },
+            pink: { primary: '#ec4899', secondary: '#db2777', light: '#f472b6', dark: '#be185d' },
+            red: { primary: '#ef4444', secondary: '#dc2626', light: '#f87171', dark: '#b91c1c' },
+            orange: { primary: '#f97316', secondary: '#ea580c', light: '#fb923c', dark: '#c2410c' },
+            yellow: { primary: '#eab308', secondary: '#ca8a04', light: '#facc15', dark: '#a16207' },
+            blue: { primary: '#3b82f6', secondary: '#2563eb', light: '#60a5fa', dark: '#1d4ed8' },
+            green: { primary: '#22c55e', secondary: '#16a34a', light: '#4ade80', dark: '#15803d' },
+            white: { primary: '#f3f4f6', secondary: '#e5e7eb', light: '#ffffff', dark: '#d1d5db' }
+        };
 
         // Page Navigation
         const homePage = document.getElementById('homePage');
@@ -1881,6 +1933,14 @@
 
                 if (profile) {
                     currentUser = { ...session.user, ...profile };
+                    if (profile.theme_color) {
+                        currentTheme = profile.theme_color;
+                        applyTheme(currentTheme);
+                    }
+                    if (profile.sound_enabled !== undefined) {
+                        soundEnabled = profile.sound_enabled;
+                        document.getElementById('soundNotifications').checked = soundEnabled;
+                    }
                     updateUI();
                 } else {
                     // Create profile if it doesn't exist
@@ -2768,7 +2828,11 @@
                         <div class="flex flex-col items-center text-center">
                             <img src="${user.profile_pic || `https://picsum.photos/seed/${user.id}/200/200.jpg`}" alt="${user.display_name}" class="w-16 h-16 rounded-full mb-4">
                             <h3 class="font-semibold text-lg">${user.display_name || user.username}</h3>
-                            <p class="text-purple-400 mb-3">@${user.username}</p>
+                            <p class="text-purple-400 mb-2">@${user.username}</p>
+                            <div class="flex gap-3 mb-3 text-xs text-purple-300">
+                                <span>${(user.followers || []).length} Followers</span>
+                                <span>${(user.following || []).length} Following</span>
+                            </div>
                             <p class="text-purple-200 mb-4 line-clamp-2">${user.bio || 'No bio available'}</p>
                             <button class="view-profile-btn glass px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-purple-600 transition-all" data-user-id="${user.id}">
                                 View Profile
@@ -2840,6 +2904,51 @@
                 modalJoinDate.textContent = formattedJoinDate;
                 modalPostCount.textContent = posts.length;
 
+                // Update followers/following counts
+                const followersCount = (user.followers || []).length;
+                const followingCount = (user.following || []).length;
+                document.getElementById('modalFollowersCount').textContent = followersCount;
+                document.getElementById('modalFollowingCount').textContent = followingCount;
+
+                // Setup followers/following buttons
+                document.getElementById('modalFollowersBtn').onclick = () => {
+                    showFollowList(user.followers || [], `${user.display_name || user.username}'s Followers`);
+                };
+                document.getElementById('modalFollowingBtn').onclick = () => {
+                    showFollowList(user.following || [], `${user.display_name || user.username} is Following`);
+                };
+
+                // Setup follow button
+                const followBtn = document.getElementById('modalFollowBtn');
+                if (currentUser && currentUser.id !== userId) {
+                    followBtn.classList.remove('hidden');
+                    const isFollowing = currentUser.following && currentUser.following.includes(userId);
+                    followBtn.textContent = isFollowing ? 'Unfollow' : 'Follow';
+                    followBtn.className = isFollowing 
+                        ? 'bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm'
+                        : 'bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg text-sm';
+                    
+                    followBtn.onclick = async () => {
+                        const newIsFollowing = await handleFollow(userId, isFollowing);
+                        followBtn.textContent = newIsFollowing ? 'Unfollow' : 'Follow';
+                        followBtn.className = newIsFollowing
+                            ? 'bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm'
+                            : 'bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg text-sm';
+                        
+                        // Refresh user data
+                        const { data: updatedUser } = await supabaseClient
+                            .from('profiles')
+                            .select('followers, following')
+                            .eq('id', userId)
+                            .single();
+                        
+                        document.getElementById('modalFollowersCount').textContent = (updatedUser.followers || []).length;
+                        document.getElementById('modalFollowingCount').textContent = (updatedUser.following || []).length;
+                    };
+                } else {
+                    followBtn.classList.add('hidden');
+                }
+
                 // Show/hide location
                 if (user.location) {
                     modalLocation.textContent = user.location;
@@ -2899,6 +3008,131 @@
                 console.error('Profile view error:', error);
                 showNotification('An unexpected error occurred. Please try again.', 'error');
             }
+        }
+
+        // Close user profile modal
+        closeUserProfileModal.addEventListener('click', () => {
+            userProfileModal.close();
+        });
+
+        // Followers/Following Dialog
+        const followListDialog = document.createElement('dialog');
+        followListDialog.id = 'followListDialog';
+        followListDialog.className = 'rounded-xl p-0 border-0 shadow-2xl bg-transparent';
+        followListDialog.style.maxWidth = '90vw';
+        followListDialog.innerHTML = `
+            <div class="bg-gray-900 text-purple-100 rounded-xl p-8 max-w-2xl glass border border-purple-800">
+                <div class="flex justify-between items-start mb-6">
+                    <h2 id="followListTitle" class="text-2xl font-bold"></h2>
+                    <button type="button" id="closeFollowList" class="text-purple-400 hover:text-white">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+                <div id="followListContainer" class="space-y-3 max-h-96 overflow-y-auto"></div>
+            </div>
+        `;
+        document.body.appendChild(followListDialog);
+
+        document.getElementById('closeFollowList').addEventListener('click', () => {
+            followListDialog.close();
+        });
+
+        // Follow/Unfollow functionality
+        async function handleFollow(userId, isFollowing) {
+            if (!currentUser) {
+                showNotification('You must be logged in to follow users', 'error');
+                return;
+            }
+
+            try {
+                const { data: targetUser } = await supabaseClient
+                    .from('profiles')
+                    .select('followers')
+                    .eq('id', userId)
+                    .single();
+
+                const { data: currentUserData } = await supabaseClient
+                    .from('profiles')
+                    .select('following')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                let newFollowers = targetUser.followers || [];
+                let newFollowing = currentUserData.following || [];
+
+                if (isFollowing) {
+                    newFollowers = newFollowers.filter(id => id !== currentUser.id);
+                    newFollowing = newFollowing.filter(id => id !== userId);
+                } else {
+                    newFollowers.push(currentUser.id);
+                    newFollowing.push(userId);
+                }
+
+                await supabaseClient
+                    .from('profiles')
+                    .update({ followers: newFollowers })
+                    .eq('id', userId);
+
+                await supabaseClient
+                    .from('profiles')
+                    .update({ following: newFollowing })
+                    .eq('id', currentUser.id);
+
+                currentUser.following = newFollowing;
+                showNotification(isFollowing ? 'Unfollowed successfully' : 'Followed successfully');
+                return !isFollowing;
+            } catch (error) {
+                console.error('Follow error:', error);
+                showNotification('An error occurred. Please try again.', 'error');
+                return isFollowing;
+            }
+        }
+
+        // Show followers/following list
+        async function showFollowList(userIds, title) {
+            document.getElementById('followListTitle').textContent = title;
+            const container = document.getElementById('followListContainer');
+            container.innerHTML = '';
+
+            if (userIds.length === 0) {
+                container.innerHTML = '<p class="text-purple-400 text-center py-8">No users to show</p>';
+                followListDialog.showModal();
+                lucide.createIcons();
+                return;
+            }
+
+            const { data: users } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .in('id', userIds);
+
+            users?.forEach(user => {
+                const userDiv = document.createElement('div');
+                userDiv.className = 'flex items-center justify-between p-3 rounded-lg glass';
+                userDiv.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <img src="${user.profile_pic || `https://picsum.photos/seed/${user.id}/200/200.jpg`}" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-semibold">${user.display_name || user.username}</p>
+                            <p class="text-xs text-purple-400">@${user.username}</p>
+                        </div>
+                    </div>
+                    <button class="view-profile-btn bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg text-sm" data-user-id="${user.id}">
+                        View Profile
+                    </button>
+                `;
+                container.appendChild(userDiv);
+            });
+
+            followListDialog.showModal();
+            lucide.createIcons();
+
+            document.querySelectorAll('#followListContainer .view-profile-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    followListDialog.close();
+                    handleViewProfile(e);
+                });
+            });
         }
 
         // Close user profile modal
@@ -2979,7 +3213,70 @@
         // Initialize UI on page load
         document.addEventListener('DOMContentLoaded', () => {
             checkAuthState();
+            setupThemeButtons();
         });
+
+        // Apply theme function
+        function applyTheme(theme) {
+            currentTheme = theme;
+            const colors = themeColors[theme];
+            document.documentElement.style.setProperty('--theme-primary', colors.primary);
+            document.documentElement.style.setProperty('--theme-secondary', colors.secondary);
+            document.documentElement.style.setProperty('--theme-light', colors.light);
+            document.documentElement.style.setProperty('--theme-dark', colors.dark);
+            
+            // Update all purple elements
+            const style = document.createElement('style');
+            style.id = 'dynamic-theme';
+            const existingStyle = document.getElementById('dynamic-theme');
+            if (existingStyle) existingStyle.remove();
+            
+            style.textContent = `
+                .bg-purple-600, .bg-purple-700, .bg-purple-800, .bg-purple-900 { background-color: ${colors.primary} !important; }
+                .hover\\:bg-purple-600:hover, .hover\\:bg-purple-700:hover, .hover\\:bg-purple-800:hover { background-color: ${colors.secondary} !important; }
+                .text-purple-400, .text-purple-600 { color: ${colors.light} !important; }
+                .border-purple-700, .border-purple-800, .border-purple-900 { border-color: ${colors.primary} !important; }
+                .bg-mesh { background-image: radial-gradient(at 0% 0%, ${colors.dark} 0, transparent 50%), radial-gradient(at 100% 100%, ${colors.secondary} 0, transparent 50%) !important; }
+            `;
+            document.head.appendChild(style);
+            
+            // Update active theme button
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.style.borderColor = btn.dataset.theme === theme ? 'white' : 'transparent';
+            });
+        }
+
+        // Setup theme buttons
+        function setupThemeButtons() {
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const theme = btn.dataset.theme;
+                    applyTheme(theme);
+                    
+                    if (currentUser) {
+                        await supabaseClient.from('profiles').update({ theme_color: theme }).eq('id', currentUser.id);
+                        showNotification('Theme updated successfully!');
+                    }
+                });
+            });
+            
+            // Sound notification toggle
+            document.getElementById('soundNotifications')?.addEventListener('change', async (e) => {
+                soundEnabled = e.target.checked;
+                if (currentUser) {
+                    await supabaseClient.from('profiles').update({ sound_enabled: soundEnabled }).eq('id', currentUser.id);
+                }
+            });
+        }
+
+        // Play notification sound
+        function playNotificationSound() {
+            if (soundEnabled) {
+                const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGGS57OihUBELTKXh8bllHAU2jdXvzn0pBSh+zPDajzsKElyx6OyrWBUIQ5zd8sFuJAUuhM/z24k2CBdju+zooVARC0yl4fG5ZRwFNo3V7859KQUofsz');
+                audio.volume = 0.3;
+                audio.play().catch(() => {});
+            }
+        }
         // Add this after the delete account button event listener
         // Sign out
         document.getElementById('signOutBtn').addEventListener('click', async () => {
@@ -3609,6 +3906,7 @@
                 content: content
             }]);
 
+            playNotificationSound();
             input.value = '';
             loadChatMessages();
         });
@@ -4114,6 +4412,7 @@
                 content: content
             }]);
 
+            playNotificationSound();
             communityMessageInput.value = '';
             loadCommunityMessages();
         });
@@ -4126,4 +4425,3 @@
 </body>
 
 </html>
-
