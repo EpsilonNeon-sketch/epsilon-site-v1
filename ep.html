@@ -15,6 +15,17 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
+        const SITE_NAME = 'epsilon';
+        (async function () {
+            const { createClient } = supabase;
+            const client = createClient('https://gfsqzkyviivhvyqadpeg.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdmc3F6a3l2aWl2aHZ5cWFkcGVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0NDI0NDQsImV4cCI6MjA4NjAxODQ0NH0.MwC6dMZKFZMyklCJKqr4DPek8dxR-EswBZSd1L_AkMA');
+            const { data } = await client.from('blocked_sites').select('site_name').eq('site_name', SITE_NAME).single();
+            if (data) {
+                document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#000;color:#f3e8ff;font-family:Inter,sans-serif;text-align:center;padding:20px;"><div style="max-width:500px;"><div style="font-size:80px;margin-bottom:20px;">🚫</div><h1 style="font-size:48px;font-weight:800;margin-bottom:16px;color:#a855f7;">Server Blocked</h1><p style="font-size:20px;color:#c084fc;margin-bottom:12px;">Epsilon ${SITE_NAME.charAt(0).toUpperCase() + SITE_NAME.slice(1)} is currently unavailable</p><p style="font-size:14px;color:#9333ea;">This site has been temporarily blocked by administrators</p></div></div>`;
+            }
+        })();
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
 
@@ -638,6 +649,11 @@
             title="Communities">
             <i data-lucide="users-2" class="w-5 h-5"></i>
         </button>
+        <button id="docsBtn"
+            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            title="Documentation">
+            <i data-lucide="book-text" class="w-5 h-5"></i>
+        </button>
         <button id="messagesBtn"
             class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all hidden"
             title="Messages">
@@ -1234,6 +1250,161 @@
         </div>
     </div>
 
+    <!-- Documentation Page -->
+    <div id="docsPage" class="page">
+        <div class="max-w-6xl w-full">
+            <header class="text-center mb-12 space-y-4">
+                <h1 class="text-4xl md:text-6xl font-extrabold tracking-tighter italic">
+                    EPSILON<span class="text-purple-600"> DOCS</span>
+                </h1>
+                <p class="text-purple-400 font-light tracking-widest uppercase text-[10px] md:text-sm">Documentation for
+                    all Epsilon projects</p>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Epsilon Aproxi Docs -->
+                <a href="https://epsilonneon-sketch.github.io/epsilon-doc-aproxi/" target="_blank" class="group">
+                    <div
+                        class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-purple-900 h-full flex flex-col justify-between">
+                        <div>
+                            <div
+                                class="w-12 h-12 bg-purple-900/50 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                                <i data-lucide="database"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold mb-2">Epsilon Aproxi</h2>
+                            <p class="text-purple-400 text-sm leading-relaxed">Complete documentation for the Business
+                                Management System.</p>
+                        </div>
+                        <div
+                            class="mt-8 flex items-center text-purple-400 font-semibold text-sm group-hover:translate-x-2 transition-transform">
+                            View Docs <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Epsilon Heckle Docs -->
+                <a href="https://epsilonneon-sketch.github.io/epsilon-docs-heckle/" target="_blank" class="group">
+                    <div
+                        class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-purple-900 h-full flex flex-col justify-between">
+                        <div>
+                            <div
+                                class="w-12 h-12 bg-purple-900/50 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                                <i data-lucide="gamepad-2"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold mb-2">Epsilon Heckle</h2>
+                            <p class="text-purple-400 text-sm leading-relaxed">Gaming platform documentation and guides.
+                            </p>
+                        </div>
+                        <div
+                            class="mt-8 flex items-center text-purple-400 font-semibold text-sm group-hover:translate-x-2 transition-transform">
+                            View Docs <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Epsilon Editz Docs -->
+                <a href="https://epsilonneon-sketch.github.io/epsilon-docs-editz/" target="_blank" class="group">
+                    <div
+                        class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-purple-900 h-full flex flex-col justify-between">
+                        <div>
+                            <div
+                                class="w-12 h-12 bg-purple-900/50 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                                <i data-lucide="clapperboard"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold mb-2">Epsilon Editz</h2>
+                            <p class="text-purple-400 text-sm leading-relaxed">Editing tools and creative resources
+                                documentation.</p>
+                        </div>
+                        <div
+                            class="mt-8 flex items-center text-purple-400 font-semibold text-sm group-hover:translate-x-2 transition-transform">
+                            View Docs <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Epsilon Neote Docs -->
+                <a href="https://epsilonneon-sketch.github.io/epsilon-docs-neote/" target="_blank" class="group">
+                    <div
+                        class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-purple-900 h-full flex flex-col justify-between">
+                        <div>
+                            <div
+                                class="w-12 h-12 bg-purple-900/50 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                                <i data-lucide="terminal"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold mb-2">Epsilon Neote</h2>
+                            <p class="text-purple-400 text-sm leading-relaxed">Programming language documentation and
+                                syntax guide.</p>
+                        </div>
+                        <div
+                            class="mt-8 flex items-center text-purple-400 font-semibold text-sm group-hover:translate-x-2 transition-transform">
+                            View Docs <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Epsilon Sport Docs -->
+                <a href="https://github.com/epsilonneon-sketch/epsilon-sport-docs" target="_blank" class="group">
+                    <div
+                        class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-purple-900 h-full flex flex-col justify-between">
+                        <div>
+                            <div
+                                class="w-12 h-12 bg-purple-900/50 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                                <i data-lucide="medal"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold mb-2">Epsilon Sport</h2>
+                            <p class="text-purple-400 text-sm leading-relaxed">Fitness tracker documentation and API
+                                reference.</p>
+                        </div>
+                        <div
+                            class="mt-8 flex items-center text-purple-400 font-semibold text-sm group-hover:translate-x-2 transition-transform">
+                            View Docs <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Epsilon Academics Docs -->
+                <a href="https://epsilonneon-sketch.github.io/epsilon-docs-academics/" target="_blank" class="group">
+                    <div
+                        class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-purple-900 h-full flex flex-col justify-between">
+                        <div>
+                            <div
+                                class="w-12 h-12 bg-purple-900/50 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                                <i data-lucide="graduation-cap"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold mb-2">Epsilon Academics</h2>
+                            <p class="text-purple-400 text-sm leading-relaxed">Learning platform documentation and
+                                course guides.</p>
+                        </div>
+                        <div
+                            class="mt-8 flex items-center text-purple-400 font-semibold text-sm group-hover:translate-x-2 transition-transform">
+                            View Docs <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Epsilon Earth Docs -->
+                <a href="https://epsilonneon-sketch.github.io/epsilon-earth-docs/" target="_blank" class="group">
+                    <div
+                        class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-purple-900 h-full flex flex-col justify-between">
+                        <div>
+                            <div
+                                class="w-12 h-12 bg-purple-900/50 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                                <i data-lucide="earth"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold mb-2">Epsilon Earth</h2>
+                            <p class="text-purple-400 text-sm leading-relaxed">Earth dashboard documentation and data
+                                sources.</p>
+                        </div>
+                        <div
+                            class="mt-8 flex items-center text-purple-400 font-semibold text-sm group-hover:translate-x-2 transition-transform">
+                            View Docs <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- Communities Page -->
     <div id="communitiesPage" class="page">
         <div class="max-w-6xl w-full">
@@ -1735,9 +1906,6 @@
             <h2 class="text-lg font-bold mb-4">Admin Panel</h2>
             <p class="mb-2">Select a site to view its documentation:</p>
             <div class="flex flex-col gap-3">
-                <button onclick="window.open('admins.html', '_blank');"
-                    class="admin-doc-btn bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded">Open Admin
-                    Page</button>
                 <button class="admin-doc-btn bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded"
                     data-doc-link="https://epsilonneon-sketch.github.io/epsilon-docs-neote/">Epsilon Neote</button>
                 <button class="admin-doc-btn bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded"
@@ -1750,7 +1918,7 @@
                     data-doc-link="https://epsilonneon-sketch.github.io/epsilon-docs-academics/">Epsilon
                     Academics</button>
                 <button class="admin-doc-btn bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded"
-                    data-doc-link="https://epsilonneon-sketch.github.io/epsilon-admin-dashboard/">Epsilon admin
+                    onclick="window.open('admins.html', '_blank')">Epsilon admin
                     dashboard</button>
             </div>
             <button id="adminPanelClose"
@@ -1858,6 +2026,7 @@
         const eventsPage = document.getElementById('eventsPage');
         const pollsPage = document.getElementById('pollsPage');
         const communitiesPage = document.getElementById('communitiesPage');
+        const docsPage = document.getElementById('docsPage');
         const messagesPage = document.getElementById('messagesPage');
         const settingsPage = document.getElementById('settingsPage');
         const homeBtn = document.getElementById('homeBtn');
@@ -1866,6 +2035,7 @@
         const eventsBtn = document.getElementById('eventsBtn');
         const pollsBtn = document.getElementById('pollsBtn');
         const communitiesBtn = document.getElementById('communitiesBtn');
+        const docsBtn = document.getElementById('docsBtn');
         const backToHomeBtn = document.getElementById('backToHomeBtn');
         let selectedUser = null;
         let messageSubscription = null;
@@ -1880,6 +2050,7 @@
             eventsPage.classList.remove('active');
             pollsPage.classList.remove('active');
             communitiesPage.classList.remove('active');
+            docsPage.classList.remove('active');
             messagesPage.classList.remove('active');
             settingsPage.classList.remove('active');
 
@@ -1908,6 +2079,7 @@
         eventsBtn.addEventListener('click', () => showPage(eventsPage));
         pollsBtn.addEventListener('click', () => showPage(pollsPage));
         communitiesBtn.addEventListener('click', () => showPage(communitiesPage));
+        docsBtn.addEventListener('click', () => showPage(docsPage));
         backToHomeBtn.addEventListener('click', () => showPage(homePage));
 
         // Notification helper
@@ -3223,7 +3395,6 @@
 
         adminBtn.addEventListener('click', () => {
             adminDialog.showModal();
-
             adminPassword.value = '';
             adminError.classList.add('hidden');
         });
@@ -4474,6 +4645,7 @@
             if (communitySubscription) communitySubscription.unsubscribe();
             communityChatDialog.close();
         });
+
     </script>
 </body>
 
