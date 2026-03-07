@@ -721,8 +721,7 @@
                     <div
                         class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-purple-900 h-full flex flex-col justify-between">
                         <div>
-                            <img stlye="width: ;"
-                                src="https://epsilonneon-sketch.github.io/epsilon-spark-v1/epsilonsparkimg.png">
+
                             <div
                                 class="w-12 h-12 bg-purple-900/50 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
                                 <i data-lucide="sparkle"></i>
@@ -1170,7 +1169,8 @@
                 <h1 class="text-4xl md:text-6xl font-extrabold tracking-tighter italic">
                     EPSILON<span class="text-purple-600"> POLLS</span>
                 </h1>
-                <p class="text-purple-400 font-light tracking-widest uppercase text-[10px] md:text-sm">Vote and share your opinion</p>
+                <p class="text-purple-400 font-light tracking-widest uppercase text-[10px] md:text-sm">Vote and share
+                    your opinion</p>
             </header>
 
             <div id="createPollSection" class="glass p-6 rounded-3xl mb-8 hidden">
@@ -1181,30 +1181,42 @@
                     <div>
                         <label class="text-xs uppercase tracking-widest text-purple-400 block mb-2">Title</label>
                         <input id="pollTitle" type="text" placeholder="What's your question?"
-                            class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 transition-all" required>
+                            class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 transition-all"
+                            required>
                     </div>
                     <div>
                         <label class="text-xs uppercase tracking-widest text-purple-400 block mb-2">Description</label>
                         <textarea id="pollDescription" placeholder="Add more details..."
-                            class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 transition-all" rows="3" required></textarea>
+                            class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 transition-all"
+                            rows="3" required></textarea>
                     </div>
                     <div>
-                        <label class="text-xs uppercase tracking-widest text-purple-400 block mb-2">Options (2-5)</label>
+                        <label class="text-xs uppercase tracking-widest text-purple-400 block mb-2">Options
+                            (2-5)</label>
                         <div id="pollOptions" class="space-y-2">
-                            <input type="text" class="poll-option w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="Option 1" required>
-                            <input type="text" class="poll-option w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="Option 2" required>
+                            <input type="text"
+                                class="poll-option w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                                placeholder="Option 1" required>
+                            <input type="text"
+                                class="poll-option w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                                placeholder="Option 2" required>
                         </div>
-                        <button type="button" id="addOption" class="mt-2 text-purple-400 text-sm hover:underline">+ Add Option</button>
+                        <button type="button" id="addOption" class="mt-2 text-purple-400 text-sm hover:underline">+ Add
+                            Option</button>
                     </div>
                     <div class="flex justify-end gap-2">
-                        <button type="button" id="cancelPoll" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">Cancel</button>
-                        <button type="submit" class="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg">Create Poll</button>
+                        <button type="button" id="cancelPoll"
+                            class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">Cancel</button>
+                        <button type="submit"
+                            class="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg">Create
+                            Poll</button>
                     </div>
                 </form>
             </div>
 
             <div class="flex justify-end mb-6">
-                <button id="newPollBtn" class="glass px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-purple-600 transition-all flex items-center gap-2 hidden">
+                <button id="newPollBtn"
+                    class="glass px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-purple-600 transition-all flex items-center gap-2 hidden">
                     <i data-lucide="plus" class="w-4 h-4"></i> <span>New Poll</span>
                 </button>
             </div>
@@ -1215,7 +1227,9 @@
                 <i data-lucide="bar-chart-3" class="w-16 h-16 mx-auto text-gray-600 mb-4"></i>
                 <h3 class="text-xl font-semibold mb-2">No polls yet</h3>
                 <p class="text-purple-400 mb-6">Be the first to create a poll!</p>
-                <button id="emptyStateNewPollBtn" class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-2 rounded-lg hidden">Create Your First Poll</button>
+                <button id="emptyStateNewPollBtn"
+                    class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-2 rounded-lg hidden">Create Your First
+                    Poll</button>
             </div>
         </div>
     </div>
@@ -1227,7 +1241,8 @@
                 <h1 class="text-4xl md:text-6xl font-extrabold tracking-tighter italic">
                     EPSILON<span class="text-purple-600"> COMMUNITIES</span>
                 </h1>
-                <p class="text-purple-400 font-light tracking-widest uppercase text-[10px] md:text-sm">Connect and collaborate</p>
+                <p class="text-purple-400 font-light tracking-widest uppercase text-[10px] md:text-sm">Connect and
+                    collaborate</p>
             </header>
 
             <div id="createCommunitySection" class="glass p-6 rounded-3xl mb-8 hidden">
@@ -1238,28 +1253,35 @@
                     <div>
                         <label class="text-xs uppercase tracking-widest text-purple-400 block mb-2">Name</label>
                         <input id="communityName" type="text" placeholder="Community name"
-                            class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 transition-all" required>
+                            class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 transition-all"
+                            required>
                     </div>
                     <div>
                         <label class="text-xs uppercase tracking-widest text-purple-400 block mb-2">Description</label>
                         <textarea id="communityDescription" placeholder="What's this community about?"
-                            class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 transition-all" rows="3" required></textarea>
+                            class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 transition-all"
+                            rows="3" required></textarea>
                     </div>
                     <div>
-                        <button type="button" id="selectMembersBtn" class="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg">
+                        <button type="button" id="selectMembersBtn"
+                            class="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg">
                             <i data-lucide="user-plus" class="w-4 h-4 inline mr-2"></i>Select Members
                         </button>
                         <p id="selectedMembersCount" class="text-sm text-purple-400 mt-2">0 members selected</p>
                     </div>
                     <div class="flex justify-end gap-2">
-                        <button type="button" id="cancelCommunity" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">Cancel</button>
-                        <button type="submit" class="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg">Create Community</button>
+                        <button type="button" id="cancelCommunity"
+                            class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">Cancel</button>
+                        <button type="submit"
+                            class="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg">Create
+                            Community</button>
                     </div>
                 </form>
             </div>
 
             <div class="flex justify-end mb-6">
-                <button id="newCommunityBtn" class="glass px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-purple-600 transition-all flex items-center gap-2 hidden">
+                <button id="newCommunityBtn"
+                    class="glass px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-purple-600 transition-all flex items-center gap-2 hidden">
                     <i data-lucide="plus" class="w-4 h-4"></i> <span>New Community</span>
                 </button>
             </div>
@@ -1270,13 +1292,16 @@
                 <i data-lucide="users-2" class="w-16 h-16 mx-auto text-gray-600 mb-4"></i>
                 <h3 class="text-xl font-semibold mb-2">No communities yet</h3>
                 <p class="text-purple-400 mb-6">Be the first to create a community!</p>
-                <button id="emptyStateNewCommunityBtn" class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-2 rounded-lg hidden">Create Your First Community</button>
+                <button id="emptyStateNewCommunityBtn"
+                    class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-2 rounded-lg hidden">Create Your First
+                    Community</button>
             </div>
         </div>
     </div>
 
     <!-- Member Selection Dialog -->
-    <dialog id="memberSelectionDialog" class="rounded-xl p-0 border-0 shadow-2xl bg-transparent" style="max-width: 90vw;">
+    <dialog id="memberSelectionDialog" class="rounded-xl p-0 border-0 shadow-2xl bg-transparent"
+        style="max-width: 90vw;">
         <div class="bg-gray-900 text-purple-100 rounded-xl p-8 max-w-2xl glass border border-purple-800">
             <div class="flex justify-between items-start mb-6">
                 <h2 class="text-2xl font-bold">Select Members</h2>
@@ -1284,15 +1309,19 @@
                     <i data-lucide="x"></i>
                 </button>
             </div>
-            <input type="text" id="memberSearchInput" placeholder="Search users..." class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 mb-4">
+            <input type="text" id="memberSearchInput" placeholder="Search users..."
+                class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 mb-4">
             <div id="membersList" class="space-y-2 max-h-96 overflow-y-auto mb-4"></div>
-            <button type="button" id="confirmMembers" class="w-full bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg">Confirm Selection</button>
+            <button type="button" id="confirmMembers"
+                class="w-full bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg">Confirm
+                Selection</button>
         </div>
     </dialog>
 
     <!-- Community Chat Dialog -->
     <dialog id="communityChatDialog" class="rounded-xl p-0 border-0 shadow-2xl bg-transparent" style="max-width: 90vw;">
-        <div class="bg-gray-900 text-purple-100 rounded-xl p-8 max-w-4xl glass border border-purple-800" style="height: 80vh;">
+        <div class="bg-gray-900 text-purple-100 rounded-xl p-8 max-w-4xl glass border border-purple-800"
+            style="height: 80vh;">
             <div class="flex justify-between items-start mb-6">
                 <div>
                     <h2 id="communityChatName" class="text-2xl font-bold"></h2>
@@ -1306,8 +1335,10 @@
                 <div id="communityMessagesContainer" class="flex-1 space-y-3 overflow-y-auto mb-4"></div>
                 <form id="communityMessageForm" class="flex gap-2">
                     <input id="communityMessageInput" type="text" placeholder="Type a message..."
-                        class="flex-1 rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required>
-                    <button type="submit" class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-3 rounded-lg">Send</button>
+                        class="flex-1 rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                        required>
+                    <button type="submit"
+                        class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-3 rounded-lg">Send</button>
                 </form>
             </div>
         </div>
@@ -1488,16 +1519,33 @@
                                 <i data-lucide="palette" class="text-purple-600"></i> Theme Color
                             </h2>
                             <div class="space-y-3">
-                                <label class="text-xs uppercase tracking-widest text-purple-400 block mb-2">Choose your theme color</label>
+                                <label class="text-xs uppercase tracking-widest text-purple-400 block mb-2">Choose your
+                                    theme color</label>
                                 <div class="grid grid-cols-4 gap-3">
-                                    <button type="button" class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all" style="background-color: #a855f7;" data-theme="purple" title="Purple"></button>
-                                    <button type="button" class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all" style="background-color: #ec4899;" data-theme="pink" title="Pink"></button>
-                                    <button type="button" class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all" style="background-color: #ef4444;" data-theme="red" title="Red"></button>
-                                    <button type="button" class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all" style="background-color: #f97316;" data-theme="orange" title="Orange"></button>
-                                    <button type="button" class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all" style="background-color: #eab308;" data-theme="yellow" title="Yellow"></button>
-                                    <button type="button" class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all" style="background-color: #3b82f6;" data-theme="blue" title="Blue"></button>
-                                    <button type="button" class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all" style="background-color: #22c55e;" data-theme="green" title="Green"></button>
-                                    <button type="button" class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all" style="background-color: #f3f4f6;" data-theme="white" title="White"></button>
+                                    <button type="button"
+                                        class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all"
+                                        style="background-color: #a855f7;" data-theme="purple" title="Purple"></button>
+                                    <button type="button"
+                                        class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all"
+                                        style="background-color: #ec4899;" data-theme="pink" title="Pink"></button>
+                                    <button type="button"
+                                        class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all"
+                                        style="background-color: #ef4444;" data-theme="red" title="Red"></button>
+                                    <button type="button"
+                                        class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all"
+                                        style="background-color: #f97316;" data-theme="orange" title="Orange"></button>
+                                    <button type="button"
+                                        class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all"
+                                        style="background-color: #eab308;" data-theme="yellow" title="Yellow"></button>
+                                    <button type="button"
+                                        class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all"
+                                        style="background-color: #3b82f6;" data-theme="blue" title="Blue"></button>
+                                    <button type="button"
+                                        class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all"
+                                        style="background-color: #22c55e;" data-theme="green" title="Green"></button>
+                                    <button type="button"
+                                        class="theme-btn w-full h-12 rounded-lg border-2 border-transparent hover:border-white transition-all"
+                                        style="background-color: #f3f4f6;" data-theme="white" title="White"></button>
                                 </div>
                             </div>
                         </div>
@@ -1622,7 +1670,8 @@
                     <button type="button" id="closeUserProfileModal" class="text-purple-400 hover:text-white">
                         <i data-lucide="x"></i>
                     </button>
-                    <button id="modalFollowBtn" class="hidden bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg text-sm">
+                    <button id="modalFollowBtn"
+                        class="hidden bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg text-sm">
                         Follow
                     </button>
                 </div>
@@ -2924,24 +2973,24 @@
                     followBtn.classList.remove('hidden');
                     const isFollowing = currentUser.following && currentUser.following.includes(userId);
                     followBtn.textContent = isFollowing ? 'Unfollow' : 'Follow';
-                    followBtn.className = isFollowing 
+                    followBtn.className = isFollowing
                         ? 'bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm'
                         : 'bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg text-sm';
-                    
+
                     followBtn.onclick = async () => {
                         const newIsFollowing = await handleFollow(userId, isFollowing);
                         followBtn.textContent = newIsFollowing ? 'Unfollow' : 'Follow';
                         followBtn.className = newIsFollowing
                             ? 'bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm'
                             : 'bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg text-sm';
-                        
+
                         // Refresh user data
                         const { data: updatedUser } = await supabaseClient
                             .from('profiles')
                             .select('followers, following')
                             .eq('id', userId)
                             .single();
-                        
+
                         document.getElementById('modalFollowersCount').textContent = (updatedUser.followers || []).length;
                         document.getElementById('modalFollowingCount').textContent = (updatedUser.following || []).length;
                     };
@@ -3224,13 +3273,13 @@
             document.documentElement.style.setProperty('--theme-secondary', colors.secondary);
             document.documentElement.style.setProperty('--theme-light', colors.light);
             document.documentElement.style.setProperty('--theme-dark', colors.dark);
-            
+
             // Update all purple elements
             const style = document.createElement('style');
             style.id = 'dynamic-theme';
             const existingStyle = document.getElementById('dynamic-theme');
             if (existingStyle) existingStyle.remove();
-            
+
             style.textContent = `
                 .bg-purple-600, .bg-purple-700, .bg-purple-800, .bg-purple-900 { background-color: ${colors.primary} !important; }
                 .hover\\:bg-purple-600:hover, .hover\\:bg-purple-700:hover, .hover\\:bg-purple-800:hover { background-color: ${colors.secondary} !important; }
@@ -3239,7 +3288,7 @@
                 .bg-mesh { background-image: radial-gradient(at 0% 0%, ${colors.dark} 0, transparent 50%), radial-gradient(at 100% 100%, ${colors.secondary} 0, transparent 50%) !important; }
             `;
             document.head.appendChild(style);
-            
+
             // Update active theme button
             document.querySelectorAll('.theme-btn').forEach(btn => {
                 btn.style.borderColor = btn.dataset.theme === theme ? 'white' : 'transparent';
@@ -3252,14 +3301,14 @@
                 btn.addEventListener('click', async () => {
                     const theme = btn.dataset.theme;
                     applyTheme(theme);
-                    
+
                     if (currentUser) {
                         await supabaseClient.from('profiles').update({ theme_color: theme }).eq('id', currentUser.id);
                         showNotification('Theme updated successfully!');
                     }
                 });
             });
-            
+
             // Sound notification toggle
             document.getElementById('soundNotifications')?.addEventListener('change', async (e) => {
                 soundEnabled = e.target.checked;
@@ -3274,7 +3323,7 @@
             if (soundEnabled) {
                 const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGGS57OihUBELTKXh8bllHAU2jdXvzn0pBSh+zPDajzsKElyx6OyrWBUIQ5zd8sFuJAUuhM/z24k2CBdju+zooVARC0yl4fG5ZRwFNo3V7859KQUofsz');
                 audio.volume = 0.3;
-                audio.play().catch(() => {});
+                audio.play().catch(() => { });
             }
         }
         // Add this after the delete account button event listener
@@ -4186,7 +4235,7 @@
         selectMembersBtn.addEventListener('click', async () => {
             const { data: users } = await supabaseClient.from('profiles').select('*').neq('id', currentUser.id);
             membersList.innerHTML = '';
-            
+
             users?.forEach(user => {
                 const isSelected = selectedMembers.includes(user.id);
                 const memberDiv = document.createElement('div');
@@ -4297,10 +4346,10 @@
                         <p class="text-purple-200 mb-4">${community.description}</p>
                         <div class="flex justify-between items-center">
                             <p class="text-sm text-purple-400">${community.members.length} members</p>
-                            ${isMember ? 
-                                `<button class="open-community-btn bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg" data-community-id="${community.id}">Open Chat</button>` :
-                                `<button class="join-community-btn bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg" data-community-id="${community.id}">Join</button>`
-                            }
+                            ${isMember ?
+                            `<button class="open-community-btn bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded-lg" data-community-id="${community.id}">Open Chat</button>` :
+                            `<button class="join-community-btn bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg" data-community-id="${community.id}">Join</button>`
+                        }
                         </div>
                     `;
 
@@ -4332,7 +4381,7 @@
             try {
                 const { data: community } = await supabaseClient.from('communities').select('members').eq('id', communityId).single();
                 const newMembers = [...community.members, currentUser.id];
-                
+
                 await supabaseClient.from('communities').update({ members: newMembers }).eq('id', communityId);
                 loadCommunities();
                 showNotification('Joined community successfully!');
@@ -4344,14 +4393,14 @@
 
         async function handleOpenCommunity(e) {
             const communityId = e.currentTarget.getAttribute('data-community-id');
-            
+
             try {
                 const { data: community } = await supabaseClient.from('communities').select('*').eq('id', communityId).single();
                 currentCommunity = community;
-                
+
                 communityChatName.textContent = community.name;
                 communityChatDesc.textContent = community.description;
-                
+
                 loadCommunityMessages();
                 subscribeToCommunityMessages();
                 communityChatDialog.showModal();
