@@ -654,6 +654,11 @@
             title="Documentation">
             <i data-lucide="book-text" class="w-5 h-5"></i>
         </button>
+        <button id="devBtn"
+            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            title="Developer Portal">
+            <i data-lucide="code-2" class="w-5 h-5"></i>
+        </button>
         <button id="messagesBtn"
             class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all hidden"
             title="Messages">
@@ -1988,6 +1993,136 @@
         </div>
     </dialog>
 
+    <!-- Developer Portal Page -->
+    <div id="developerPage" class="page">
+        <div class="max-w-6xl w-full">
+            <header class="text-center mb-12 space-y-4">
+                <h1 class="text-4xl md:text-6xl font-extrabold tracking-tighter italic">
+                    EPSILON<span class="text-purple-600"> DEVELOPER</span>
+                </h1>
+                <p class="text-purple-400 font-light tracking-widest uppercase text-[10px] md:text-sm">Access public
+                    account data via API</p>
+            </header>
+
+            <!-- Login Required Message -->
+            <div id="devLoginRequired" class="glass p-8 rounded-3xl text-center mb-8">
+                <i data-lucide="lock" class="w-16 h-16 mx-auto mb-4 text-purple-400"></i>
+                <h2 class="text-2xl font-bold mb-4">Login Required</h2>
+                <p class="text-purple-400 mb-6">You need to be logged in to access the developer portal</p>
+                <button id="devLoginBtn"
+                    class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-3 rounded-lg inline-block">
+                    Go to Login
+                </button>
+            </div>
+
+            <!-- Developer Portal Content -->
+            <div id="developerContent" class="hidden">
+                <!-- Create API Key Section -->
+                <div class="glass p-8 rounded-3xl mb-8">
+                    <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
+                        <i data-lucide="key" class="text-purple-600"></i> Create New API Key
+                    </h2>
+                    <form id="devCreateKeyForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm text-purple-400 mb-2">Key Name</label>
+                            <input id="devKeyName" type="text" placeholder="My App API Key" required
+                                class="w-full px-4 py-3 bg-gray-800 border border-purple-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-purple-400 mb-2">Rate Limit (calls per key)</label>
+                            <input id="devKeyLimit" type="number" value="1000" min="100" max="10000" required
+                                class="w-full px-4 py-3 bg-gray-800 border border-purple-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600">
+                        </div>
+                        <button type="submit" class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-3 rounded-lg">
+                            Generate API Key
+                        </button>
+                    </form>
+                </div>
+
+                <!-- API Keys Table -->
+                <div class="glass p-8 rounded-3xl mb-8">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                        <i data-lucide="database" class="text-purple-600"></i> Your API Keys
+                    </h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-purple-800">
+                                    <th class="text-left py-3 px-4 text-purple-400">Name</th>
+                                    <th class="text-left py-3 px-4 text-purple-400">API Key</th>
+                                    <th class="text-left py-3 px-4 text-purple-400">Calls</th>
+                                    <th class="text-left py-3 px-4 text-purple-400">Limit</th>
+                                    <th class="text-left py-3 px-4 text-purple-400">Status</th>
+                                    <th class="text-left py-3 px-4 text-purple-400">Created</th>
+                                    <th class="text-left py-3 px-4 text-purple-400">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="devApiKeysTable">
+                                <tr>
+                                    <td colspan="7" class="text-center py-8 text-purple-400">No API keys yet</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Documentation -->
+                <div class="glass p-8 rounded-3xl">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                        <i data-lucide="book-open" class="text-purple-600"></i> Quick Start Guide
+                    </h2>
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-xl font-bold mb-2 text-purple-400">1. Include the API Library</h3>
+                            <pre class="bg-gray-900 p-4 rounded-lg overflow-x-auto text-sm"><code>&lt;script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"&gt;&lt;/script&gt;
+&lt;script src="https://epsilon-site-v1.vercel.app/epsilon-api.js"&gt;&lt;/script&gt;</code></pre>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-bold mb-2 text-purple-400">2. Initialize the API</h3>
+                            <pre
+                                class="bg-gray-900 p-4 rounded-lg overflow-x-auto text-sm"><code>const api = new EpsilonAPI('YOUR_API_KEY');</code></pre>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-bold mb-2 text-purple-400">3. Make API Calls</h3>
+                            <pre class="bg-gray-900 p-4 rounded-lg overflow-x-auto text-sm"><code>// Get user by username
+const user = await api.getUserByUsername('warren_epsilon');
+
+// Get user posts
+const posts = await api.getUserPosts('warren_epsilon', 10);
+
+// Get all users
+const users = await api.getAllUsers(1, 20);
+
+// Get followers
+const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-bold mb-2 text-purple-400">Available Endpoints</h3>
+                            <ul class="list-disc list-inside space-y-2 text-purple-200">
+                                <li><code>getUserByUsername(username)</code> - Returns user profile data</li>
+                                <li><code>getUserPosts(username, limit)</code> - Returns user's posts</li>
+                                <li><code>getAllUsers(page, limit)</code> - Returns paginated list of users</li>
+                                <li><code>getUserFollowers(username)</code> - Returns user's followers</li>
+                                <li><code>getUserFollowing(username)</code> - Returns users that user follows</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-bold mb-2 text-purple-400">Test Your API</h3>
+                            <a href="./api-test.html" target="_blank"
+                                class="inline-block bg-purple-700 hover:bg-purple-800 text-white px-6 py-3 rounded-lg">
+                                Open API Test Page
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Initialize Supabase
         const { createClient } = supabase;
@@ -2029,6 +2164,7 @@
         const docsPage = document.getElementById('docsPage');
         const messagesPage = document.getElementById('messagesPage');
         const settingsPage = document.getElementById('settingsPage');
+        const developerPage = document.getElementById('developerPage');
         const homeBtn = document.getElementById('homeBtn');
         const postsBtn = document.getElementById('postsBtn');
         const usersBtn = document.getElementById('usersBtn');
@@ -2036,6 +2172,7 @@
         const pollsBtn = document.getElementById('pollsBtn');
         const communitiesBtn = document.getElementById('communitiesBtn');
         const docsBtn = document.getElementById('docsBtn');
+        const devBtn = document.getElementById('devBtn');
         const backToHomeBtn = document.getElementById('backToHomeBtn');
         let selectedUser = null;
         let messageSubscription = null;
@@ -2053,6 +2190,7 @@
             docsPage.classList.remove('active');
             messagesPage.classList.remove('active');
             settingsPage.classList.remove('active');
+            developerPage.classList.remove('active');
 
             page.classList.add('active');
 
@@ -2070,6 +2208,8 @@
                 loadCommunities();
             } else if (page === messagesPage) {
                 loadMessagesUsers();
+            } else if (page === developerPage) {
+                checkDevAuth();
             }
         }
 
@@ -2080,6 +2220,7 @@
         pollsBtn.addEventListener('click', () => showPage(pollsPage));
         communitiesBtn.addEventListener('click', () => showPage(communitiesPage));
         docsBtn.addEventListener('click', () => showPage(docsPage));
+        devBtn.addEventListener('click', () => showPage(developerPage));
         backToHomeBtn.addEventListener('click', () => showPage(homePage));
 
         // Notification helper
@@ -4644,6 +4785,184 @@
         closeCommunityChat.addEventListener('click', () => {
             if (communitySubscription) communitySubscription.unsubscribe();
             communityChatDialog.close();
+        });
+
+        // Developer Portal Functions
+        // Check auth state for developer portal
+        async function checkDevAuth() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+
+            if (session) {
+                const { data: profile } = await supabaseClient
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (profile) {
+                    currentUser = { ...session.user, ...profile };
+                    document.getElementById('devLoginRequired').classList.add('hidden');
+                    document.getElementById('developerContent').classList.remove('hidden');
+                    loadDevAPIKeys();
+                }
+            } else {
+                document.getElementById('devLoginRequired').classList.remove('hidden');
+                document.getElementById('developerContent').classList.add('hidden');
+            }
+        }
+
+        // Generate random API key
+        function generateAPIKey() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let key = 'ep_';
+            for (let i = 0; i < 48; i++) {
+                key += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return key;
+        }
+
+        // Create API key
+        document.getElementById('devCreateKeyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const keyName = document.getElementById('devKeyName').value;
+            const keyLimit = parseInt(document.getElementById('devKeyLimit').value);
+            const apiKey = generateAPIKey();
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('api_keys')
+                    .insert([{
+                        user_id: currentUser.id,
+                        api_key: apiKey,
+                        key_name: keyName,
+                        calls_limit: keyLimit
+                    }])
+                    .select()
+                    .single();
+
+                if (error) throw error;
+
+                document.getElementById('devCreateKeyForm').reset();
+                loadDevAPIKeys();
+            } catch (error) {
+                console.error('Error creating API key:', error);
+                alert('Error creating API key: ' + error.message);
+            }
+        });
+
+        // Load API keys
+        async function loadDevAPIKeys() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('api_keys')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                const tbody = document.getElementById('devApiKeysTable');
+
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-purple-400">No API keys yet</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.map(key => {
+                    const createdDate = new Date(key.created_at).toLocaleDateString();
+                    const maskedKey = key.api_key.substring(0, 10) + '...' + key.api_key.substring(key.api_key.length - 4);
+                    const statusColor = key.is_active ? 'text-green-400' : 'text-red-400';
+                    const statusText = key.is_active ? 'Active' : 'Inactive';
+
+                    return `
+                        <tr class="border-b border-purple-800/30">
+                            <td class="py-3 px-4">${key.key_name}</td>
+                            <td class="py-3 px-4 font-mono text-sm">
+                                <span id="devkey-${key.id}">${maskedKey}</span>
+                                <button onclick="copyDevKey('${key.api_key}', '${key.id}')" 
+                                    class="ml-2 text-purple-400 hover:text-purple-300">
+                                    <i data-lucide="copy" class="w-4 h-4 inline"></i>
+                                </button>
+                            </td>
+                            <td class="py-3 px-4">${key.calls_made || 0}</td>
+                            <td class="py-3 px-4">${key.calls_limit}</td>
+                            <td class="py-3 px-4 ${statusColor}">${statusText}</td>
+                            <td class="py-3 px-4">${createdDate}</td>
+                            <td class="py-3 px-4">
+                                <button onclick="toggleDevKey('${key.id}', ${!key.is_active})" 
+                                    class="text-purple-400 hover:text-purple-300 mr-2">
+                                    <i data-lucide="${key.is_active ? 'pause' : 'play'}" class="w-4 h-4 inline"></i>
+                                </button>
+                                <button onclick="deleteDevKey('${key.id}')" 
+                                    class="text-red-400 hover:text-red-300">
+                                    <i data-lucide="trash-2" class="w-4 h-4 inline"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                lucide.createIcons();
+            } catch (error) {
+                console.error('Error loading API keys:', error);
+            }
+        }
+
+        // Copy API key
+        async function copyDevKey(key, id) {
+            try {
+                await navigator.clipboard.writeText(key);
+                const span = document.getElementById(`devkey-${id}`);
+                const originalText = span.textContent;
+                span.textContent = 'Copied!';
+                setTimeout(() => {
+                    span.textContent = originalText;
+                }, 2000);
+            } catch (error) {
+                alert('Failed to copy key');
+            }
+        }
+
+        // Toggle key active status
+        async function toggleDevKey(id, isActive) {
+            try {
+                const { error } = await supabaseClient
+                    .from('api_keys')
+                    .update({ is_active: isActive })
+                    .eq('id', id);
+
+                if (error) throw error;
+                loadDevAPIKeys();
+            } catch (error) {
+                console.error('Error toggling key:', error);
+                alert('Error updating key status');
+            }
+        }
+
+        // Delete key
+        async function deleteDevKey(id) {
+            if (!confirm('Are you sure you want to delete this API key? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('api_keys')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+                loadDevAPIKeys();
+            } catch (error) {
+                console.error('Error deleting key:', error);
+                alert('Error deleting key');
+            }
+        }
+
+        // Developer login button
+        document.getElementById('devLoginBtn').addEventListener('click', () => {
+            authDialog.showModal();
         });
 
     </script>
