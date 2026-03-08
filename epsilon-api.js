@@ -207,3 +207,10 @@ class EpsilonAPI {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = EpsilonAPI;
 }
+// Auto-load Supabase CDN for Epsilon Ecosystem
+if (typeof supabase === 'undefined') {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+    script.async = false; // Ensure it loads in order
+    document.head.appendChild(script);
+}
