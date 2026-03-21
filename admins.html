@@ -10,6 +10,8 @@
     <link rel="icon" href="epsilon logo.png">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add PeerJS library -->
+    <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
 
@@ -41,6 +43,40 @@
 
         .page.active {
             display: block;
+        }
+
+        /* Call notification styles */
+        .call-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .call-active {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 999;
+        }
+
+        .audio-level {
+            height: 4px;
+            background-color: #a855f7;
+            transition: width 0.1s;
         }
     </style>
 </head>
@@ -97,6 +133,10 @@
             <button class="nav-btn glass p-6 rounded-3xl hover:bg-purple-600 transition" data-page="servers">
                 <i data-lucide="shield-off" class="w-8 h-8 mx-auto mb-2"></i>
                 <p class="font-bold">Block Servers</p>
+            </button>
+            <button class="nav-btn glass p-6 rounded-3xl hover:bg-purple-600 transition" data-page="calls">
+                <i data-lucide="phone" class="w-8 h-8 mx-auto mb-2"></i>
+                <p class="font-bold">Admin Calls</p>
             </button>
         </div>
 
@@ -168,13 +208,14 @@
             <div class="glass p-6 rounded-3xl mb-6">
                 <h2 class="text-2xl font-bold mb-4">Block Epsilon Sites</h2>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                   
+
                     <button onclick="toggleSiteBlock('epsilon')"
-                        class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition col-span-2" data-site="epsilon">
+                        class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition col-span-2"
+                        data-site="epsilon">
                         <p class="font-bold text-lg">🚨 Epsilon Main Site</p>
                         <p class="text-xs text-purple-400 mt-1" id="status-epsilon">Active</p>
                     </button>
-                     <button onclick="blockAllSites()"
+                    <button onclick="blockAllSites()"
                         class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition">
                         <p class="font-bold">Toggle All</p>
                     </button>
@@ -242,6 +283,68 @@
                 </div>
             </div>
         </div>
+
+        <!-- Audio Calls Section -->
+        <div id="callsSection" class="section hidden">
+            <div class="glass p-6 rounded-3xl mb-6">
+                <h2 class="text-2xl font-bold mb-4">Admin Audio Calls</h2>
+                <div class="mb-6">
+                    <button id="callAllBtn" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-bold">
+                        <i data-lucide="phone" class="inline w-5 h-5 mr-2"></i>
+                        Call All Admins
+                    </button>
+                </div>
+                <div id="onlineAdmins" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Online admins will be listed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call Notification (initially hidden) -->
+    <div id="callNotification" class="call-notification glass p-4 rounded-lg hidden">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <i data-lucide="phone" class="w-8 h-8 text-green-400 animate-pulse"></i>
+                <div>
+                    <p class="font-bold">Incoming Call</p>
+                    <p id="callerName" class="text-sm text-purple-300">Admin is calling you</p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button id="acceptCallBtn" class="bg-green-600 hover:bg-green-700 text-white p-2 rounded-full">
+                    <i data-lucide="phone" class="w-5 h-5"></i>
+                </button>
+                <button id="declineCallBtn" class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full">
+                    <i data-lucide="phone-off" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Call UI (initially hidden) -->
+    <div id="activeCallUI" class="call-active glass p-4 rounded-lg hidden">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <i data-lucide="phone" class="w-8 h-8 text-green-400 animate-pulse"></i>
+                <div>
+                    <p class="font-bold">Active Call</p>
+                    <p id="callDuration" class="text-sm text-purple-300">00:00</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="mic" class="w-5 h-5"></i>
+                    <div class="w-24 bg-gray-700 rounded-full h-2">
+                        <div id="audioLevel" class="audio-level rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
+                <button id="endCallBtn" class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full">
+                    <i data-lucide="phone-off" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+        <audio id="remoteAudio" autoplay></audio>
     </div>
 
     <script>
@@ -253,6 +356,14 @@
 
         let currentAdmin = null;
         let chatSubscription = null;
+        
+        // PeerJS variables
+        let peer = null;
+        let currentCall = null;
+        let callStartTime = null;
+        let callDurationInterval = null;
+        let incomingCall = null;
+        let peerIdSubscription = null;
 
         // Check for existing session on load
         async function checkSession() {
@@ -263,9 +374,71 @@
                 document.getElementById('loginPage').classList.remove('active');
                 document.getElementById('dashboardPage').classList.add('active');
                 loadAnalytics();
+                initializePeerJS();
             }
         }
         checkSession();
+
+        // Initialize PeerJS
+        function initializePeerJS() {
+            if (!currentAdmin) return;
+            
+            // Generate a unique peer ID based on user ID and timestamp
+            const peerId = `epsilon-admin-${currentAdmin.id}-${Date.now()}`;
+            
+            // Create peer connection
+            peer = new Peer(peerId, {
+                debug: 2,
+                config: {
+                    'iceServers': [
+                        { url: 'stun:stun.l.google.com:19302' },
+                        { url: 'stun:stun1.l.google.com:19302' }
+                    ]
+                }
+            });
+            
+            peer.on('open', async (id) => {
+                console.log('My peer ID is: ' + id);
+                
+                // Store peer ID in database
+                await supabaseClient.from('admin_peer_ids').upsert({
+                    user_id: currentAdmin.id,
+                    peer_id: id,
+                    last_seen: new Date().toISOString()
+                });
+                
+                // Set up heartbeat to keep the peer ID active
+                setInterval(async () => {
+                    await supabaseClient.from('admin_peer_ids').upsert({
+                        user_id: currentAdmin.id,
+                        peer_id: id,
+                        last_seen: new Date().toISOString()
+                    });
+                }, 30000); // Update every 30 seconds
+            });
+            
+            // Handle incoming calls
+            peer.on('call', (call) => {
+                incomingCall = call;
+                
+                // Get caller info
+                supabaseClient.from('admin_peer_ids')
+                    .select('*, profiles:user_id(username, display_name)')
+                    .eq('peer_id', call.peer)
+                    .single()
+                    .then(({ data }) => {
+                        const callerName = data?.profiles?.display_name || data?.profiles?.username || 'Admin';
+                        document.getElementById('callerName').textContent = `${callerName} is calling you`;
+                    });
+                
+                // Show call notification
+                document.getElementById('callNotification').classList.remove('hidden');
+            });
+            
+            peer.on('error', (err) => {
+                console.error('PeerJS error:', err);
+            });
+        }
 
         // Login
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
@@ -286,10 +459,22 @@
             document.getElementById('loginPage').classList.remove('active');
             document.getElementById('dashboardPage').classList.add('active');
             loadAnalytics();
+            initializePeerJS();
         });
 
         // Logout
         document.getElementById('logoutBtn').addEventListener('click', async () => {
+            // Clean up peer connection
+            if (peer) {
+                peer.destroy();
+                peer = null;
+            }
+            
+            // Remove peer ID from database
+            if (currentAdmin) {
+                await supabaseClient.from('admin_peer_ids').delete().eq('user_id', currentAdmin.id);
+            }
+            
             await supabaseClient.auth.signOut();
             currentAdmin = null;
             document.getElementById('dashboardPage').classList.remove('active');
@@ -309,6 +494,7 @@
                 if (page === 'analytics') loadAnalytics();
                 if (page === 'charts') loadCharts();
                 if (page === 'servers') loadBlockedSites();
+                if (page === 'calls') loadOnlineAdmins();
             });
         });
 
@@ -505,6 +691,253 @@
         }
         function blockAllSites() {
             ['aproxi', 'neote', 'edits', 'academics', 'sports', 'earth', 'heckle'].forEach(site => toggleSiteBlock(site));
+        }
+
+        // Audio Calls Functions
+        async function loadOnlineAdmins() {
+            // Get all online admins (active in the last 2 minutes)
+            const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+            const { data: onlineAdmins } = await supabaseClient
+                .from('admin_peer_ids')
+                .select('*, profiles:user_id(username, display_name, profile_pic)')
+                .gte('last_seen', twoMinutesAgo)
+                .neq('user_id', currentAdmin.id); // Exclude current admin
+            
+            const container = document.getElementById('onlineAdmins');
+            container.innerHTML = '';
+            
+            if (onlineAdmins && onlineAdmins.length > 0) {
+                onlineAdmins.forEach(admin => {
+                    const div = document.createElement('div');
+                    div.className = 'glass p-4 rounded-lg flex items-center justify-between';
+                    div.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <div class="relative">
+                                <img src="${admin.profiles.profile_pic || 'https://picsum.photos/200'}" class="w-12 h-12 rounded-full">
+                                <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900"></div>
+                            </div>
+                            <div>
+                                <p class="font-bold">${admin.profiles.display_name || admin.profiles.username}</p>
+                                <p class="text-xs text-purple-400">Online</p>
+                            </div>
+                        </div>
+                        <button onclick="callAdmin('${admin.peer_id}')" class="bg-green-600 hover:bg-green-700 text-white p-2 rounded-full">
+                            <i data-lucide="phone" class="w-5 h-5"></i>
+                        </button>
+                    `;
+                    container.appendChild(div);
+                });
+            } else {
+                container.innerHTML = '<p class="text-purple-300">No other admins are currently online.</p>';
+            }
+            
+            // Re-initialize lucide icons
+            lucide.createIcons();
+        }
+
+        // Call a specific admin
+        function callAdmin(peerId) {
+            if (!peer || !peerId) return;
+            
+            // Get user media
+            navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+                .then(stream => {
+                    // Create the call
+                    const call = peer.call(peerId, stream);
+                    
+                    // Set up the call
+                    setupCall(call, stream);
+                    
+                    // Show active call UI
+                    showActiveCallUI();
+                })
+                .catch(err => {
+                    console.error('Failed to get local stream', err);
+                    alert('Could not access your microphone. Please check your permissions.');
+                });
+        }
+
+        // Call all admins
+        document.getElementById('callAllBtn').addEventListener('click', async () => {
+            if (!peer) {
+                alert('Peer connection not established. Please refresh the page.');
+                return;
+            }
+            
+            // Get all online admins
+            const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+            const { data: onlineAdmins } = await supabaseClient
+                .from('admin_peer_ids')
+                .select('peer_id')
+                .gte('last_seen', twoMinutesAgo)
+                .neq('user_id', currentAdmin.id); // Exclude current admin
+            
+            if (!onlineAdmins || onlineAdmins.length === 0) {
+                alert('No other admins are currently online.');
+                return;
+            }
+            
+            // Get user media
+            navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+                .then(stream => {
+                    // Call each admin
+                    onlineAdmins.forEach(admin => {
+                        const call = peer.call(admin.peer_id, stream);
+                        
+                        // Set up the call
+                        setupCall(call, stream);
+                    });
+                    
+                    // Show active call UI
+                    showActiveCallUI();
+                })
+                .catch(err => {
+                    console.error('Failed to get local stream', err);
+                    alert('Could not access your microphone. Please check your permissions.');
+                });
+        });
+
+        // Setup call event handlers
+        function setupCall(call, localStream) {
+            currentCall = call;
+            
+            // When the remote stream is added
+            call.on('stream', remoteStream => {
+                // Play the remote audio
+                const remoteAudio = document.getElementById('remoteAudio');
+                remoteAudio.srcObject = remoteStream;
+                
+                // Set up audio level monitoring
+                monitorAudioLevel(remoteStream);
+            });
+            
+            // When the call is closed
+            call.on('close', () => {
+                endCall();
+            });
+            
+            // Handle errors
+            call.on('error', err => {
+                console.error('Call error:', err);
+            });
+        }
+
+        // Accept incoming call
+        document.getElementById('acceptCallBtn').addEventListener('click', () => {
+            if (!incomingCall) return;
+            
+            // Get user media
+            navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+                .then(stream => {
+                    // Answer the call with our stream
+                    incomingCall.answer(stream);
+                    
+                    // Set up the call
+                    setupCall(incomingCall, stream);
+                    
+                    // Hide notification and show active call UI
+                    document.getElementById('callNotification').classList.add('hidden');
+                    showActiveCallUI();
+                })
+                .catch(err => {
+                    console.error('Failed to get local stream', err);
+                    alert('Could not access your microphone. Please check your permissions.');
+                });
+        });
+
+        // Decline incoming call
+        document.getElementById('declineCallBtn').addEventListener('click', () => {
+            if (incomingCall) {
+                incomingCall.close();
+                incomingCall = null;
+            }
+            
+            // Hide notification
+            document.getElementById('callNotification').classList.add('hidden');
+        });
+
+        // End active call
+        document.getElementById('endCallBtn').addEventListener('click', () => {
+            endCall();
+        });
+
+        // End call function
+        function endCall() {
+            if (currentCall) {
+                currentCall.close();
+                currentCall = null;
+            }
+            
+            // Stop local stream
+            if (currentLocalStream) {
+                currentLocalStream.getTracks().forEach(track => track.stop());
+                currentLocalStream = null;
+            }
+            
+            // Clear call duration interval
+            if (callDurationInterval) {
+                clearInterval(callDurationInterval);
+                callDurationInterval = null;
+            }
+            
+            // Hide active call UI
+            document.getElementById('activeCallUI').classList.add('hidden');
+        }
+
+        // Show active call UI
+        function showActiveCallUI() {
+            document.getElementById('activeCallUI').classList.remove('hidden');
+            
+            // Start call duration timer
+            callStartTime = Date.now();
+            callDurationInterval = setInterval(updateCallDuration, 1000);
+        }
+
+        // Update call duration
+        function updateCallDuration() {
+            if (!callStartTime) return;
+            
+            const elapsed = Math.floor((Date.now() - callStartTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            
+            document.getElementById('callDuration').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Monitor audio level
+        let currentLocalStream = null;
+        function monitorAudioLevel(stream) {
+            if (!stream) return;
+            
+            currentLocalStream = stream;
+            const audioContext = new AudioContext();
+            const analyser = audioContext.createAnalyser();
+            const microphone = audioContext.createMediaStreamSource(stream);
+            const javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
+            
+            analyser.smoothingTimeConstant = 0.8;
+            analyser.fftSize = 1024;
+            
+            microphone.connect(analyser);
+            analyser.connect(javascriptNode);
+            javascriptNode.connect(audioContext.destination);
+            
+            javascriptNode.onaudioprocess = function() {
+                const array = new Uint8Array(analyser.frequencyBinCount);
+                analyser.getByteFrequencyData(array);
+                let values = 0;
+                
+                const length = array.length;
+                for (let i = 0; i < length; i++) {
+                    values += array[i];
+                }
+                
+                const average = values / length;
+                const percentage = Math.min(100, Math.round(average * 2));
+                
+                document.getElementById('audioLevel').style.width = `${percentage}%`;
+            };
         }
     </script>
 </body>
