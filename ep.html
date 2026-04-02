@@ -79,8 +79,15 @@
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
         }
 
         /* Mobile sidebar */
@@ -653,66 +660,68 @@
     <div class="bg-mesh"></div>
 
     <!-- Mobile Menu Toggle -->
-    <button id="mobileMenuToggle" class="fixed left-4 top-4 z-[60] glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-pink-400 transition-all md:hidden">
+    <button id="mobileMenuToggle"
+        class="fixed left-4 top-4 z-[60] glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-pink-400 transition-all md:hidden">
         <i data-lucide="menu" class="w-6 h-6"></i>
     </button>
 
     <!-- Sidebar Navigation -->
-    <div id="sideNav" class="fixed left-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-50 transition-transform duration-300 md:translate-x-0 -translate-x-[200%]">
+    <div id="sideNav"
+        class="fixed left-6 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-50 transition-transform duration-300 md:translate-x-0 -translate-x-[200%]">
         <button id="homeBtn"
-            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
             title="Home">
-            <i data-lucide="home" class="w-5 h-5"></i>
+            <i data-lucide="home" class="w-4 h-4"></i>
         </button>
         <button id="postsBtn"
-            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
             title="Stories">
-            <i data-lucide="book-open" class="w-5 h-5"></i>
+            <i data-lucide="book-open" class="w-4 h-4"></i>
         </button>
         <button id="usersBtn"
-            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
             title="Community">
-            <i data-lucide="users" class="w-5 h-5"></i>
+            <i data-lucide="users" class="w-4 h-4"></i>
         </button>
         <button id="eventsBtn"
-            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
             title="Events">
-            <i data-lucide="calendar" class="w-5 h-5"></i>
+            <i data-lucide="calendar" class="w-4 h-4"></i>
         </button>
         <button id="pollsBtn"
-            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
             title="Polls">
-            <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+            <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
         </button>
         <button id="communitiesBtn"
-            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
             title="Communities">
-            <i data-lucide="users-2" class="w-5 h-5"></i>
+            <i data-lucide="users-2" class="w-4 h-4"></i>
         </button>
         <button id="docsBtn"
-            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
             title="Documentation">
-            <i data-lucide="book-text" class="w-5 h-5"></i>
+            <i data-lucide="book-text" class="w-4 h-4"></i>
         </button>
         <button id="devBtn"
-            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
             title="Developer Portal">
-            <i data-lucide="code-2" class="w-5 h-5"></i>
+            <i data-lucide="code-2" class="w-4 h-4"></i>
         </button>
         <button id="messagesBtn"
-            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all hidden"
+            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all hidden"
             title="Messages">
-            <i data-lucide="message-circle" class="w-5 h-5"></i>
+            <i data-lucide="message-circle" class="w-4 h-4"></i>
         </button>
         <button id="authBtn"
-            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
             title="Account">
-            <i data-lucide="user" class="w-5 h-5"></i>
+            <i data-lucide="user" class="w-4 h-4"></i>
         </button>
         <button id="settingsBtn"
-            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all hidden"
+            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all hidden"
             title="Settings">
-            <i data-lucide="settings" class="w-5 h-5"></i>
+            <i data-lucide="settings" class="w-4 h-4"></i>
         </button>
     </div>
 
@@ -725,7 +734,8 @@
             </h1>
             <p class="text-pink-400 font-light tracking-widest uppercase text-[10px] md:text-sm">-BY warren adrian and
                 epsilon team</p>
-            <p class="text-pink-300 text-sm mt-2">🌸 Happy Easter! 🐰 <a href="easter-game.html" class="underline hover:text-pink-600">Play Easter Game!</a></p>
+            <p class="text-pink-300 text-sm mt-2">🌸 Happy Easter! 🐰 <a href="easter-game.html"
+                    class="underline hover:text-pink-600">Play Easter Game!</a></p>
         </header>
 
         <section id="members" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 w-full max-w-6xl mb-16">
@@ -3648,7 +3658,7 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
         function setupMobileMenu() {
             const toggle = document.getElementById('mobileMenuToggle');
             const sideNav = document.getElementById('sideNav');
-            
+
             toggle.addEventListener('click', () => {
                 sideNav.classList.toggle('open');
             });
@@ -3683,13 +3693,13 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
                 if (pos.left) egg.style.left = pos.left;
                 if (pos.right) egg.style.right = pos.right;
                 egg.style.animationDelay = `${i * 0.3}s`;
-                
+
                 egg.addEventListener('click', () => {
                     egg.style.transform = 'scale(0) rotate(360deg)';
                     setTimeout(() => egg.remove(), 300);
                     showNotification('You found an Easter egg! 🎉', 'success');
                 });
-                
+
                 document.body.appendChild(egg);
             });
         }
@@ -5318,6 +5328,7 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
             originalUpdateUI();
             if (currentUser) {
                 initPeerJS();
+
             }
         };
 
