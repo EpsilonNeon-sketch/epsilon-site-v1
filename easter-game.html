@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Easter Egg Hunt - Epsilon</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ffeef8 0%, #fff0f5 25%, #e6f3ff 50%, #fff5e6 75%, #f0fff0 100%);
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            touch-action: none;
+        }
+
+        #gameCanvas {
+            display: block;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.3);
+        }
+
+        .game-ui {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 30px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff69b4;
+            z-index: 10;
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 20;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ff69b4, #ff1493);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: scale(1.1);
+        }
+
+        .egg {
+            animation: bounce 0.5s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-ui">
+        <span>🥚 Score: <span id="score">0</span></span>
+        <span style="margin-left: 20px;">⏱️ Time: <span id="timer">60</span>s</span>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="gameOver" class="game-over">
+        <h1 style="color: #ff69b4; font-size: 48px; margin-bottom: 20px;">🐰 Game Over! 🐰</h1>
+        <p style="font-size: 24px; margin-bottom: 20px;">You collected <span id="finalScore">0</span> eggs!</p>
+        <button class="btn" onclick="restartGame()">Play Again</button>
+        <button class="btn" onclick="window.location.href='epsilon.html'">Back to Home</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size
+        function resizeCanvas() {
+            canvas.width = Math.min(window.innerWidth - 40, 800);
+            canvas.height = Math.min(window.innerHeight - 100, 600);
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Game variables
+        let score = 0;
+        let timeLeft = 60;
+        let gameRunning = true;
+        let eggs = [];
+        let basket = {
+            x: canvas.width / 2 - 40,
+            y: canvas.height - 80,
+            width: 80,
+            height: 60,
+            speed: 8
+        };
+
+        // Egg colors
+        const eggColors = ['#ff69b4', '#87ceeb', '#98fb98', '#ffd700', '#ff6347', '#9370db'];
+        const eggEmojis = ['🥚', '🐣', '🐰', '🌸', '🌷', '🦋'];
+
+        // Create eggs
+        function createEgg() {
+            eggs.push({
+                x: Math.random() * (canvas.width - 40),
+                y: -40,
+                width: 40,
+                height: 50,
+                speed: 2 + Math.random() * 3,
+                color: eggColors[Math.floor(Math.random() * eggColors.length)],
+                emoji: eggEmojis[Math.floor(Math.random() * eggEmojis.length)]
+            });
+        }
+
+        // Draw basket
+        function drawBasket() {
+            ctx.fillStyle = '#8b4513';
+            ctx.fillRect(basket.x, basket.y, basket.width, basket.height);
+            ctx.fillStyle = '#d2691e';
+            ctx.fillRect(basket.x + 5, basket.y + 5, basket.width - 10, basket.height - 10);
+            
+            // Draw handle
+            ctx.strokeStyle = '#8b4513';
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.arc(basket.x + basket.width / 2, basket.y, 30, 0, Math.PI, true);
+            ctx.stroke();
+        }
+
+        // Draw eggs
+        function drawEggs() {
+            eggs.forEach((egg, index) => {
+                // Draw egg shape
+                ctx.fillStyle = egg.color;
+                ctx.beginPath();
+                ctx.ellipse(egg.x + 20, egg.y + 25, 20, 25, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw emoji
+                ctx.font = '30px Arial';
+                ctx.fillText(egg.emoji, egg.x + 5, egg.y + 35);
+
+                // Move egg down
+                egg.y += egg.speed;
+
+                // Check collision with basket
+                if (egg.y + egg.height > basket.y &&
+                    egg.y < basket.y + basket.height &&
+                    egg.x + egg.width > basket.x &&
+                    egg.x < basket.x + basket.width) {
+                    score++;
+                    document.getElementById('score').textContent = score;
+                    eggs.splice(index, 1);
+                    playSound();
+                }
+
+                // Remove if off screen
+                if (egg.y > canvas.height) {
+                    eggs.splice(index, 1);
+                }
+            });
+        }
+
+        // Play sound effect
+        function playSound() {
+            const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGGS57OihUBELTKXh8bllHAU2jdXvzn0pBSh+zPDajzsKElyx6OyrWBUIQ5zd8sFuJAUuhM/z24k2CBdju+zooVARC0yl4fG5ZRwFNo3V7859KQUofsz');
+            audio.volume = 0.3;
+            audio.play().catch(() => {});
+        }
+
+        // Handle input
+        let keys = {};
+        let touchStartX = 0;
+
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+        });
+
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        // Touch controls
+        canvas.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touchX = e.touches[0].clientX;
+            const rect = canvas.getBoundingClientRect();
+            basket.x = touchX - rect.left - basket.width / 2;
+            basket.x = Math.max(0, Math.min(canvas.width - basket.width, basket.x));
+        });
+
+        // Mouse controls
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            basket.x = e.clientX - rect.left - basket.width / 2;
+            basket.x = Math.max(0, Math.min(canvas.width - basket.width, basket.x));
+        });
+
+        // Update basket position
+        function updateBasket() {
+            if (keys['ArrowLeft'] || keys['a']) {
+                basket.x -= basket.speed;
+            }
+            if (keys['ArrowRight'] || keys['d']) {
+                basket.x += basket.speed;
+            }
+            basket.x = Math.max(0, Math.min(canvas.width - basket.width, basket.x));
+        }
+
+        // Timer
+        setInterval(() => {
+            if (gameRunning && timeLeft > 0) {
+                timeLeft--;
+                document.getElementById('timer').textContent = timeLeft;
+                if (timeLeft === 0) {
+                    endGame();
+                }
+            }
+        }, 1000);
+
+        // Spawn eggs
+        setInterval(() => {
+            if (gameRunning && eggs.length < 10) {
+                createEgg();
+            }
+        }, 800);
+
+        // End game
+        function endGame() {
+            gameRunning = false;
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('gameOver').style.display = 'block';
+        }
+
+        // Restart game
+        function restartGame() {
+            score = 0;
+            timeLeft = 60;
+            eggs = [];
+            gameRunning = true;
+            document.getElementById('score').textContent = score;
+            document.getElementById('timer').textContent = timeLeft;
+            document.getElementById('gameOver').style.display = 'none';
+        }
+
+        // Game loop
+        function gameLoop() {
+            if (gameRunning) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw background decorations
+                ctx.font = '40px Arial';
+                ctx.fillText('🌸', 50, 100);
+                ctx.fillText('🌷', canvas.width - 80, 150);
+                ctx.fillText('🦋', 100, canvas.height - 100);
+                ctx.fillText('🐰', canvas.width - 100, canvas.height - 80);
+
+                updateBasket();
+                drawBasket();
+                drawEggs();
+            }
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start game
+        gameLoop();
+    </script>
+</body>
+</html>
