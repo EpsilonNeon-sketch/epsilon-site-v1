@@ -33,25 +33,25 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #000000;
-            color: #f3e8ff;
+            background: linear-gradient(135deg, #ffeef8 0%, #fff0f5 25%, #e6f3ff 50%, #fff5e6 75%, #f0fff0 100%);
+            color: #5a3e5e;
             overflow-x: hidden;
         }
 
         .purple-glow {
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+            box-shadow: 0 0 20px rgba(255, 182, 193, 0.4);
         }
 
         .card-gradient:hover {
-            background: linear-gradient(145deg, #111827 0%, #1e1b4b 100%);
-            border-color: rgba(168, 85, 247, 0.5);
+            background: linear-gradient(145deg, #fff5f7 0%, #ffe4e9 100%);
+            border-color: rgba(255, 105, 180, 0.5);
             transform: translateY(-5px);
         }
 
         .glass {
-            background: rgba(17, 24, 39, 0.7);
+            background: rgba(255, 250, 250, 0.85);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(168, 85, 247, 0.2);
+            border: 1px solid rgba(255, 182, 193, 0.3);
         }
 
         .bg-mesh {
@@ -61,9 +61,36 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background-image:
-                radial-gradient(at 0% 0%, #1e1b4b 0, transparent 50%),
-                radial-gradient(at 100% 100%, #312e81 0, transparent 50%);
+            background: linear-gradient(135deg, #ffeef8 0%, #fff0f5 25%, #e6f3ff 50%, #fff5e6 75%, #f0fff0 100%);
+        }
+
+        /* Easter Eggs */
+        .easter-egg {
+            position: fixed;
+            font-size: 2rem;
+            animation: float 3s ease-in-out infinite;
+            cursor: pointer;
+            z-index: 40;
+            transition: transform 0.3s;
+        }
+
+        .easter-egg:hover {
+            transform: scale(1.3) rotate(10deg);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Mobile sidebar */
+        #sideNav.open {
+            transform: translateX(0) translateY(-50%);
+        }
+
+        body {
+            background: linear-gradient(135deg, #ffeef8 0%, #fff0f5 25%, #e6f3ff 50%, #fff5e6 75%, #f0fff0 100%);
+            color: #5a3e5e;
         }
 
         .img {
@@ -625,8 +652,13 @@
 <body class="min-h-screen flex flex-col items-center py-12 px-6">
     <div class="bg-mesh"></div>
 
+    <!-- Mobile Menu Toggle -->
+    <button id="mobileMenuToggle" class="fixed left-4 top-4 z-[60] glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-pink-400 transition-all md:hidden">
+        <i data-lucide="menu" class="w-6 h-6"></i>
+    </button>
+
     <!-- Sidebar Navigation -->
-    <div class="fixed left-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-50">
+    <div id="sideNav" class="fixed left-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-50 transition-transform duration-300 md:translate-x-0 -translate-x-[200%]">
         <button id="homeBtn"
             class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
             title="Home">
@@ -689,10 +721,11 @@
         <!-- Header Section -->
         <header class="text-center mb-12 space-y-4">
             <h1 class="text-4xl md:text-6xl font-extrabold tracking-tighter italic">
-                EPSILON<span class="text-purple-600">.</span>
+                EPSILON<span class="text-pink-500">.</span>
             </h1>
-            <p class="text-purple-400 font-light tracking-widest uppercase text-[10px] md:text-sm">-BY warren adrian and
+            <p class="text-pink-400 font-light tracking-widest uppercase text-[10px] md:text-sm">-BY warren adrian and
                 epsilon team</p>
+            <p class="text-pink-300 text-sm mt-2">🌸 Happy Easter! 🐰 <a href="easter-game.html" class="underline hover:text-pink-600">Play Easter Game!</a></p>
         </header>
 
         <section id="members" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 w-full max-w-6xl mb-16">
@@ -772,7 +805,7 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <!-- Epsilon Aproxi -->
-                    <a href="https://epsilonneon-sketch.github.io/epsilon-aproxi/" class="group">
+                    <a href="https://epsilonneon-sketch.github.io/epsilon-aproxi-v3/" class="group">
                         <div
                             class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-purple-900 h-full flex flex-col justify-between">
                             <div>
@@ -2151,19 +2184,19 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
         let currentUserFilter = 'all';
         let usersSearchQuery = '';
         let eventImageFile = null;
-        let currentTheme = 'purple';
+        let currentTheme = 'pink';
         let soundEnabled = true;
 
         // Theme colors mapping
         const themeColors = {
-            purple: { primary: '#a855f7', secondary: '#9333ea', light: '#c084fc', dark: '#7e22ce' },
-            pink: { primary: '#ec4899', secondary: '#db2777', light: '#f472b6', dark: '#be185d' },
-            red: { primary: '#ef4444', secondary: '#dc2626', light: '#f87171', dark: '#b91c1c' },
-            orange: { primary: '#f97316', secondary: '#ea580c', light: '#fb923c', dark: '#c2410c' },
-            yellow: { primary: '#eab308', secondary: '#ca8a04', light: '#facc15', dark: '#a16207' },
-            blue: { primary: '#3b82f6', secondary: '#2563eb', light: '#60a5fa', dark: '#1d4ed8' },
-            green: { primary: '#22c55e', secondary: '#16a34a', light: '#4ade80', dark: '#15803d' },
-            white: { primary: '#f3f4f6', secondary: '#e5e7eb', light: '#ffffff', dark: '#d1d5db' }
+            purple: { primary: '#ff69b4', secondary: '#ff1493', light: '#ffb6c1', dark: '#c71585' },
+            pink: { primary: '#ff69b4', secondary: '#ff1493', light: '#ffb6c1', dark: '#c71585' },
+            red: { primary: '#ff6b9d', secondary: '#ff1493', light: '#ffc0cb', dark: '#c71585' },
+            orange: { primary: '#ffb347', secondary: '#ffa500', light: '#ffd700', dark: '#ff8c00' },
+            yellow: { primary: '#ffd700', secondary: '#ffb347', light: '#ffffe0', dark: '#daa520' },
+            blue: { primary: '#87ceeb', secondary: '#4682b4', light: '#b0e0e6', dark: '#4169e1' },
+            green: { primary: '#90ee90', secondary: '#32cd32', light: '#98fb98', dark: '#228b22' },
+            white: { primary: '#ffb6c1', secondary: '#ff69b4', light: '#ffffff', dark: '#ffc0cb' }
         };
 
         // Page Navigation
@@ -3607,7 +3640,59 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
         document.addEventListener('DOMContentLoaded', () => {
             checkAuthState();
             setupThemeButtons();
+            setupMobileMenu();
+            createEasterEggs();
         });
+
+        // Mobile menu toggle
+        function setupMobileMenu() {
+            const toggle = document.getElementById('mobileMenuToggle');
+            const sideNav = document.getElementById('sideNav');
+            
+            toggle.addEventListener('click', () => {
+                sideNav.classList.toggle('open');
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!sideNav.contains(e.target) && !toggle.contains(e.target)) {
+                    sideNav.classList.remove('open');
+                }
+            });
+        }
+
+        // Create Easter eggs
+        function createEasterEggs() {
+            const eggs = ['🥚', '🐣', '🐰', '🌸', '🌷', '🦋', '🌼', '🐥'];
+            const positions = [
+                { top: '10%', left: '5%' },
+                { top: '20%', right: '8%' },
+                { top: '40%', left: '3%' },
+                { top: '60%', right: '5%' },
+                { top: '80%', left: '10%' },
+                { top: '70%', right: '12%' },
+                { top: '30%', left: '90%' },
+                { top: '50%', right: '2%' }
+            ];
+
+            positions.forEach((pos, i) => {
+                const egg = document.createElement('div');
+                egg.className = 'easter-egg';
+                egg.textContent = eggs[i % eggs.length];
+                egg.style.top = pos.top;
+                if (pos.left) egg.style.left = pos.left;
+                if (pos.right) egg.style.right = pos.right;
+                egg.style.animationDelay = `${i * 0.3}s`;
+                
+                egg.addEventListener('click', () => {
+                    egg.style.transform = 'scale(0) rotate(360deg)';
+                    setTimeout(() => egg.remove(), 300);
+                    showNotification('You found an Easter egg! 🎉', 'success');
+                });
+                
+                document.body.appendChild(egg);
+            });
+        }
 
         // Apply theme function
         function applyTheme(theme) {
@@ -3627,9 +3712,11 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
             style.textContent = `
                 .bg-purple-600, .bg-purple-700, .bg-purple-800, .bg-purple-900 { background-color: ${colors.primary} !important; }
                 .hover\\:bg-purple-600:hover, .hover\\:bg-purple-700:hover, .hover\\:bg-purple-800:hover { background-color: ${colors.secondary} !important; }
-                .text-purple-400, .text-purple-600 { color: ${colors.light} !important; }
+                .text-purple-400, .text-purple-600, .text-purple-300, .text-purple-200 { color: ${colors.light} !important; }
                 .border-purple-700, .border-purple-800, .border-purple-900 { border-color: ${colors.primary} !important; }
-                .bg-mesh { background-image: radial-gradient(at 0% 0%, ${colors.dark} 0, transparent 50%), radial-gradient(at 100% 100%, ${colors.secondary} 0, transparent 50%) !important; }
+                .bg-mesh { background: linear-gradient(135deg, #ffeef8 0%, #fff0f5 25%, #e6f3ff 50%, #fff5e6 75%, #f0fff0 100%) !important; }
+                body { background: linear-gradient(135deg, #ffeef8 0%, #fff0f5 25%, #e6f3ff 50%, #fff5e6 75%, #f0fff0 100%) !important; color: #5a3e5e !important; }
+                .glass { background: rgba(255, 250, 250, 0.85) !important; border: 1px solid rgba(255, 182, 193, 0.3) !important; }
             `;
             document.head.appendChild(style);
 
@@ -5244,47 +5331,47 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
                 initPeerJS();
             }
         });
-// 1. Function to sync Supabase user to LocalStorage
-function syncUserToLocal(user) {
-    if (user) {
-        localStorage.setItem('epsilon_user', JSON.stringify(user));
-        console.log("User session saved to local storage.");
-    } else {
-        localStorage.removeItem('epsilon_user');
-        console.log("User session cleared.");
-    }
-}
+        // 1. Function to sync Supabase user to LocalStorage
+        function syncUserToLocal(user) {
+            if (user) {
+                localStorage.setItem('epsilon_user', JSON.stringify(user));
+                console.log("User session saved to local storage.");
+            } else {
+                localStorage.removeItem('epsilon_user');
+                console.log("User session cleared.");
+            }
+        }
 
-// 2. Modified checkAuthState to restore from LocalStorage immediately
-async function checkAuthState() {
-    // Try to get local user first for instant UI response
-    const localUser = localStorage.getItem('epsilon_user');
-    if (localUser) {
-        currentUser = JSON.parse(localUser);
-        updateUI(); 
-    }
+        // 2. Modified checkAuthState to restore from LocalStorage immediately
+        async function checkAuthState() {
+            // Try to get local user first for instant UI response
+            const localUser = localStorage.getItem('epsilon_user');
+            if (localUser) {
+                currentUser = JSON.parse(localUser);
+                updateUI();
+            }
 
-    // Then verify with Supabase to ensure the session is still valid
-    const { data: { user }, error } = await supabaseClient.auth.getUser();
-    
-    if (user) {
-        currentUser = user;
-        syncUserToLocal(user); // Keep local storage updated
-    } else {
-        currentUser = null;
-        syncUserToLocal(null);
-    }
-    updateUI();
-}
+            // Then verify with Supabase to ensure the session is still valid
+            const { data: { user }, error } = await supabaseClient.auth.getUser();
 
-// 3. Update your existing Sign Out listener to clear storage
-document.getElementById('signOutBtn').addEventListener('click', async () => {
-    await supabaseClient.auth.signOut();
-    syncUserToLocal(null); // Explicitly clear local storage
-    currentUser = null;
-    showPage(homePage);
-    updateUI();
-});
+            if (user) {
+                currentUser = user;
+                syncUserToLocal(user); // Keep local storage updated
+            } else {
+                currentUser = null;
+                syncUserToLocal(null);
+            }
+            updateUI();
+        }
+
+        // 3. Update your existing Sign Out listener to clear storage
+        document.getElementById('signOutBtn').addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            syncUserToLocal(null); // Explicitly clear local storage
+            currentUser = null;
+            showPage(homePage);
+            updateUI();
+        });
     </script>
     <!-- Incoming Call Dialog -->
     <dialog id="incomingCallDialog" class="bg-gray-900 border border-purple-500 rounded-2xl p-6 text-center max-w-sm">
