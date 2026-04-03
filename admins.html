@@ -223,7 +223,7 @@
     <aside id="sidebar" class="sidebar closed">
         <div class="p-6">
             <div class="flex items-center justify-between mb-8">
-                <h2 class="text-2xl font-bold">EPSILON<span class="text-purple-600"> ADMIN</span></h2>
+                <h2 class="text-2xl font-bold">EPSILON<span class="text-purple-600"> ADMIN v2</span></h2>
                 <button id="closeSidebar" class="md:hidden">
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
@@ -554,664 +554,836 @@
     </div>
 
     <script>
-        const { createClient } = supabase;
-        const supabaseClient = createClient('https://gfsqzkyviivhvyqadpeg.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdmc3F6a3l2aWl2aHZ5cWFkcGVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0NDI0NDQsImV4cCI6MjA4NjAxODQ0NH0.MwC6dMZKFZMyklCJKqr4DPek8dxR-EswBZSd1L_AkMA', {
-            auth: { persistSession: true, storageKey: 'epsilon-admin-auth' }
+       const { createClient } = supabase;
+const supabaseClient = createClient('https://gfsqzkyviivhvyqadpeg.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdmc3F6a3l2aWl2aHZ5cWFkcGVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0NDI0NDQsImV4cCI6MjA4NjAxODQ0NH0.MwC6dMZKFZMyklCJKqr4DPek8dxR-EswBZSd1L_AkMA', {
+    auth: { persistSession: true, storageKey: 'epsilon-admin-auth' }
+});
+lucide.createIcons();
+
+// Sidebar toggle functionality
+const sidebar = document.getElementById('sidebar');
+const mainContent = document.getElementById('mainContent');
+const menuToggle = document.getElementById('menuToggle');
+const closeSidebar = document.getElementById('closeSidebar');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+function toggleSidebar() {
+    sidebar.classList.toggle('closed');
+    sidebar.classList.toggle('open');
+    mainContent.classList.toggle('expanded');
+    sidebarOverlay.classList.toggle('active');
+}
+
+menuToggle.addEventListener('click', toggleSidebar);
+closeSidebar.addEventListener('click', toggleSidebar);
+sidebarOverlay.addEventListener('click', toggleSidebar);
+
+let currentAdmin = null;
+let chatSubscription = null;
+
+// PeerJS variables
+let peer = null;
+let currentCall = null;
+let callStartTime = null;
+let callDurationInterval = null;
+let incomingCall = null;
+let peerIdSubscription = null;
+
+// Media stream variables
+let localStream = null;
+let localVideoTrack = null;
+let localAudioTrack = null;
+let isScreenSharing = false;
+let originalVideoTrack = null;
+
+// Check for existing session on load
+async function checkSession() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) {
+        const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', session.user.id).single();
+        currentAdmin = { ...session.user, ...profile };
+        document.getElementById('loginPage').classList.remove('active');
+        document.getElementById('dashboardPage').classList.add('active');
+        menuToggle.classList.remove('hidden');
+        sidebar.classList.remove('closed');
+        mainContent.classList.remove('expanded');
+        loadAnalytics();
+        initializePeerJS();
+    }
+}
+checkSession();
+
+// Initialize PeerJS
+function initializePeerJS() {
+    if (!currentAdmin) return;
+
+    // Generate a unique peer ID based on user ID and timestamp
+    const peerId = `epsilon-admin-${currentAdmin.id}-${Date.now()}`;
+
+    // Create peer connection
+    peer = new Peer(peerId, {
+        debug: 2,
+        config: {
+            'iceServers': [
+                { url: 'stun:stun.l.google.com:19302' },
+                { url: 'stun:stun1.l.google.com:19302' }
+            ]
+        }
+    });
+
+    peer.on('open', async (id) => {
+        console.log('My peer ID is: ' + id);
+
+        // Store peer ID in database
+        await supabaseClient.from('admin_peer_ids').upsert({
+            user_id: currentAdmin.id,
+            peer_id: id,
+            last_seen: new Date().toISOString()
         });
+
+        // Set up heartbeat to keep the peer ID active
+        setInterval(async () => {
+            await supabaseClient.from('admin_peer_ids').upsert({
+                user_id: currentAdmin.id,
+                peer_id: id,
+                last_seen: new Date().toISOString()
+            });
+        }, 30000); // Update every 30 seconds
+    });
+
+    // Handle incoming calls
+    peer.on('call', (call) => {
+        incomingCall = call;
+        const isVideo = call.metadata?.video || false;
+
+        // Get caller info
+        supabaseClient.from('admin_peer_ids')
+            .select('*, profiles:user_id(username, display_name)')
+            .eq('peer_id', call.peer)
+            .single()
+            .then(({ data }) => {
+                const callerName = data?.profiles?.display_name || data?.profiles?.username || 'Admin';
+                document.getElementById('callerName').textContent = `${callerName} is calling you (${isVideo ? 'Video' : 'Audio'})`;
+            });
+
+        // Show call notification
+        document.getElementById('callNotification').classList.remove('hidden');
+    });
+
+    peer.on('error', (err) => {
+        console.error('PeerJS error:', err);
+    });
+}
+
+// Login
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('adminEmail').value;
+    const password = document.getElementById('adminPassword').value;
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) {
+        document.getElementById('loginError').textContent = error.message;
+        document.getElementById('loginError').classList.remove('hidden');
+        return;
+    }
+
+    const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', data.user.id).single();
+    currentAdmin = { ...data.user, ...profile };
+
+    document.getElementById('loginPage').classList.remove('active');
+    document.getElementById('dashboardPage').classList.add('active');
+    menuToggle.classList.remove('hidden');
+    sidebar.classList.remove('closed');
+    mainContent.classList.remove('expanded');
+    loadAnalytics();
+    initializePeerJS();
+});
+
+// Logout
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+    // Clean up peer connection
+    if (peer) {
+        peer.destroy();
+        peer = null;
+    }
+
+    // Stop local stream
+    if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+        localStream = null;
+    }
+
+    // Remove peer ID from database
+    if (currentAdmin) {
+        await supabaseClient.from('admin_peer_ids').delete().eq('user_id', currentAdmin.id);
+    }
+
+    await supabaseClient.auth.signOut();
+    currentAdmin = null;
+    document.getElementById('dashboardPage').classList.remove('active');
+    document.getElementById('loginPage').classList.add('active');
+    menuToggle.classList.add('hidden');
+    sidebar.classList.add('closed');
+    mainContent.classList.add('expanded');
+});
+
+// Navigation
+document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const page = btn.dataset.page;
+        document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+        document.getElementById(`${page}Section`).classList.remove('hidden');
+        
+        // Close sidebar on mobile after selection
+        if (window.innerWidth < 768) {
+            toggleSidebar();
+        }
+        
+        // Update active state
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('bg-purple-600'));
+        btn.classList.add('bg-purple-600');
+        
+        // Re-initialize lucide icons
         lucide.createIcons();
 
-        // Sidebar toggle functionality
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-        const menuToggle = document.getElementById('menuToggle');
-        const closeSidebar = document.getElementById('closeSidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        if (page === 'chat') loadChat();
+        if (page === 'projects') loadProjects();
+        if (page === 'users') loadUsers();
+        if (page === 'analytics') loadAnalytics();
+        if (page === 'charts') loadCharts();
+        if (page === 'servers') loadBlockedSites();
+        if (page === 'calls') loadOnlineAdmins();
+    });
+});
 
-        function toggleSidebar() {
-            sidebar.classList.toggle('closed');
-            sidebar.classList.toggle('open');
-            mainContent.classList.toggle('expanded');
-            sidebarOverlay.classList.toggle('active');
+// Chat
+async function loadChat() {
+    const { data: messages } = await supabaseClient.from('admin_messages').select('*, profiles:sender_id(username, profile_pic)').order('created_at', { ascending: true });
+    const container = document.getElementById('chatMessages');
+    container.innerHTML = '';
+
+    messages?.forEach(msg => {
+        const div = document.createElement('div');
+        div.className = 'flex items-start gap-3 glass p-3 rounded-lg';
+        div.innerHTML = `
+            <img src="${msg.profiles.profile_pic || 'https://picsum.photos/200'}" class="w-10 h-10 rounded-full">
+            <div class="flex-1">
+                <p class="font-bold text-sm">${msg.profiles.username}</p>
+                <p class="text-purple-200">${msg.content}</p>
+                <p class="text-xs text-purple-400">${new Date(msg.created_at).toLocaleTimeString()}</p>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+    container.scrollTop = container.scrollHeight;
+    subscribeToChat();
+}
+
+function subscribeToChat() {
+    if (chatSubscription) chatSubscription.unsubscribe();
+    chatSubscription = supabaseClient.channel('admin_messages').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'admin_messages' }, () => loadChat()).subscribe();
+}
+
+document.getElementById('chatForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const content = document.getElementById('chatInput').value.trim();
+    if (!content) return;
+
+    await supabaseClient.from('admin_messages').insert([{ sender_id: currentAdmin.id, content }]);
+    document.getElementById('chatInput').value = '';
+});
+
+// Projects
+document.getElementById('projectForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await supabaseClient.from('admin_projects').insert([{
+        name: document.getElementById('projectName').value,
+        description: document.getElementById('projectDesc').value,
+        status: document.getElementById('projectStatus').value,
+        created_by: currentAdmin.id
+    }]);
+    e.target.reset();
+    loadProjects();
+});
+
+async function loadProjects() {
+    const { data: projects } = await supabaseClient.from('admin_projects').select('*, profiles:created_by(username)').order('created_at', { ascending: false });
+    const container = document.getElementById('projectsList');
+    container.innerHTML = '';
+
+    projects?.forEach(project => {
+        const div = document.createElement('div');
+        div.className = 'glass p-6 rounded-3xl';
+        div.innerHTML = `
+            <h3 class="text-xl font-bold mb-2">${project.name}</h3>
+            <p class="text-purple-200 mb-3">${project.description}</p>
+            <div class="flex justify-between items-center">
+                <span class="text-xs px-3 py-1 bg-purple-900 rounded-full">${project.status}</span>
+                <span class="text-xs text-purple-400">by @${project.profiles.username}</span>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+// Users
+async function loadUsers() {
+    const { data: users } = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
+    const container = document.getElementById('usersList');
+    container.innerHTML = '';
+
+    users?.forEach(user => {
+        const div = document.createElement('div');
+        div.className = 'flex items-center justify-between glass p-4 rounded-lg';
+        div.innerHTML = `
+            <div class="flex items-center gap-3">
+                <img src="${user.profile_pic || 'https://picsum.photos/200'}" class="w-12 h-12 rounded-full">
+                <div>
+                    <p class="font-bold">${user.display_name || user.username}</p>
+                    <p class="text-xs text-purple-400">@${user.username}</p>
+                </div>
+            </div>
+            <span class="text-xs text-purple-400">${new Date(user.created_at).toLocaleDateString()}</span>
+        `;
+        container.appendChild(div);
+    });
+}
+
+// Analytics
+async function loadAnalytics() {
+    const { count: usersCount } = await supabaseClient.from('profiles').select('*', { count: 'exact', head: true });
+    const { count: postsCount } = await supabaseClient.from('posts').select('*', { count: 'exact', head: true });
+    const { count: projectsCount } = await supabaseClient.from('admin_projects').select('*', { count: 'exact', head: true }).eq('status', 'in-progress');
+
+    document.getElementById('totalUsers').textContent = usersCount || 0;
+    document.getElementById('totalPosts').textContent = postsCount || 0;
+    document.getElementById('activeProjects').textContent = projectsCount || 0;
+}
+
+// Charts
+let charts = {};
+async function loadCharts() {
+    Object.values(charts).forEach(chart => chart.destroy());
+    charts = {};
+
+    const chartConfig = { responsive: true, maintainAspectRatio: true, plugins: { legend: { labels: { color: '#f3e8ff' } } }, scales: { y: { ticks: { color: '#f3e8ff' }, grid: { color: 'rgba(168, 85, 247, 0.1)' } }, x: { ticks: { color: '#f3e8ff' }, grid: { color: 'rgba(168, 85, 247, 0.1)' } } } };
+
+    // User Growth Chart
+    const { data: users } = await supabaseClient.from('profiles').select('created_at').order('created_at', { ascending: true });
+    const last7Days = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() - 6 + i); return d.toISOString().split('T')[0]; });
+    const userCounts = last7Days.map(date => users?.filter(u => u.created_at.startsWith(date)).length || 0);
+    charts.userGrowth = new Chart(document.getElementById('userGrowthChart'), {
+        type: 'line',
+        data: { labels: last7Days.map(d => new Date(d).toLocaleDateString('en', { month: 'short', day: 'numeric' })), datasets: [{ label: 'New Users', data: userCounts, borderColor: '#a855f7', backgroundColor: 'rgba(168, 85, 247, 0.1)', tension: 0.4 }] },
+        options: chartConfig
+    });
+
+    // Project Status Chart
+    const { data: projects } = await supabaseClient.from('admin_projects').select('status');
+    const statusCounts = { planning: 0, 'in-progress': 0, completed: 0 };
+    projects?.forEach(p => statusCounts[p.status]++);
+    charts.projectStatus = new Chart(document.getElementById('projectStatusChart'), {
+        type: 'doughnut',
+        data: { labels: ['Planning', 'In Progress', 'Completed'], datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#8b5cf6', '#a855f7', '#c084fc'] }] },
+        options: { responsive: true, plugins: { legend: { labels: { color: '#f3e8ff' } } } }
+    });
+
+    // Posts Activity Chart
+    const { data: posts } = await supabaseClient.from('posts').select('created_at');
+    const postCounts = last7Days.map(date => posts?.filter(p => p.created_at.startsWith(date)).length || 0);
+    charts.postsActivity = new Chart(document.getElementById('postsActivityChart'), {
+        type: 'bar',
+        data: { labels: last7Days.map(d => new Date(d).toLocaleDateString('en', { month: 'short', day: 'numeric' })), datasets: [{ label: 'Posts', data: postCounts, backgroundColor: '#a855f7' }] },
+        options: chartConfig
+    });
+
+    // Messages Chart
+    const { data: messages } = await supabaseClient.from('admin_messages').select('created_at');
+    const msgCounts = last7Days.map(date => messages?.filter(m => m.created_at.startsWith(date)).length || 0);
+    charts.messages = new Chart(document.getElementById('messagesChart'), {
+        type: 'line',
+        data: { labels: last7Days.map(d => new Date(d).toLocaleDateString('en', { month: 'short', day: 'numeric' })), datasets: [{ label: 'Messages', data: msgCounts, borderColor: '#c084fc', backgroundColor: 'rgba(192, 132, 252, 0.1)', fill: true }] },
+        options: chartConfig
+    });
+
+    // Engagement Chart
+    const { count: likesCount } = await supabaseClient.from('likes').select('*', { count: 'exact', head: true });
+    const { count: commentsCount } = await supabaseClient.from('comments').select('*', { count: 'exact', head: true });
+    charts.engagement = new Chart(document.getElementById('engagementChart'), {
+        type: 'bar',
+        data: { labels: ['Users', 'Posts', 'Likes', 'Comments', 'Projects'], datasets: [{ label: 'Total Count', data: [users?.length || 0, posts?.length || 0, likesCount || 0, commentsCount || 0, projects?.length || 0], backgroundColor: ['#8b5cf6', '#a855f7', '#c084fc', '#d8b4fe', '#e9d5ff'] }] },
+        options: { ...chartConfig, indexAxis: 'y' }
+    });
+}
+
+// Server Blocking
+async function loadBlockedSites() {
+    const { data: blocked } = await supabaseClient.from('blocked_sites').select('site_name');
+    const blockedNames = blocked?.map(b => b.site_name) || [];
+
+    ['epsilon', 'aproxi', 'neote', 'edits', 'academics', 'sports', 'earth', 'heckle'].forEach(site => {
+        const btn = document.querySelector(`[data-site="${site}"]`);
+        const status = document.getElementById(`status-${site}`);
+        if (blockedNames.includes(site)) {
+            btn.classList.add('bg-red-600');
+            status.textContent = 'BLOCKED';
+            status.classList.add('text-red-400');
+        } else {
+            btn.classList.remove('bg-red-600');
+            status.textContent = 'Active';
+            status.classList.remove('text-red-400');
         }
+    });
+}
 
-        menuToggle.addEventListener('click', toggleSidebar);
-        closeSidebar.addEventListener('click', toggleSidebar);
-        sidebarOverlay.addEventListener('click', toggleSidebar);
+async function toggleSiteBlock(siteName) {
+    const { data: existing } = await supabaseClient.from('blocked_sites').select('*').eq('site_name', siteName).single();
 
-        let currentAdmin = null;
-        let chatSubscription = null;
+    if (existing) {
+        await supabaseClient.from('blocked_sites').delete().eq('site_name', siteName);
+    } else {
+        await supabaseClient.from('blocked_sites').insert([{ site_name: siteName, blocked_by: currentAdmin.id }]);
+    }
 
-        // PeerJS variables
-        let peer = null;
-        let currentCall = null;
-        let callStartTime = null;
-        let callDurationInterval = null;
-        let incomingCall = null;
-        let peerIdSubscription = null;
+    loadBlockedSites();
+}
+function blockAllSites() {
+    ['aproxi', 'neote', 'edits', 'academics', 'sports', 'earth', 'heckle'].forEach(site => toggleSiteBlock(site));
+}
 
-        // Check for existing session on load
-        async function checkSession() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', session.user.id).single();
-                currentAdmin = { ...session.user, ...profile };
-                document.getElementById('loginPage').classList.remove('active');
-                document.getElementById('dashboardPage').classList.add('active');
-                menuToggle.classList.remove('hidden');
-                sidebar.classList.remove('closed');
-                mainContent.classList.remove('expanded');
-                loadAnalytics();
-                initializePeerJS();
-            }
-        }
-        checkSession();
+// Audio Calls Functions
+async function loadOnlineAdmins() {
+    // Get all online admins (active in the last 2 minutes)
+    const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+    const { data: onlineAdmins } = await supabaseClient
+        .from('admin_peer_ids')
+        .select('*, profiles:user_id(username, display_name, profile_pic)')
+        .gte('last_seen', twoMinutesAgo)
+        .neq('user_id', currentAdmin.id); // Exclude current admin
 
-        // Initialize PeerJS
-        function initializePeerJS() {
-            if (!currentAdmin) return;
+    const container = document.getElementById('onlineAdmins');
+    container.innerHTML = '';
 
-            // Generate a unique peer ID based on user ID and timestamp
-            const peerId = `epsilon-admin-${currentAdmin.id}-${Date.now()}`;
-
-            // Create peer connection
-            peer = new Peer(peerId, {
-                debug: 2,
-                config: {
-                    'iceServers': [
-                        { url: 'stun:stun.l.google.com:19302' },
-                        { url: 'stun:stun1.l.google.com:19302' }
-                    ]
-                }
-            });
-
-            peer.on('open', async (id) => {
-                console.log('My peer ID is: ' + id);
-
-                // Store peer ID in database
-                await supabaseClient.from('admin_peer_ids').upsert({
-                    user_id: currentAdmin.id,
-                    peer_id: id,
-                    last_seen: new Date().toISOString()
-                });
-
-                // Set up heartbeat to keep the peer ID active
-                setInterval(async () => {
-                    await supabaseClient.from('admin_peer_ids').upsert({
-                        user_id: currentAdmin.id,
-                        peer_id: id,
-                        last_seen: new Date().toISOString()
-                    });
-                }, 30000); // Update every 30 seconds
-            });
-
-            // Handle incoming calls
-            peer.on('call', (call) => {
-                incomingCall = call;
-                const isVideo = call.metadata?.video || false;
-
-                // Get caller info
-                supabaseClient.from('admin_peer_ids')
-                    .select('*, profiles:user_id(username, display_name)')
-                    .eq('peer_id', call.peer)
-                    .single()
-                    .then(({ data }) => {
-                        const callerName = data?.profiles?.display_name || data?.profiles?.username || 'Admin';
-                        document.getElementById('callerName').textContent = `${callerName} is calling you (${isVideo ? 'Video' : 'Audio'})`;
-                    });
-
-                // Show call notification
-                document.getElementById('callNotification').classList.remove('hidden');
-            });
-
-            peer.on('error', (err) => {
-                console.error('PeerJS error:', err);
-            });
-        }
-
-        // Login
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('adminEmail').value;
-            const password = document.getElementById('adminPassword').value;
-
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            if (error) {
-                document.getElementById('loginError').textContent = error.message;
-                document.getElementById('loginError').classList.remove('hidden');
-                return;
-            }
-
-            const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', data.user.id).single();
-            currentAdmin = { ...data.user, ...profile };
-
-            document.getElementById('loginPage').classList.remove('active');
-            document.getElementById('dashboardPage').classList.add('active');
-            menuToggle.classList.remove('hidden');
-            sidebar.classList.remove('closed');
-            mainContent.classList.remove('expanded');
-            loadAnalytics();
-            initializePeerJS();
-        });
-
-        // Logout
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            // Clean up peer connection
-            if (peer) {
-                peer.destroy();
-                peer = null;
-            }
-
-            // Remove peer ID from database
-            if (currentAdmin) {
-                await supabaseClient.from('admin_peer_ids').delete().eq('user_id', currentAdmin.id);
-            }
-
-            await supabaseClient.auth.signOut();
-            currentAdmin = null;
-            document.getElementById('dashboardPage').classList.remove('active');
-            document.getElementById('loginPage').classList.add('active');
-            menuToggle.classList.add('hidden');
-            sidebar.classList.add('closed');
-            mainContent.classList.add('expanded');
-        });
-
-        // Navigation
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const page = btn.dataset.page;
-                document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
-                document.getElementById(`${page}Section`).classList.remove('hidden');
-                
-                // Close sidebar on mobile after selection
-                if (window.innerWidth < 768) {
-                    toggleSidebar();
-                }
-                
-                // Update active state
-                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('bg-purple-600'));
-                btn.classList.add('bg-purple-600');
-                
-                // Re-initialize lucide icons
-                lucide.createIcons();
-
-                if (page === 'chat') loadChat();
-                if (page === 'projects') loadProjects();
-                if (page === 'users') loadUsers();
-                if (page === 'analytics') loadAnalytics();
-                if (page === 'charts') loadCharts();
-                if (page === 'servers') loadBlockedSites();
-                if (page === 'calls') loadOnlineAdmins();
-            });
-        });
-
-        // Chat
-        async function loadChat() {
-            const { data: messages } = await supabaseClient.from('admin_messages').select('*, profiles:sender_id(username, profile_pic)').order('created_at', { ascending: true });
-            const container = document.getElementById('chatMessages');
-            container.innerHTML = '';
-
-            messages?.forEach(msg => {
-                const div = document.createElement('div');
-                div.className = 'flex items-start gap-3 glass p-3 rounded-lg';
-                div.innerHTML = `
-                    <img src="${msg.profiles.profile_pic || 'https://picsum.photos/200'}" class="w-10 h-10 rounded-full">
-                    <div class="flex-1">
-                        <p class="font-bold text-sm">${msg.profiles.username}</p>
-                        <p class="text-purple-200">${msg.content}</p>
-                        <p class="text-xs text-purple-400">${new Date(msg.created_at).toLocaleTimeString()}</p>
+    if (onlineAdmins && onlineAdmins.length > 0) {
+        onlineAdmins.forEach(admin => {
+            const div = document.createElement('div');
+            div.className = 'glass p-4 rounded-lg flex items-center justify-between';
+            div.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <img src="${admin.profiles.profile_pic || 'https://picsum.photos/200'}" class="w-12 h-12 rounded-full">
+                        <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900"></div>
                     </div>
-                `;
-                container.appendChild(div);
-            });
-            container.scrollTop = container.scrollHeight;
-            subscribeToChat();
-        }
-
-        function subscribeToChat() {
-            if (chatSubscription) chatSubscription.unsubscribe();
-            chatSubscription = supabaseClient.channel('admin_messages').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'admin_messages' }, () => loadChat()).subscribe();
-        }
-
-        document.getElementById('chatForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const content = document.getElementById('chatInput').value.trim();
-            if (!content) return;
-
-            await supabaseClient.from('admin_messages').insert([{ sender_id: currentAdmin.id, content }]);
-            document.getElementById('chatInput').value = '';
-        });
-
-        // Projects
-        document.getElementById('projectForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await supabaseClient.from('admin_projects').insert([{
-                name: document.getElementById('projectName').value,
-                description: document.getElementById('projectDesc').value,
-                status: document.getElementById('projectStatus').value,
-                created_by: currentAdmin.id
-            }]);
-            e.target.reset();
-            loadProjects();
-        });
-
-        async function loadProjects() {
-            const { data: projects } = await supabaseClient.from('admin_projects').select('*, profiles:created_by(username)').order('created_at', { ascending: false });
-            const container = document.getElementById('projectsList');
-            container.innerHTML = '';
-
-            projects?.forEach(project => {
-                const div = document.createElement('div');
-                div.className = 'glass p-6 rounded-3xl';
-                div.innerHTML = `
-                    <h3 class="text-xl font-bold mb-2">${project.name}</h3>
-                    <p class="text-purple-200 mb-3">${project.description}</p>
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs px-3 py-1 bg-purple-900 rounded-full">${project.status}</span>
-                        <span class="text-xs text-purple-400">by @${project.profiles.username}</span>
+                    <div>
+                        <p class="font-bold">${admin.profiles.display_name || admin.profiles.username}</p>
+                        <p class="text-xs text-purple-400">Online</p>
                     </div>
-                `;
-                container.appendChild(div);
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="callAdmin('${admin.peer_id}', false)" class="bg-green-600 hover:bg-green-700 text-white p-2 rounded-full" title="Audio Call">
+                        <i data-lucide="phone" class="w-5 h-5"></i>
+                    </button>
+                    <button onclick="callAdmin('${admin.peer_id}', true)" class="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full" title="Video Call">
+                        <i data-lucide="video" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    } else {
+        container.innerHTML = '<p class="text-purple-300">No other admins are currently online.</p>';
+    }
+
+    // Re-initialize lucide icons
+    lucide.createIcons();
+}
+
+// Call a specific admin
+function callAdmin(peerId, video = false) {
+    if (!peer || !peerId) return;
+
+    // Get user media
+    navigator.mediaDevices.getUserMedia({ audio: true, video: video })
+        .then(stream => {
+            // Store the stream
+            localStream = stream;
+            localAudioTrack = stream.getAudioTracks()[0];
+            if (video) {
+                localVideoTrack = stream.getVideoTracks()[0];
+            }
+
+            // Create the call
+            const call = peer.call(peerId, stream, { metadata: { video: video } });
+
+            // Set up the call
+            setupCall(call, stream, video);
+
+            // Show active call UI
+            showActiveCallUI(video);
+        })
+        .catch(err => {
+            console.error('Failed to get local stream', err);
+            alert(`Could not access your ${video ? 'camera/microphone' : 'microphone'}. Please check your permissions.`);
+        });
+}
+
+// Call all admins (Audio)
+document.getElementById('callAllBtn').addEventListener('click', () => callAllAdmins(false));
+
+// Call all admins (Video)
+document.getElementById('videoCallAllBtn').addEventListener('click', () => callAllAdmins(true));
+
+async function callAllAdmins(video = false) {
+    if (!peer) {
+        alert('Peer connection not established. Please refresh the page.');
+        return;
+    }
+
+    // Get all online admins
+    const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+    const { data: onlineAdmins } = await supabaseClient
+        .from('admin_peer_ids')
+        .select('peer_id')
+        .gte('last_seen', twoMinutesAgo)
+        .neq('user_id', currentAdmin.id); // Exclude current admin
+
+    if (!onlineAdmins || onlineAdmins.length === 0) {
+        alert('No other admins are currently online.');
+        return;
+    }
+
+    // Get user media
+    navigator.mediaDevices.getUserMedia({ audio: true, video: video })
+        .then(stream => {
+            // Store the stream
+            localStream = stream;
+            localAudioTrack = stream.getAudioTracks()[0];
+            if (video) {
+                localVideoTrack = stream.getVideoTracks()[0];
+            }
+
+            // Call each admin
+            onlineAdmins.forEach(admin => {
+                const call = peer.call(admin.peer_id, stream, { metadata: { video: video } });
+
+                // Set up the call
+                setupCall(call, stream, video);
             });
+
+            // Show active call UI
+            showActiveCallUI(video);
+        })
+        .catch(err => {
+            console.error('Failed to get local stream', err);
+            alert(`Could not access your ${video ? 'camera/microphone' : 'microphone'}. Please check your permissions.`);
+        });
+}
+
+// Setup call event handlers
+function setupCall(call, stream, isVideo = false) {
+    currentCall = call;
+
+    // When the remote stream is added
+    call.on('stream', remoteStream => {
+        // If it's a video call, set up video streams
+        if (isVideo || remoteStream.getVideoTracks().length > 0) {
+            const remoteVideo = document.getElementById('remoteVideo');
+            const localVideo = document.getElementById('localVideo');
+            
+            remoteVideo.srcObject = remoteStream;
+            localVideo.srcObject = stream;
+            
+            document.getElementById('videoSection').classList.remove('hidden');
+            document.getElementById('audioOnlyUI').classList.add('hidden');
+        } else {
+            // Play the remote audio
+            const remoteAudio = document.getElementById('remoteAudio');
+            remoteAudio.srcObject = remoteStream;
+            
+            document.getElementById('videoSection').classList.add('hidden');
+            document.getElementById('audioOnlyUI').classList.remove('hidden');
         }
 
-        // Users
-        async function loadUsers() {
-            const { data: users } = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
-            const container = document.getElementById('usersList');
-            container.innerHTML = '';
+        // Set up audio level monitoring
+        monitorAudioLevel(stream);
+    });
 
-            users?.forEach(user => {
-                const div = document.createElement('div');
-                div.className = 'flex items-center justify-between glass p-4 rounded-lg';
-                div.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <img src="${user.profile_pic || 'https://picsum.photos/200'}" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">${user.display_name || user.username}</p>
-                            <p class="text-xs text-purple-400">@${user.username}</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">${new Date(user.created_at).toLocaleDateString()}</span>
-                `;
-                container.appendChild(div);
-            });
-        }
+    // When the call is closed
+    call.on('close', () => {
+        endCall();
+    });
 
-        // Analytics
-        async function loadAnalytics() {
-            const { count: usersCount } = await supabaseClient.from('profiles').select('*', { count: 'exact', head: true });
-            const { count: postsCount } = await supabaseClient.from('posts').select('*', { count: 'exact', head: true });
-            const { count: projectsCount } = await supabaseClient.from('admin_projects').select('*', { count: 'exact', head: true }).eq('status', 'in-progress');
+    // Handle errors
+    call.on('error', err => {
+        console.error('Call error:', err);
+        endCall();
+    });
+}
 
-            document.getElementById('totalUsers').textContent = usersCount || 0;
-            document.getElementById('totalPosts').textContent = postsCount || 0;
-            document.getElementById('activeProjects').textContent = projectsCount || 0;
-        }
+// Accept incoming call
+document.getElementById('acceptCallBtn').addEventListener('click', () => {
+    if (!incomingCall) return;
+    const isVideo = incomingCall.metadata?.video || false;
 
-        // Charts
-        let charts = {};
-        async function loadCharts() {
-            Object.values(charts).forEach(chart => chart.destroy());
-            charts = {};
+    // Get user media
+    navigator.mediaDevices.getUserMedia({ audio: true, video: isVideo })
+        .then(stream => {
+            // Store the stream
+            localStream = stream;
+            localAudioTrack = stream.getAudioTracks()[0];
+            if (isVideo) {
+                localVideoTrack = stream.getVideoTracks()[0];
+            }
 
-            const chartConfig = { responsive: true, maintainAspectRatio: true, plugins: { legend: { labels: { color: '#f3e8ff' } } }, scales: { y: { ticks: { color: '#f3e8ff' }, grid: { color: 'rgba(168, 85, 247, 0.1)' } }, x: { ticks: { color: '#f3e8ff' }, grid: { color: 'rgba(168, 85, 247, 0.1)' } } } };
+            // Answer the call with our stream
+            incomingCall.answer(stream);
 
-            // User Growth Chart
-            const { data: users } = await supabaseClient.from('profiles').select('created_at').order('created_at', { ascending: true });
-            const last7Days = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() - 6 + i); return d.toISOString().split('T')[0]; });
-            const userCounts = last7Days.map(date => users?.filter(u => u.created_at.startsWith(date)).length || 0);
-            charts.userGrowth = new Chart(document.getElementById('userGrowthChart'), {
-                type: 'line',
-                data: { labels: last7Days.map(d => new Date(d).toLocaleDateString('en', { month: 'short', day: 'numeric' })), datasets: [{ label: 'New Users', data: userCounts, borderColor: '#a855f7', backgroundColor: 'rgba(168, 85, 247, 0.1)', tension: 0.4 }] },
-                options: chartConfig
-            });
+            // Set up the call
+            setupCall(incomingCall, stream, isVideo);
 
-            // Project Status Chart
-            const { data: projects } = await supabaseClient.from('admin_projects').select('status');
-            const statusCounts = { planning: 0, 'in-progress': 0, completed: 0 };
-            projects?.forEach(p => statusCounts[p.status]++);
-            charts.projectStatus = new Chart(document.getElementById('projectStatusChart'), {
-                type: 'doughnut',
-                data: { labels: ['Planning', 'In Progress', 'Completed'], datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#8b5cf6', '#a855f7', '#c084fc'] }] },
-                options: { responsive: true, plugins: { legend: { labels: { color: '#f3e8ff' } } } }
-            });
+            // Hide notification and show active call UI
+            document.getElementById('callNotification').classList.add('hidden');
+            showActiveCallUI(isVideo);
+        })
+        .catch(err => {
+            console.error('Failed to get local stream', err);
+            alert(`Could not access your ${isVideo ? 'camera/microphone' : 'microphone'}. Please check your permissions.`);
+        });
+});
 
-            // Posts Activity Chart
-            const { data: posts } = await supabaseClient.from('posts').select('created_at');
-            const postCounts = last7Days.map(date => posts?.filter(p => p.created_at.startsWith(date)).length || 0);
-            charts.postsActivity = new Chart(document.getElementById('postsActivityChart'), {
-                type: 'bar',
-                data: { labels: last7Days.map(d => new Date(d).toLocaleDateString('en', { month: 'short', day: 'numeric' })), datasets: [{ label: 'Posts', data: postCounts, backgroundColor: '#a855f7' }] },
-                options: chartConfig
-            });
+// Decline incoming call
+document.getElementById('declineCallBtn').addEventListener('click', () => {
+    if (incomingCall) {
+        incomingCall.close();
+        incomingCall = null;
+    }
 
-            // Messages Chart
-            const { data: messages } = await supabaseClient.from('admin_messages').select('created_at');
-            const msgCounts = last7Days.map(date => messages?.filter(m => m.created_at.startsWith(date)).length || 0);
-            charts.messages = new Chart(document.getElementById('messagesChart'), {
-                type: 'line',
-                data: { labels: last7Days.map(d => new Date(d).toLocaleDateString('en', { month: 'short', day: 'numeric' })), datasets: [{ label: 'Messages', data: msgCounts, borderColor: '#c084fc', backgroundColor: 'rgba(192, 132, 252, 0.1)', fill: true }] },
-                options: chartConfig
-            });
+    // Hide notification
+    document.getElementById('callNotification').classList.add('hidden');
+});
 
-            // Engagement Chart
-            const { count: likesCount } = await supabaseClient.from('likes').select('*', { count: 'exact', head: true });
-            const { count: commentsCount } = await supabaseClient.from('comments').select('*', { count: 'exact', head: true });
-            charts.engagement = new Chart(document.getElementById('engagementChart'), {
-                type: 'bar',
-                data: { labels: ['Users', 'Posts', 'Likes', 'Comments', 'Projects'], datasets: [{ label: 'Total Count', data: [users?.length || 0, posts?.length || 0, likesCount || 0, commentsCount || 0, projects?.length || 0], backgroundColor: ['#8b5cf6', '#a855f7', '#c084fc', '#d8b4fe', '#e9d5ff'] }] },
-                options: { ...chartConfig, indexAxis: 'y' }
-            });
-        }
+// End active call
+document.getElementById('endCallBtn').addEventListener('click', () => {
+    endCall();
+});
 
-        // Server Blocking
-        async function loadBlockedSites() {
-            const { data: blocked } = await supabaseClient.from('blocked_sites').select('site_name');
-            const blockedNames = blocked?.map(b => b.site_name) || [];
+// End call function
+function endCall() {
+    if (currentCall) {
+        currentCall.close();
+        currentCall = null;
+    }
 
-            ['epsilon', 'aproxi', 'neote', 'edits', 'academics', 'sports', 'earth', 'heckle'].forEach(site => {
-                const btn = document.querySelector(`[data-site="${site}"]`);
-                const status = document.getElementById(`status-${site}`);
-                if (blockedNames.includes(site)) {
-                    btn.classList.add('bg-red-600');
-                    status.textContent = 'BLOCKED';
-                    status.classList.add('text-red-400');
-                } else {
-                    btn.classList.remove('bg-red-600');
-                    status.textContent = 'Active';
-                    status.classList.remove('text-red-400');
-                }
-            });
-        }
+    // Stop local stream
+    if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+        localStream = null;
+        localAudioTrack = null;
+        localVideoTrack = null;
+    }
 
-        async function toggleSiteBlock(siteName) {
-            const { data: existing } = await supabaseClient.from('blocked_sites').select('*').eq('site_name', siteName).single();
+    // Reset screen sharing state
+    isScreenSharing = false;
+    originalVideoTrack = null;
 
-            if (existing) {
-                await supabaseClient.from('blocked_sites').delete().eq('site_name', siteName);
+    // Clear call duration interval
+    if (callDurationInterval) {
+        clearInterval(callDurationInterval);
+        callDurationInterval = null;
+    }
+
+    // Hide active call UI
+    document.getElementById('activeCallUI').classList.add('hidden');
+}
+
+// Show active call UI
+function showActiveCallUI(isVideo) {
+    document.getElementById('activeCallUI').classList.remove('hidden');
+
+    // Show/hide video section based on call type
+    if (isVideo) {
+        document.getElementById('videoSection').classList.remove('hidden');
+        document.getElementById('audioOnlyUI').classList.add('hidden');
+    } else {
+        document.getElementById('videoSection').classList.add('hidden');
+        document.getElementById('audioOnlyUI').classList.remove('hidden');
+    }
+
+    // Start call duration timer
+    callStartTime = Date.now();
+    callDurationInterval = setInterval(updateCallDuration, 1000);
+
+    // Set up video control buttons
+    setupVideoControls();
+}
+
+// Update call duration
+function updateCallDuration() {
+    if (!callStartTime) return;
+
+    const elapsed = Math.floor((Date.now() - callStartTime) / 1000);
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+
+    document.getElementById('callDuration').textContent =
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+// Setup video control buttons
+function setupVideoControls() {
+    // Toggle microphone
+    document.getElementById('toggleMicBtn').onclick = () => {
+        if (localAudioTrack) {
+            localAudioTrack.enabled = !localAudioTrack.enabled;
+            const btn = document.getElementById('toggleMicBtn');
+            const icon = btn.querySelector('i');
+            
+            if (localAudioTrack.enabled) {
+                btn.classList.remove('bg-red-600');
+                btn.classList.add('bg-gray-800');
+                icon.setAttribute('data-lucide', 'mic');
             } else {
-                await supabaseClient.from('blocked_sites').insert([{ site_name: siteName, blocked_by: currentAdmin.id }]);
+                btn.classList.remove('bg-gray-800');
+                btn.classList.add('bg-red-600');
+                icon.setAttribute('data-lucide', 'mic-off');
             }
-
-            loadBlockedSites();
-        }
-        function blockAllSites() {
-            ['aproxi', 'neote', 'edits', 'academics', 'sports', 'earth', 'heckle'].forEach(site => toggleSiteBlock(site));
-        }
-
-        // Audio Calls Functions
-        async function loadOnlineAdmins() {
-            // Get all online admins (active in the last 2 minutes)
-            const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
-            const { data: onlineAdmins } = await supabaseClient
-                .from('admin_peer_ids')
-                .select('*, profiles:user_id(username, display_name, profile_pic)')
-                .gte('last_seen', twoMinutesAgo)
-                .neq('user_id', currentAdmin.id); // Exclude current admin
-
-            const container = document.getElementById('onlineAdmins');
-            container.innerHTML = '';
-
-            if (onlineAdmins && onlineAdmins.length > 0) {
-                onlineAdmins.forEach(admin => {
-                    const div = document.createElement('div');
-                    div.className = 'glass p-4 rounded-lg flex items-center justify-between';
-                    div.innerHTML = `
-                        <div class="flex items-center gap-3">
-                            <div class="relative">
-                                <img src="${admin.profiles.profile_pic || 'https://picsum.photos/200'}" class="w-12 h-12 rounded-full">
-                                <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900"></div>
-                            </div>
-                            <div>
-                                <p class="font-bold">${admin.profiles.display_name || admin.profiles.username}</p>
-                                <p class="text-xs text-purple-400">Online</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="callAdmin('${admin.peer_id}', false)" class="bg-green-600 hover:bg-green-700 text-white p-2 rounded-full" title="Audio Call">
-                                <i data-lucide="phone" class="w-5 h-5"></i>
-                            </button>
-                            <button onclick="callAdmin('${admin.peer_id}', true)" class="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full" title="Video Call">
-                                <i data-lucide="video" class="w-5 h-5"></i>
-                            </button>
-                        </div>
-                    `;
-                    container.appendChild(div);
-                });
-            } else {
-                container.innerHTML = '<p class="text-purple-300">No other admins are currently online.</p>';
-            }
-
-            // Re-initialize lucide icons
             lucide.createIcons();
         }
+    };
 
-        // Call a specific admin
-        function callAdmin(peerId, video = false) {
-            if (!peer || !peerId) return;
-
-            // Get user media
-            navigator.mediaDevices.getUserMedia({ audio: true, video: video })
-                .then(stream => {
-                    // Create the call
-                    const call = peer.call(peerId, stream, { metadata: { video: video } });
-
-                    // Set up the call
-                    setupCall(call, stream, video);
-
-                    // Show active call UI
-                    showActiveCallUI(video);
-                })
-                .catch(err => {
-                    console.error('Failed to get local stream', err);
-                    alert(`Could not access your ${video ? 'camera/microphone' : 'microphone'}. Please check your permissions.`);
-                });
+    // Toggle video
+    document.getElementById('toggleVideoBtn').onclick = () => {
+        if (localVideoTrack) {
+            localVideoTrack.enabled = !localVideoTrack.enabled;
+            const btn = document.getElementById('toggleVideoBtn');
+            const icon = btn.querySelector('i');
+            
+            if (localVideoTrack.enabled) {
+                btn.classList.remove('bg-red-600');
+                btn.classList.add('bg-gray-800');
+                icon.setAttribute('data-lucide', 'video');
+            } else {
+                btn.classList.remove('bg-gray-800');
+                btn.classList.add('bg-red-600');
+                icon.setAttribute('data-lucide', 'video-off');
+            }
+            lucide.createIcons();
         }
+    };
 
-        // Call all admins (Audio)
-        document.getElementById('callAllBtn').addEventListener('click', () => callAllAdmins(false));
+    // Share screen
+    document.getElementById('shareScreenBtn').onclick = async () => {
+        if (!isScreenSharing) {
+            try {
+                // Get screen share stream
+                const screenStream = await navigator.mediaDevices.getDisplayMedia({ 
+                    video: true, 
+                    audio: true 
+                });
+                
+                // Store original video track
+                originalVideoTrack = localVideoTrack;
+                
+                // Replace video track with screen share
+                const sender = currentCall.peerConnection.getSenders().find(
+                    s => s.track && s.track.kind === 'video'
+                );
+                
+                if (sender) {
+                    sender.replaceTrack(screenStream.getVideoTracks()[0]);
+                }
+                
+                // Update local video
+                const localVideo = document.getElementById('localVideo');
+                localVideo.srcObject = screenStream;
+                
+                // Update button
+                const btn = document.getElementById('shareScreenBtn');
+                btn.classList.remove('bg-gray-800');
+                btn.classList.add('bg-red-600');
+                const icon = btn.querySelector('i');
+                icon.setAttribute('data-lucide', 'monitor-off');
+                lucide.createIcons();
+                
+                isScreenSharing = true;
+                
+                // Listen for screen share end
+                screenStream.getVideoTracks()[0].onended = () => {
+                    stopScreenShare();
+                };
+                
+            } catch (err) {
+                console.error('Error sharing screen:', err);
+                alert('Could not share screen. Please check your permissions.');
+            }
+        } else {
+            stopScreenShare();
+        }
+    };
+}
+
+// Stop screen sharing
+function stopScreenShare() {
+    if (isScreenSharing && originalVideoTrack) {
+        // Replace with original video track
+        const sender = currentCall.peerConnection.getSenders().find(
+            s => s.track && s.track.kind === 'video'
+        );
         
-        // Call all admins (Video)
-        document.getElementById('videoCallAllBtn').addEventListener('click', () => callAllAdmins(true));
+        if (sender) {
+            sender.replaceTrack(originalVideoTrack);
+        }
+        
+        // Update local video
+        const localVideo = document.getElementById('localVideo');
+        localVideo.srcObject = localStream;
+        
+        // Update button
+        const btn = document.getElementById('shareScreenBtn');
+        btn.classList.remove('bg-red-600');
+        btn.classList.add('bg-gray-800');
+        const icon = btn.querySelector('i');
+        icon.setAttribute('data-lucide', 'monitor');
+        lucide.createIcons();
+        
+        isScreenSharing = false;
+        originalVideoTrack = null;
+    }
+}
 
-        async function callAllAdmins(video = false) {
-            if (!peer) {
-                alert('Peer connection not established. Please refresh the page.');
-                return;
-            }
+// Monitor audio level
+function monitorAudioLevel(stream) {
+    if (!stream) return;
 
-            // Get all online admins
-            const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
-            const { data: onlineAdmins } = await supabaseClient
-                .from('admin_peer_ids')
-                .select('peer_id')
-                .gte('last_seen', twoMinutesAgo)
-                .neq('user_id', currentAdmin.id); // Exclude current admin
+    const audioContext = new AudioContext();
+    const analyser = audioContext.createAnalyser();
+    const microphone = audioContext.createMediaStreamSource(stream);
+    const javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
 
-            if (!onlineAdmins || onlineAdmins.length === 0) {
-                alert('No other admins are currently online.');
-                return;
-            }
+    analyser.smoothingTimeConstant = 0.8;
+    analyser.fftSize = 1024;
 
-            // Get user media
-            navigator.mediaDevices.getUserMedia({ audio: true, video: video })
-                .then(stream => {
-                    // Call each admin
-                    onlineAdmins.forEach(admin => {
-                        const call = peer.call(admin.peer_id, stream, { metadata: { video: video } });
+    microphone.connect(analyser);
+    analyser.connect(javascriptNode);
+    javascriptNode.connect(audioContext.destination);
 
-                        // Set up the call
-                        setupCall(call, stream, video);
-                    });
+    javascriptNode.onaudioprocess = function () {
+        const array = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteFrequencyData(array);
+        let values = 0;
 
-                    // Show active call UI
-                    showActiveCallUI(video);
-                })
-                .catch(err => {
-                    console.error('Failed to get local stream', err);
-                    alert(`Could not access your ${video ? 'camera/microphone' : 'microphone'}. Please check your permissions.`);
-                });
+        const length = array.length;
+        for (let i = 0; i < length; i++) {
+            values += array[i];
         }
 
-        // Setup call event handlers
-        function setupCall(call, localStream, isVideo = false) {
-            currentCall = call;
+        const average = values / length;
+        const percentage = Math.min(100, Math.round(average * 2));
 
-            // When the remote stream is added
-            call.on('stream', remoteStream => {
-                // If it's a video call, set up video streams
-                if (isVideo || remoteStream.getVideoTracks().length > 0) {
-                    const remoteVideo = document.getElementById('remoteVideo');
-                    const localVideo = document.getElementById('localVideo');
-                    
-                    remoteVideo.srcObject = remoteStream;
-                    localVideo.srcObject = localStream;
-                    
-                    document.getElementById('videoSection').classList.remove('hidden');
-                    document.getElementById('audioOnlyUI').classList.add('hidden');
-                } else {
-                    // Play the remote audio
-                    const remoteAudio = document.getElementById('remoteAudio');
-                    remoteAudio.srcObject = remoteStream;
-                    
-                    document.getElementById('videoSection').classList.add('hidden');
-                    document.getElementById('audioOnlyUI').classList.remove('hidden');
-                }
-
-                // Set up audio level monitoring
-                monitorAudioLevel(localStream);
-            });
-
-            // When the call is closed
-            call.on('close', () => {
-                endCall();
-            });
-
-            // Handle errors
-            call.on('error', err => {
-                console.error('Call error:', err);
-                endCall();
-            });
-        }
-
-        // Accept incoming call
-        document.getElementById('acceptCallBtn').addEventListener('click', () => {
-            if (!incomingCall) return;
-            const isVideo = incomingCall.metadata?.video || false;
-
-            // Get user media
-            navigator.mediaDevices.getUserMedia({ audio: true, video: isVideo })
-                .then(stream => {
-                    // Answer the call with our stream
-                    incomingCall.answer(stream);
-
-                    // Set up the call
-                    setupCall(incomingCall, stream, isVideo);
-
-                    // Hide notification and show active call UI
-                    document.getElementById('callNotification').classList.add('hidden');
-                    showActiveCallUI(isVideo);
-                })
-                .catch(err => {
-                    console.error('Failed to get local stream', err);
-                    alert(`Could not access your ${isVideo ? 'camera/microphone' : 'microphone'}. Please check your permissions.`);
-                });
-        });
-
-        // Decline incoming call
-        document.getElementById('declineCallBtn').addEventListener('click', () => {
-            if (incomingCall) {
-                incomingCall.close();
-                incomingCall = null;
-            }
-
-            // Hide notification
-            document.getElementById('callNotification').classList.add('hidden');
-        });
-
-        // End active call
-        document.getElementById('endCallBtn').addEventListener('click', () => {
-            endCall();
-        });
-
-        // End call function
-        function endCall() {
-            if (currentCall) {
-                currentCall.close();
-                currentCall = null;
-            }
-
-            // Stop local stream
-            if (currentLocalStream) {
-                currentLocalStream.getTracks().forEach(track => track.stop());
-                currentLocalStream = null;
-            }
-
-            // Clear call duration interval
-            if (callDurationInterval) {
-                clearInterval(callDurationInterval);
-                callDurationInterval = null;
-            }
-
-            // Hide active call UI
-            document.getElementById('activeCallUI').classList.add('hidden');
-        }
-
-        // Show active call UI
-        function showActiveCallUI() {
-            document.getElementById('activeCallUI').classList.remove('hidden');
-
-            // Start call duration timer
-            callStartTime = Date.now();
-            callDurationInterval = setInterval(updateCallDuration, 1000);
-        }
-
-        // Update call duration
-        function updateCallDuration() {
-            if (!callStartTime) return;
-
-            const elapsed = Math.floor((Date.now() - callStartTime) / 1000);
-            const minutes = Math.floor(elapsed / 60);
-            const seconds = elapsed % 60;
-
-            document.getElementById('callDuration').textContent =
-                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-
-        // Monitor audio level
-        let currentLocalStream = null;
-        function monitorAudioLevel(stream) {
-            if (!stream) return;
-
-            currentLocalStream = stream;
-            const audioContext = new AudioContext();
-            const analyser = audioContext.createAnalyser();
-            const microphone = audioContext.createMediaStreamSource(stream);
-            const javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
-
-            analyser.smoothingTimeConstant = 0.8;
-            analyser.fftSize = 1024;
-
-            microphone.connect(analyser);
-            analyser.connect(javascriptNode);
-            javascriptNode.connect(audioContext.destination);
-
-            javascriptNode.onaudioprocess = function () {
-                const array = new Uint8Array(analyser.frequencyBinCount);
-                analyser.getByteFrequencyData(array);
-                let values = 0;
-
-                const length = array.length;
-                for (let i = 0; i < length; i++) {
-                    values += array[i];
-                }
-
-                const average = values / length;
-                const percentage = Math.min(100, Math.round(average * 2));
-
-                document.getElementById('audioLevel').style.width = `${percentage}%`;
-            };
-        }
+        document.getElementById('audioLevel').style.width = `${percentage}%`;
+    };
+}
     </script>
 </body>
 
