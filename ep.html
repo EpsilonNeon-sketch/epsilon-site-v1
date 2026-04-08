@@ -12,21 +12,14 @@
     <meta name="apple-mobile-web-app-title" content="Epsilon Hub">
     <link rel="apple-touch-icon" href="./epsilon logo.png">
     <link rel="icon" href="./epsilon logo.png">
+    <script src="./ep_service.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <!-- PeerJS for audio calling -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script>
-        const SITE_NAME = 'epsilon';
-        (async function () {
-            const { createClient } = supabase;
-            const client = createClient('https://gfsqzkyviivhvyqadpeg.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdmc3F6a3l2aWl2aHZ5cWFkcGVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0NDI0NDQsImV4cCI6MjA4NjAxODQ0NH0.MwC6dMZKFZMyklCJKqr4DPek8dxR-EswBZSd1L_AkMA');
-            const { data } = await client.from('blocked_sites').select('site_name').eq('site_name', SITE_NAME).single();
-            if (data) {
-                document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#000;color:#f3e8ff;font-family:Inter,sans-serif;text-align:center;padding:20px;"><div style="max-width:500px;"><div style="font-size:80px;margin-bottom:20px;">🚫</div><h1 style="font-size:48px;font-weight:800;margin-bottom:16px;color:#a855f7;">Server Blocked</h1><p style="font-size:20px;color:#c084fc;margin-bottom:12px;">Epsilon ${SITE_NAME.charAt(0).toUpperCase() + SITE_NAME.slice(1)} is currently unavailable</p><p style="font-size:14px;color:#9333ea;">This site has been temporarily blocked by administrators</p></div></div>`;
-            }
-        })();
+
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
