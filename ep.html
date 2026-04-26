@@ -8,44 +8,50 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
-
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Epsilon Hub">
     <link rel="apple-touch-icon" href="./epsilon logo.png">
     <link rel="icon" href="./epsilon logo.png">
-    <script src="./ep_service.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <!-- PeerJS for audio calling -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script>
-
+        const SITE_NAME = 'epsilon';
+        (async function () {
+            const { createClient } = supabase;
+            const client = createClient('https://gfsqzkyviivhvyqadpeg.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdmc3F6a3l2aWl2aHZ5cWFkcGVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0NDI0NDQsImV4cCI6MjA4NjAxODQ0NH0.MwC6dMZKFZMyklCJKqr4DPek8dxR-EswBZSd1L_AkMA');
+            const { data } = await client.from('blocked_sites').select('site_name').eq('site_name', SITE_NAME).single();
+            if (data) {
+                document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#000;color:#f3e8ff;font-family:Inter,sans-serif;text-align:center;padding:20px;"><div style="max-width:500px;"><div style="font-size:80px;margin-bottom:20px;">🚫</div><h1 style="font-size:48px;font-weight:800;margin-bottom:16px;color:#a855f7;">Server Blocked</h1><p style="font-size:20px;color:#c084fc;margin-bottom:12px;">Epsilon ${SITE_NAME.charAt(0).toUpperCase() + SITE_NAME.slice(1)} is currently unavailable</p><p style="font-size:14px;color:#9333ea;">This site has been temporarily blocked by administrators</p></div></div>`;
+            }
+        })();
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #ffeef8 0%, #fff0f5 25%, #e6f3ff 50%, #fff5e6 75%, #f0fff0 100%);
-            color: #5a3e5e;
+            background-color: #000000;
+            color: #f3e8ff;
             overflow-x: hidden;
         }
 
         .purple-glow {
-            box-shadow: 0 0 20px rgba(255, 182, 193, 0.4);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
         }
 
         .card-gradient:hover {
-            background: linear-gradient(145deg, #fff5f7 0%, #ffe4e9 100%);
-            border-color: rgba(255, 105, 180, 0.5);
+            background: linear-gradient(145deg, #111827 0%, #1e1b4b 100%);
+            border-color: rgba(168, 85, 247, 0.5);
             transform: translateY(-5px);
         }
 
         .glass {
-            background: rgba(255, 250, 250, 0.85);
+            background: rgba(17, 24, 39, 0.7);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 182, 193, 0.3);
+            border: 1px solid rgba(168, 85, 247, 0.2);
         }
 
         .bg-mesh {
@@ -55,43 +61,9 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: linear-gradient(135deg, #ffeef8 0%, #fff0f5 25%, #e6f3ff 50%, #fff5e6 75%, #f0fff0 100%);
-        }
-
-        /* Easter Eggs */
-        .easter-egg {
-            position: fixed;
-            font-size: 2rem;
-            animation: float 3s ease-in-out infinite;
-            cursor: pointer;
-            z-index: 40;
-            transition: transform 0.3s;
-        }
-
-        .easter-egg:hover {
-            transform: scale(1.3) rotate(10deg);
-        }
-
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-20px);
-            }
-        }
-
-        /* Mobile sidebar */
-        #sideNav.open {
-            transform: translateX(0) translateY(-50%);
-        }
-
-        body {
-            background: linear-gradient(135deg, #ffeef8 0%, #fff0f5 25%, #e6f3ff 50%, #fff5e6 75%, #f0fff0 100%);
-            color: #5a3e5e;
+            background-image:
+                radial-gradient(at 0% 0%, #1e1b4b 0, transparent 50%),
+                radial-gradient(at 100% 100%, #312e81 0, transparent 50%);
         }
 
         .img {
@@ -653,69 +625,62 @@
 <body class="min-h-screen flex flex-col items-center py-12 px-6">
     <div class="bg-mesh"></div>
 
-    <!-- Mobile Menu Toggle -->
-    <button id="mobileMenuToggle"
-        class="fixed left-4 top-4 z-[60] glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-pink-400 transition-all md:hidden">
-        <i data-lucide="menu" class="w-6 h-6"></i>
-    </button>
-
     <!-- Sidebar Navigation -->
-    <div id="sideNav"
-        class="fixed left-6 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-50 transition-transform duration-300 md:translate-x-0 -translate-x-[200%]">
+    <div class="fixed left-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-50">
         <button id="homeBtn"
-            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
             title="Home">
-            <i data-lucide="home" class="w-4 h-4"></i>
+            <i data-lucide="home" class="w-5 h-5"></i>
         </button>
         <button id="postsBtn"
-            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
             title="Stories">
-            <i data-lucide="book-open" class="w-4 h-4"></i>
+            <i data-lucide="book-open" class="w-5 h-5"></i>
         </button>
         <button id="usersBtn"
-            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
             title="Community">
-            <i data-lucide="users" class="w-4 h-4"></i>
+            <i data-lucide="users" class="w-5 h-5"></i>
         </button>
         <button id="eventsBtn"
-            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
             title="Events">
-            <i data-lucide="calendar" class="w-4 h-4"></i>
+            <i data-lucide="calendar" class="w-5 h-5"></i>
         </button>
         <button id="pollsBtn"
-            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
             title="Polls">
-            <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+            <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
         </button>
         <button id="communitiesBtn"
-            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
             title="Communities">
-            <i data-lucide="users-2" class="w-4 h-4"></i>
+            <i data-lucide="users-2" class="w-5 h-5"></i>
         </button>
         <button id="docsBtn"
-            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
             title="Documentation">
-            <i data-lucide="book-text" class="w-4 h-4"></i>
+            <i data-lucide="book-text" class="w-5 h-5"></i>
         </button>
         <button id="devBtn"
-            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
             title="Developer Portal">
-            <i data-lucide="code-2" class="w-4 h-4"></i>
+            <i data-lucide="code-2" class="w-5 h-5"></i>
         </button>
         <button id="messagesBtn"
-            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all hidden"
+            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all hidden"
             title="Messages">
-            <i data-lucide="message-circle" class="w-4 h-4"></i>
+            <i data-lucide="message-circle" class="w-5 h-5"></i>
         </button>
         <button id="authBtn"
-            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
+            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all"
             title="Account">
-            <i data-lucide="user" class="w-4 h-4"></i>
+            <i data-lucide="user" class="w-5 h-5"></i>
         </button>
         <button id="settingsBtn"
-            class="glass w-10 h-10 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all hidden"
+            class="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-600 transition-all hidden"
             title="Settings">
-            <i data-lucide="settings" class="w-4 h-4"></i>
+            <i data-lucide="settings" class="w-5 h-5"></i>
         </button>
     </div>
 
@@ -724,12 +689,10 @@
         <!-- Header Section -->
         <header class="text-center mb-12 space-y-4">
             <h1 class="text-4xl md:text-6xl font-extrabold tracking-tighter italic">
-                EPSILON<span class="text-pink-500">.</span>
+                EPSILON<span class="text-purple-600">.</span>
             </h1>
-            <p class="text-pink-400 font-light tracking-widest uppercase text-[10px] md:text-sm">-BY warren adrian and
+            <p class="text-purple-400 font-light tracking-widest uppercase text-[10px] md:text-sm">-BY warren adrian and
                 epsilon team</p>
-            <p class="text-pink-300 text-sm mt-2">🌸 Happy Easter! 🐰 <a href="easter-game.html"
-                    class="underline hover:text-pink-600">Play Easter Game!</a></p>
         </header>
 
         <section id="members" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 w-full max-w-6xl mb-16">
@@ -777,31 +740,8 @@
 
             <!-- Primary Ecosystem -->
             <section>
-                <div class="flex items-center gap-4">
-                    <div class="h-px flex-1 bg-gradient-to-r from-transparent to-purple-600/30"></div>
-                    <h3 class="text-purple-300 uppercase tracking-[0.3em] text-xs font-bold">Epsilon Events(special
-                        drops)</h3>
-                    <div class="h-px flex-1 bg-gradient-to-l from-transparent to-purple-600/30"></div>
-                </div>
-                <div>
-                    <div
-                        class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-purple-900 h-full flex flex-col justify-between">
-                        <div>
 
-                            <div
-                                class="w-12 h-12 bg-purple-900/50 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                                <i data-lucide="sparkle"></i>
-                            </div>
-                            <h2 class="text-2xl font-bold mb-2">Epsilon Spark</h2>
-                            <p class="text-purple-400 text-sm leading-relaxed">Activness and imagination coming to life
-                                in a neet way.</p>
-                        </div>
-                        <div
-                            class="mt-8 flex items-center text-purple-400 font-semibold text-sm group-hover:translate-x-2 transition-transform">
-                            Open Studio <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
-                        </div>
-                    </div>
-                </div>
+
                 <div class="flex items-center gap-4">
                     <div class="h-px flex-1 bg-gradient-to-r from-transparent to-purple-600/30"></div>
                     <h3 class="text-purple-300 uppercase tracking-[0.3em] text-xs font-bold">Epsilon Sites</h3>
@@ -829,7 +769,7 @@
                     </a>
 
                     <!-- Epsilon Heckle -->
-                    <a href="https://epsilonneon-sketch.github.io/epsilon-heckle-v1/" class="group">
+                    <a href="https://epsilon-heckle.vercel.app" class="group">
                         <div
                             class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-purple-900 h-full flex flex-col justify-between">
                             <div>
@@ -970,15 +910,6 @@
                             </div>
                         </div>
                     </a>
-
-                </div>
-
-                <div class="flex items-center gap-4">
-                    <div class="h-px flex-1 bg-gradient-to-r from-transparent to-purple-600/30"></div>
-                    <h3 class="text-purple-300 uppercase tracking-[0.3em] text-xs font-bold">Life and growth</h3>
-                    <div class="h-px flex-1 bg-gradient-to-l from-transparent to-purple-600/30"></div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8" style="margin-bottom: 30px;">
                     <a href="https://epsilonneon-sketch.github.io/epsilon-sport/" class="group">
                         <div
                             class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-purple-900 h-full flex flex-col justify-between">
@@ -1000,25 +931,12 @@
                         </div>
                     </a>
 
-                    <a href="https://epsilonneon-sketch.github.io/epsilon-earth/" class="group">
-                        <div
-                            class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-purple-900 h-full flex flex-col justify-between">
-                            <div>
-                                <div
-                                    class="w-12 h-12 bg-purple-900/50 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                                    <i data-lucide="earth"></i>
-                                </div>
-                                <h2 class="text-2xl font-bold mb-2">Epsilon Earth</h2>
-                                <p class="text-purple-400 text-sm leading-relaxed">Earth dashboard and site for earth
-                                    learning and growing
-                                    .</p>
-                            </div>
-                        </div>
-                        <div
-                            class="mt-8 flex items-center text-purple-400 font-semibold text-sm group-hover:translate-x-2 transition-transform">
-                            Open Dasboard <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
-                        </div>
-                    </a>
+                </div>
+
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8" style="margin-bottom: 30px;">
+
+
                 </div>
         </div>
 
@@ -2188,19 +2106,19 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
         let currentUserFilter = 'all';
         let usersSearchQuery = '';
         let eventImageFile = null;
-        let currentTheme = 'pink';
+        let currentTheme = 'purple';
         let soundEnabled = true;
 
         // Theme colors mapping
         const themeColors = {
-            purple: { primary: '#ff69b4', secondary: '#ff1493', light: '#ffb6c1', dark: '#c71585' },
-            pink: { primary: '#ff69b4', secondary: '#ff1493', light: '#ffb6c1', dark: '#c71585' },
-            red: { primary: '#ff6b9d', secondary: '#ff1493', light: '#ffc0cb', dark: '#c71585' },
-            orange: { primary: '#ffb347', secondary: '#ffa500', light: '#ffd700', dark: '#ff8c00' },
-            yellow: { primary: '#ffd700', secondary: '#ffb347', light: '#ffffe0', dark: '#daa520' },
-            blue: { primary: '#87ceeb', secondary: '#4682b4', light: '#b0e0e6', dark: '#4169e1' },
-            green: { primary: '#90ee90', secondary: '#32cd32', light: '#98fb98', dark: '#228b22' },
-            white: { primary: '#ffb6c1', secondary: '#ff69b4', light: '#ffffff', dark: '#ffc0cb' }
+            purple: { primary: '#a855f7', secondary: '#9333ea', light: '#c084fc', dark: '#7e22ce' },
+            pink: { primary: '#ec4899', secondary: '#db2777', light: '#f472b6', dark: '#be185d' },
+            red: { primary: '#ef4444', secondary: '#dc2626', light: '#f87171', dark: '#b91c1c' },
+            orange: { primary: '#f97316', secondary: '#ea580c', light: '#fb923c', dark: '#c2410c' },
+            yellow: { primary: '#eab308', secondary: '#ca8a04', light: '#facc15', dark: '#a16207' },
+            blue: { primary: '#3b82f6', secondary: '#2563eb', light: '#60a5fa', dark: '#1d4ed8' },
+            green: { primary: '#22c55e', secondary: '#16a34a', light: '#4ade80', dark: '#15803d' },
+            white: { primary: '#f3f4f6', secondary: '#e5e7eb', light: '#ffffff', dark: '#d1d5db' }
         };
 
         // Page Navigation
@@ -3644,59 +3562,7 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
         document.addEventListener('DOMContentLoaded', () => {
             checkAuthState();
             setupThemeButtons();
-            setupMobileMenu();
-            createEasterEggs();
         });
-
-        // Mobile menu toggle
-        function setupMobileMenu() {
-            const toggle = document.getElementById('mobileMenuToggle');
-            const sideNav = document.getElementById('sideNav');
-
-            toggle.addEventListener('click', () => {
-                sideNav.classList.toggle('open');
-            });
-
-            // Close menu when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!sideNav.contains(e.target) && !toggle.contains(e.target)) {
-                    sideNav.classList.remove('open');
-                }
-            });
-        }
-
-        // Create Easter eggs
-        function createEasterEggs() {
-            const eggs = ['🥚', '🐣', '🐰', '🌸', '🌷', '🦋', '🌼', '🐥'];
-            const positions = [
-                { top: '10%', left: '5%' },
-                { top: '20%', right: '8%' },
-                { top: '40%', left: '3%' },
-                { top: '60%', right: '5%' },
-                { top: '80%', left: '10%' },
-                { top: '70%', right: '12%' },
-                { top: '30%', left: '90%' },
-                { top: '50%', right: '2%' }
-            ];
-
-            positions.forEach((pos, i) => {
-                const egg = document.createElement('div');
-                egg.className = 'easter-egg';
-                egg.textContent = eggs[i % eggs.length];
-                egg.style.top = pos.top;
-                if (pos.left) egg.style.left = pos.left;
-                if (pos.right) egg.style.right = pos.right;
-                egg.style.animationDelay = `${i * 0.3}s`;
-
-                egg.addEventListener('click', () => {
-                    egg.style.transform = 'scale(0) rotate(360deg)';
-                    setTimeout(() => egg.remove(), 300);
-                    showNotification('You found an Easter egg! 🎉', 'success');
-                });
-
-                document.body.appendChild(egg);
-            });
-        }
 
         // Apply theme function
         function applyTheme(theme) {
@@ -3716,11 +3582,9 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
             style.textContent = `
                 .bg-purple-600, .bg-purple-700, .bg-purple-800, .bg-purple-900 { background-color: ${colors.primary} !important; }
                 .hover\\:bg-purple-600:hover, .hover\\:bg-purple-700:hover, .hover\\:bg-purple-800:hover { background-color: ${colors.secondary} !important; }
-                .text-purple-400, .text-purple-600, .text-purple-300, .text-purple-200 { color: ${colors.light} !important; }
+                .text-purple-400, .text-purple-600 { color: ${colors.light} !important; }
                 .border-purple-700, .border-purple-800, .border-purple-900 { border-color: ${colors.primary} !important; }
-                .bg-mesh { background: linear-gradient(135deg, #ffeef8 0%, #fff0f5 25%, #e6f3ff 50%, #fff5e6 75%, #f0fff0 100%) !important; }
-                body { background: linear-gradient(135deg, #ffeef8 0%, #fff0f5 25%, #e6f3ff 50%, #fff5e6 75%, #f0fff0 100%) !important; color: #5a3e5e !important; }
-                .glass { background: rgba(255, 250, 250, 0.85) !important; border: 1px solid rgba(255, 182, 193, 0.3) !important; }
+                .bg-mesh { background-image: radial-gradient(at 0% 0%, ${colors.dark} 0, transparent 50%), radial-gradient(at 100% 100%, ${colors.secondary} 0, transparent 50%) !important; }
             `;
             document.head.appendChild(style);
 
@@ -5322,7 +5186,6 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
             originalUpdateUI();
             if (currentUser) {
                 initPeerJS();
-
             }
         };
 
@@ -5377,41 +5240,6 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
             showPage(homePage);
             updateUI();
         });
-        async function handleDynamicRouting() {
-            // 1. Get the username from the URL path (e.g., /warrenseye)
-            const path = window.location.pathname.split('/').filter(p => p !== "").pop();
-
-            // Ignore if it's just the home page or a system file
-            const ignoreList = ['index.html', 'admin', 'login', 'signup'];
-            if (!path || ignoreList.includes(path)) return;
-
-            console.log(`Searching Epsilon database for user: ${path}...`);
-
-            // 2. Query Supabase for the profile
-            const { data: profile, error } = await supabase
-                .from('profiles') // Make sure your table name is 'profiles'
-                .select('*')
-                .eq('username', path) // Make sure you have a 'username' column
-                .single();
-
-            if (error || !profile) {
-                console.error("Profile not found or DB error:", error);
-                // Optional: show a 404 state instead of doing nothing
-                return;
-            }
-
-            // 3. Update the UI with the account data
-            // Assuming you have an element with id="profileName"
-            if (document.getElementById('profileName')) {
-                document.getElementById('profileName').innerText = profile.username;
-                // Add more UI updates here (e.g., profile picture, bio)
-            }
-
-            document.title = `${profile.username} | Epsilon Hub`;
-        }
-
-        // Run on page load
-        window.addEventListener('DOMContentLoaded', handleDynamicRouting);
     </script>
     <!-- Incoming Call Dialog -->
     <dialog id="incomingCallDialog" class="bg-gray-900 border border-purple-500 rounded-2xl p-6 text-center max-w-sm">
