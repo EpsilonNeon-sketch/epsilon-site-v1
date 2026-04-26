@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    
+
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Epsilon Hub">
     <link rel="apple-touch-icon" href="./epsilon logo.png">
@@ -5377,6 +5377,41 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
             showPage(homePage);
             updateUI();
         });
+        async function handleDynamicRouting() {
+            // 1. Get the username from the URL path (e.g., /warrenseye)
+            const path = window.location.pathname.split('/').filter(p => p !== "").pop();
+
+            // Ignore if it's just the home page or a system file
+            const ignoreList = ['index.html', 'admin', 'login', 'signup'];
+            if (!path || ignoreList.includes(path)) return;
+
+            console.log(`Searching Epsilon database for user: ${path}...`);
+
+            // 2. Query Supabase for the profile
+            const { data: profile, error } = await supabase
+                .from('profiles') // Make sure your table name is 'profiles'
+                .select('*')
+                .eq('username', path) // Make sure you have a 'username' column
+                .single();
+
+            if (error || !profile) {
+                console.error("Profile not found or DB error:", error);
+                // Optional: show a 404 state instead of doing nothing
+                return;
+            }
+
+            // 3. Update the UI with the account data
+            // Assuming you have an element with id="profileName"
+            if (document.getElementById('profileName')) {
+                document.getElementById('profileName').innerText = profile.username;
+                // Add more UI updates here (e.g., profile picture, bio)
+            }
+
+            document.title = `${profile.username} | Epsilon Hub`;
+        }
+
+        // Run on page load
+        window.addEventListener('DOMContentLoaded', handleDynamicRouting);
     </script>
     <!-- Incoming Call Dialog -->
     <dialog id="incomingCallDialog" class="bg-gray-900 border border-purple-500 rounded-2xl p-6 text-center max-w-sm">
