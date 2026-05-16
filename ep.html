@@ -5240,6 +5240,35 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
             showPage(homePage);
             updateUI();
         });
+        // Function to check if the URL contains a @username
+async function handleUserRouting() {
+    const path = window.location.pathname; // Gets "/@warrenseye"
+    
+    if (path.startsWith('/@')) {
+        const username = path.substring(2); // Removes the "/@" to get "warrenseye"
+        
+        // 1. Fetch user from your Supabase 'profiles' table
+        const { data: profile, error } = await supabaseClient
+            .from('profiles')
+            .select('*')
+            .eq('username', username)
+            .single();
+
+        if (profile) {
+            // 2. Call your existing function to show the modal
+            // (Make sure this function is globally accessible)
+            showUserProfile(profile); 
+        } else {
+            showNotification("User not found", "error");
+        }
+    }
+}
+
+// Run on page load
+window.addEventListener('load', handleUserRouting);
+
+// Run if the user clicks 'back' or 'forward'
+window.addEventListener('popstate', handleUserRouting);
     </script>
     <!-- Incoming Call Dialog -->
     <dialog id="incomingCallDialog" class="bg-gray-900 border border-purple-500 rounded-2xl p-6 text-center max-w-sm">
