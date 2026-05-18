@@ -39,19 +39,20 @@
         }
 
         .purple-glow {
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
         }
 
         .card-gradient:hover {
-            background: linear-gradient(145deg, #111827 0%, #1e1b4b 100%);
-            border-color: rgba(168, 85, 247, 0.5);
-            transform: translateY(-5px);
+            background: linear-gradient(145deg, #1e1b4b 0%, #312e81 100%);
+            border-color: rgba(192, 132, 252, 0.6);
+            transform: translateY(-8px) scale(1.02);
         }
 
         .glass {
-            background: rgba(17, 24, 39, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(168, 85, 247, 0.2);
+            background: rgba(13, 10, 25, 0.75);
+            backdrop-filter: blur(15px) saturate(160%);
+            border: 1px solid rgba(168, 85, 247, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
         }
 
         .bg-mesh {
@@ -61,9 +62,10 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background-image:
-                radial-gradient(at 0% 0%, #1e1b4b 0, transparent 50%),
-                radial-gradient(at 100% 100%, #312e81 0, transparent 50%);
+            background: 
+                radial-gradient(circle at 20% 20%, #2e1065 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, #4c1d95 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, #1e1b4b 0%, #000000 100%);
         }
 
         .img {
@@ -82,10 +84,23 @@
         }
 
         .inpu-s {
-            height: 30px;
-            width: 600px;
+            height: 44px;
+            width: 100%;
+            max-width: 600px;
             margin-bottom: 40px;
-            color: black;
+            padding: 0 1rem;
+            border-radius: 12px;
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            color: #f3e8ff;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .inpu-s:focus {
+            border-color: #a855f7;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+            background: rgba(168, 85, 247, 0.15);
         }
 
         .page {
@@ -97,12 +112,15 @@
         }
 
         .post-card {
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(168, 85, 247, 0.1);
         }
 
         .post-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(168, 85, 247, 0.2);
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 20px 40px rgba(168, 85, 247, 0.25);
+            border-color: rgba(168, 85, 247, 0.4);
+            background: rgba(30, 20, 50, 0.4);
         }
 
         .profile-pic-preview {
@@ -122,14 +140,16 @@
 
         .notification {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            border-radius: 8px;
+            top: 24px;
+            right: 24px;
+            padding: 16px 24px;
+            border-radius: 12px;
             color: white;
-            font-weight: 500;
+            font-weight: 600;
             z-index: 1000;
-            animation: slideIn 0.3s ease-out;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            animation: slideIn 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
         }
 
         .notification.success {
@@ -5241,34 +5261,34 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
             updateUI();
         });
         // Function to check if the URL contains a @username
-async function handleUserRouting() {
-    const path = window.location.pathname; // Gets "/@warrenseye"
-    
-    if (path.startsWith('/@')) {
-        const username = path.substring(2); // Removes the "/@" to get "warrenseye"
-        
-        // 1. Fetch user from your Supabase 'profiles' table
-        const { data: profile, error } = await supabaseClient
-            .from('profiles')
-            .select('*')
-            .eq('username', username)
-            .single();
+        async function handleUserRouting() {
+            const path = window.location.pathname; // Gets "/@warrenseye"
 
-        if (profile) {
-            // 2. Call your existing function to show the modal
-            // (Make sure this function is globally accessible)
-            showUserProfile(profile); 
-        } else {
-            showNotification("User not found", "error");
+            if (path.startsWith('/@')) {
+                const username = path.substring(2); // Removes the "/@" to get "warrenseye"
+
+                // 1. Fetch user from your Supabase 'profiles' table
+                const { data: profile, error } = await supabaseClient
+                    .from('profiles')
+                    .select('*')
+                    .eq('username', username)
+                    .single();
+
+                if (profile) {
+                    // 2. Call your existing function to show the modal
+                    // (Make sure this function is globally accessible)
+                    showUserProfile(profile);
+                } else {
+                    showNotification("User not found", "error");
+                }
+            }
         }
-    }
-}
 
-// Run on page load
-window.addEventListener('load', handleUserRouting);
+        // Run on page load
+        window.addEventListener('load', handleUserRouting);
 
-// Run if the user clicks 'back' or 'forward'
-window.addEventListener('popstate', handleUserRouting);
+        // Run if the user clicks 'back' or 'forward'
+        window.addEventListener('popstate', handleUserRouting);
     </script>
     <!-- Incoming Call Dialog -->
     <dialog id="incomingCallDialog" class="bg-gray-900 border border-purple-500 rounded-2xl p-6 text-center max-w-sm">
