@@ -911,6 +911,24 @@
             </section>
             <!-- Primary Ecosystem -->
             <section>
+                <a href="https://epsilon-ai.vercel.app" class="group">
+                    <div
+                        class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-purple-900 h-full flex flex-col justify-between">
+                        <div>
+                            <div
+                                class="w-12 h-12 bg-purple-900/50 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                                <i data-lucide="sparkles"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold mb-2">Epsilon AI</h2>
+                            <p class="text-purple-400 text-sm leading-relaxed">AI assistant for everyone.
+                            </p>
+                        </div>
+                        <div
+                            class="mt-8 flex items-center text-purple-400 font-semibold text-sm group-hover:translate-x-2 transition-transform">
+                            Open learning place <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                        </div>
+                    </div>
+                </a>
                 <!-- Epsilon azure -->
                 <a href="https://epsilon-azure.vercel.app" class="group">
                     <div
@@ -1008,6 +1026,7 @@
                         </div>
                     </div>
                 </a>
+
                 <a href="https://epsilon-sports.vercel.app" class="group">
                     <div
                         class="glass p-6 md:p-8 rounded-3xl transition-all duration-300 card-gradient border border-purple-900 h-full flex flex-col justify-between">
@@ -2372,8 +2391,8 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
 
                 if (profile) {
                     currentUser = { ...session.user, ...profile };
-                    if (profile.theme_color) {
-                        currentTheme = profile.theme_color;
+                    if (profile.theme) {
+                        currentTheme = profile.theme;
                         applyTheme(currentTheme);
                     }
                     if (profile.sound_enabled !== undefined) {
@@ -3709,7 +3728,7 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
                     applyTheme(theme);
 
                     if (currentUser) {
-                        await supabaseClient.from('profiles').update({ theme_color: theme }).eq('id', currentUser.id);
+                        await supabaseClient.from('profiles').update({ theme: theme }).eq('id', currentUser.id);
                         showNotification('Theme updated successfully!');
                     }
                 });
