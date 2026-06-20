@@ -750,6 +750,11 @@
             box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
         }
 
+        .view-toggle-btn.active {
+            background: #a855f7;
+            color: white;
+        }
+
         /* Mobile Adjustments for New Sidebar */
         @media (max-width: 768px) {
             .nav-sidebar {
@@ -853,8 +858,21 @@
         </header>
         <!-- Main Grid -->
         <input type="text" id="search" placeholder="search..." class="inpu-s">
+
+        <!-- Toggle Buttons -->
+        <div class="flex justify-center gap-3 mb-8">
+            <button id="epsilonAppsBtn"
+                class="view-toggle-btn glass px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wider hover:bg-purple-600 transition-all active">
+                Epsilon Apps
+            </button>
+            <button id="clientProjectsBtn"
+                class="view-toggle-btn glass px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wider hover:bg-purple-600 transition-all">
+                Client Projects
+            </button>
+        </div>
+
         <div class="max-w-6xl w-full space-y-12 md:space-y-20">
-            <section class="space-y-8">
+            <section id="clientProjectsSection" class="space-y-8" style="display: none;">
                 <div class="flex items-center gap-4">
                     <div class="h-px flex-1 bg-gradient-to-r from-transparent to-purple-600/30"></div>
                     <h3 class="text-purple-300 uppercase tracking-[0.3em] text-xs font-bold">Strategic Partners</h3>
@@ -905,12 +923,16 @@
                     <!-- Placeholder for future partners (Empty Glass Card) -->
                     <div
                         class="glass p-6 md:p-8 rounded-3xl border border-dashed border-purple-800 flex items-center justify-center text-gray-600 italic text-sm">
-                        New Partners Coming Soon...
+                        Want to be a client of epsilon's web development services? Don't worry order a website at:<br>
+                        <br> <button onclick="window.open('https://epsilon-panel.vercel.app')"
+                            class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                            Epsilon Panel
+                        </button>
                     </div>
                 </div>
             </section>
             <!-- Primary Ecosystem -->
-            <section>
+            <section id="epsilonAppsSection">
                 <h1 class="text-3xl font-bold mb-8">Meet our creations:</h1>
                 <a href="https://epsiai.vercel.app" class="group">
                     <div
@@ -3703,7 +3725,30 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
         document.addEventListener('DOMContentLoaded', () => {
             checkAuthState();
             setupThemeButtons();
+            setupViewToggle();
         });
+
+        // Setup view toggle functionality
+        function setupViewToggle() {
+            const epsilonAppsBtn = document.getElementById('epsilonAppsBtn');
+            const clientProjectsBtn = document.getElementById('clientProjectsBtn');
+            const epsilonAppsSection = document.getElementById('epsilonAppsSection');
+            const clientProjectsSection = document.getElementById('clientProjectsSection');
+
+            epsilonAppsBtn.addEventListener('click', () => {
+                epsilonAppsBtn.classList.add('active');
+                clientProjectsBtn.classList.remove('active');
+                epsilonAppsSection.style.display = 'block';
+                clientProjectsSection.style.display = 'none';
+            });
+
+            clientProjectsBtn.addEventListener('click', () => {
+                clientProjectsBtn.classList.add('active');
+                epsilonAppsBtn.classList.remove('active');
+                epsilonAppsSection.style.display = 'none';
+                clientProjectsSection.style.display = 'block';
+            });
+        }
 
         // Apply theme function
         function applyTheme(theme) {
