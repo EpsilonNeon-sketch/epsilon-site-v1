@@ -17,6 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <!-- PeerJS for audio calling -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="survey.js" defer></script>
     <script>
         const SITE_NAME = 'epsilon';
         (async function () {
@@ -2045,6 +2046,82 @@
         </div>
     </dialog>
 
+    <!-- Survey Modal -->
+    <dialog id="surveyModal" class="rounded-xl p-0 border-0 shadow-2xl bg-transparent" style="max-width: 600px;">
+        <div class="bg-gray-900 text-purple-100 rounded-xl p-8 glass border border-purple-800">
+            <h2 class="text-2xl font-bold mb-4 text-center">Welcome to Epsilon!</h2>
+            <p class="text-purple-400 text-center mb-6">Help us recommend the perfect Epsilon site for you</p>
+            <form id="surveyForm" class="space-y-6">
+                <div>
+                    <label class="text-sm font-semibold mb-3 block">What interests you most?</label>
+                    <select id="surveyInterest" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required>
+                        <option value="">Select an option</option>
+                        <option value="ai">Artificial Intelligence & Learning</option>
+                        <option value="gaming">Gaming & Entertainment</option>
+                        <option value="business">Business Management</option>
+                        <option value="creative">Creative & Editing</option>
+                        <option value="fitness">Fitness & Sports</option>
+                        <option value="cars">Cars & Automobiles</option>
+                        <option value="learning">Education & Learning</option>
+                        <option value="coding">Programming & Development</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold mb-3 block">What do you enjoy doing?</label>
+                    <select id="surveyActivity" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required>
+                        <option value="">Select an option</option>
+                        <option value="chat">Chatting with AI assistants</option>
+                        <option value="play">Playing games</option>
+                        <option value="manage">Managing projects/business</option>
+                        <option value="edit">Creating & editing content</option>
+                        <option value="workout">Tracking workouts</option>
+                        <option value="explore">Exploring cars & vehicles</option>
+                        <option value="study">Learning new things</option>
+                        <option value="code">Writing code</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold mb-3 block">What's your goal?</label>
+                    <select id="surveyGoal" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required>
+                        <option value="">Select an option</option>
+                        <option value="learn">Learn something new</option>
+                        <option value="fun">Have fun & relax</option>
+                        <option value="productive">Be more productive</option>
+                        <option value="creative">Express creativity</option>
+                        <option value="health">Improve health & fitness</option>
+                        <option value="knowledge">Gain knowledge</option>
+                    </select>
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" id="surveySkip" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-4 py-3 rounded-lg font-semibold">Skip</button>
+                    <button type="submit" class="flex-1 bg-purple-700 hover:bg-purple-800 text-white px-4 py-3 rounded-lg font-semibold">Get Recommendation</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- Recommendation Modal -->
+    <dialog id="recommendationModal" class="rounded-xl p-0 border-0 shadow-2xl bg-transparent" style="max-width: 500px;">
+        <div class="bg-gray-900 text-purple-100 rounded-xl p-8 glass border border-purple-800 text-center">
+            <div class="mb-6">
+                <div class="w-20 h-20 mx-auto mb-4 bg-purple-600 rounded-full flex items-center justify-center">
+                    <i data-lucide="sparkles" class="w-10 h-10"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-2">Perfect Match!</h2>
+                <p class="text-purple-400 mb-4">Based on your answers, we recommend:</p>
+            </div>
+            <div id="recommendedSite" class="glass p-6 rounded-xl mb-6">
+                <img id="recSiteLogo" src="" alt="" class="w-16 h-16 mx-auto mb-3 rounded-xl">
+                <h3 id="recSiteName" class="text-xl font-bold mb-2"></h3>
+                <p id="recSiteDesc" class="text-purple-300 text-sm mb-4"></p>
+            </div>
+            <div class="flex gap-3">
+                <button id="recClose" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-4 py-3 rounded-lg font-semibold">Maybe Later</button>
+                <button id="recVisit" class="flex-1 bg-purple-700 hover:bg-purple-800 text-white px-4 py-3 rounded-lg font-semibold">Visit Now</button>
+            </div>
+        </div>
+    </dialog>
+
     <!-- Auth Dialog -->
     <dialog id="authDialog" class="rounded-xl p-0 border-0 shadow-2xl bg-transparent" style="max-width: 90vw;">
         <div
@@ -2612,6 +2689,7 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
                         updateUI();
                         authForm.reset();
                         showNotification('Successfully logged in!');
+                        showSurveyModal();
                     }
                 } else {
                     // Sign up
@@ -2659,6 +2737,7 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
                     updateUI();
                     authForm.reset();
                     showNotification('Account created successfully!');
+                    showSurveyModal();
                 }
             } catch (error) {
                 console.error('Authentication error:', error);
@@ -3726,6 +3805,7 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
             checkAuthState();
             setupThemeButtons();
             setupViewToggle();
+            setupSurvey();
         });
 
         // Setup view toggle functionality
