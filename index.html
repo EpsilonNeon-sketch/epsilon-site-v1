@@ -1,293 +1,291 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Epsilon | The Future of Connection</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="./ep_service.js"></script>
+    <title>Epsilon | The Future Ecosystem</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" href="./epsilon logo.png">
-    
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600;800&display=swap');
-
         :root {
-            --accent: #a855f7;
-            --bg: #000000;
+            --bg-deep: #04040a;
+            --purple-glow: rgba(124, 58, 237, 0.3);
         }
-
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: #f3e8ff;
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--bg-deep);
+            color: #ede9fe;
             overflow-x: hidden;
         }
-
-        .glow-mesh {
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        
+        .bg-mesh {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -1;
-            background-image:
-                radial-gradient(at 0% 0%, #1e1b4b 0, transparent 50%),
-                radial-gradient(at 100% 100%, #312e81 0, transparent 50%);
+            background:
+                radial-gradient(circle at 20% 20%, rgba(91, 33, 182, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(167, 139, 250, 0.1) 0%, transparent 40%),
+                linear-gradient(180deg, #04040a 0%, #0a0912 100%);
         }
 
-        .glass {
-            background: rgba(17, 24, 39, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(168, 85, 247, 0.2);
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(139, 92, 246, 0.1);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .glass:hover {
-            background: rgba(30, 27, 75, 0.8);
-            border-color: rgba(168, 85, 247, 0.5);
-            transform: translateY(-4px);
+        .glass-card:hover {
+            border-color: rgba(139, 92, 246, 0.5);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -10px var(--purple-glow);
         }
 
-        .hero-title {
-            background: linear-gradient(to bottom right, #a855f7 30%, #7c3aed 100%);
-            background-clip: text;
+        .hero-gradient {
+            background: linear-gradient(to right, #fff, #a78bfa, #5b21b6);
+            -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-20px);
-            }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
+        .animate-float { animation: float 6s ease-in-out infinite; }
 
-        .float-animation {
-            animation: float 6s ease-in-out infinite;
+        .btn-glow {
+            box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+        }
+        .btn-glow:hover {
+            box-shadow: 0 0 35px rgba(124, 58, 237, 0.6);
         }
 
         .reveal {
             opacity: 0;
             transform: translateY(20px);
-            animation: revealIn 0.8s forwards;
+            transition: all 0.8s ease-out;
         }
-
-        @keyframes revealIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .stagger-1 {
-            animation-delay: 0.1s;
-        }
-
-        .stagger-2 {
-            animation-delay: 0.2s;
-        }
-
-        .stagger-3 {
-            animation-delay: 0.3s;
-        }
-
-        .btn-primary {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-primary::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, transparent 70%);
-            transform: scale(0);
-            transition: transform 0.6s ease-out;
-        }
-
-        .btn-primary:hover::after {
-            transform: scale(1);
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
-
 <body class="antialiased">
-    <div class="glow-mesh"></div>
+    <div class="bg-mesh"></div>
 
     <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-50 px-6 py-8">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center rotate-12">
-                    <span class="text-white font-bold -rotate-12 text-xl">E</span>
-                </div>
-                <span class="text-xl font-extrabold tracking-tighter italic">EPSILON<span
-                        class="text-purple-500">.</span></span>
+    <nav class="fixed top-0 w-full z-50 px-6 py-6 flex justify-between items-center bg-opacity-50 backdrop-blur-md">
+        <div class="flex items-center gap-2">
+            <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center btn-glow">
+                <i data-lucide="zap" class="text-white w-6 h-6"></i>
             </div>
-
-            <div class="hidden md:flex items-center gap-8 text-sm font-medium tracking-widest uppercase text-gray-400">
-                <a href="#" class="hover:text-purple-400 transition-colors">Ecosystem</a>
-                <a href="#" class="hover:text-purple-400 transition-colors">Stories</a>
-                <a href="#" class="hover:text-purple-400 transition-colors">Labs</a>
-            </div>
-            <a href="./ep.html"
-                class="glass px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-purple-600 transition-all">
-                Enter Hub
-            </a>
+            <span class="text-2xl font-bold tracking-tighter mono uppercase">Epsilon</span>
         </div>
+        <div class="hidden md:flex gap-8 text-sm font-medium text-purple-200/70 mono uppercase tracking-widest">
+            <a href="#ecosystem" class="hover:text-purple-400 transition-colors">Ecosystem</a>
+            <a href="#vision" class="hover:text-purple-400 transition-colors">Vision</a>
+            <a href="#team" class="hover:text-purple-400 transition-colors">Creators</a>
+        </div>
+        <a href="./ep.html" class="px-6 py-2 bg-white text-black rounded-full font-bold text-sm hover:bg-purple-400 transition-all">
+            ENTER HUB
+        </a>
     </nav>
 
     <!-- Hero Section -->
-    <main class="relative min-h-screen flex flex-col items-center justify-center px-6 pt-20">
-        <div
-            class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-purple-600/20 blur-[120px] rounded-full -z-10">
-        </div>
-
-        <div class="text-center max-w-4xl mx-auto reveal">
-            <span
-                class="inline-block py-1 px-4 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-6">
-                Now Live: The Epsilon Ecosystem
-            </span>
-            <h1 class="hero-title text-6xl md:text-8xl font-extrabold tracking-tighter mb-8 leading-[0.9]">
-                THINK BEYOND <br />THE ORDINARY.
+    <section class="relative min-h-screen flex flex-col items-center justify-center px-6 pt-20">
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[120px] -z-10"></div>
+        
+        <div class="text-center max-w-5xl mx-auto">
+            <div class="inline-block px-4 py-1 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-400 text-xs font-bold mono mb-6 animate-pulse">
+                VERSION 2.0 NOW LIVE
+            </div>
+            <h1 class="text-6xl md:text-8xl font-bold tracking-tighter mb-8 leading-none">
+                The Next Generation of <br>
+                <span class="hero-gradient">Digital Intelligence.</span>
             </h1>
-            <p class="text-gray-400 text-lg md:text-xl font-light max-w-2xl mx-auto mb-10 leading-relaxed">
-                A collaborative digital sanctuary for creators, experimenters, and storytellers. Explore the hub where
-                innovation meets community.
+            <p class="text-lg md:text-xl text-purple-200/60 max-w-2xl mx-auto mb-10 font-light leading-relaxed">
+                A unified ecosystem of open-source tools, creative suites, and AI-driven platforms designed to empower the builders of tomorrow.
             </p>
-            <a href="./game.html">Check out epsilon valentines game <i data-lucide="external-link"></i></a>
+            
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <a href="#"
-                    class="btn-primary bg-white text-black px-10 py-4 rounded-full font-bold text-sm uppercase tracking-widest hover:scale-105 transition-transform">
-                    Get Started
+                <a href="./ep.html" class="group relative px-8 py-4 bg-purple-600 rounded-xl font-bold text-lg btn-glow transition-all hover:scale-105 active:scale-95">
+                    Launch Epsilon Hub
+                    <i data-lucide="arrow-right" class="inline-block ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
                 </a>
-                <a href="#"
-                    class="glass px-10 py-4 rounded-full font-bold text-sm uppercase tracking-widest flex items-center gap-2">
-                    <i data-lucide="play-circle" class="w-5 h-5"></i> Watch Intro
+                <a href="#ecosystem" class="px-8 py-4 glass-card rounded-xl font-bold text-lg hover:bg-white/5 transition-all">
+                    Explore Ecosystem
                 </a>
             </div>
         </div>
 
         <!-- Floating Elements -->
-        <div class="absolute bottom-10 left-10 hidden lg:block float-animation stagger-1">
-            <div class="glass p-4 rounded-2xl flex items-center gap-4">
-                <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center">
-                    <i data-lucide="users" class="text-purple-400 w-5 h-5"></i>
-                </div>
-                <div>
-                    <p class="text-xs text-gray-400 font-bold uppercase tracking-tighter">Community</p>
-                    <p class="text-sm font-semibold">12+ Members</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="absolute top-1/3 right-10 hidden lg:block float-animation stagger-2">
-            <div class="glass p-4 rounded-2xl flex items-center gap-4">
-                <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
-                    <i data-lucide="zap" class="text-blue-400 w-5 h-5"></i>
-                </div>
-                <div>
-                    <p class="text-xs text-gray-400 font-bold uppercase tracking-tighter">Velocity</p>
-                    <p class="text-sm font-semibold">New Labs Daily</p>
+        <div class="hidden lg:block">
+            <div class="absolute top-1/3 left-10 animate-float" style="animation-delay: 0s;">
+                <div class="glass-card p-4 rounded-2xl flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-500">
+                        <i data-lucide="sparkles"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-400 mono">Epsilon AI</p>
+                        <p class="text-sm font-bold">Generating Ideas...</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </main>
-
-    <!-- Content Preview Section -->
-    <section class="py-24 px-6 max-w-7xl mx-auto">
-        <div class="text-center mb-16 reveal">
-            <h2 class="text-3xl md:text-5xl font-bold tracking-tight mb-4">Inside the Hub</h2>
-            <p class="text-gray-500 uppercase tracking-[0.3em] text-xs">Explore our primary sectors</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Feature 1 -->
-            <div class="glass p-8 rounded-[2rem] reveal stagger-1">
-                <div class="w-12 h-12 bg-purple-600/20 rounded-xl flex items-center justify-center mb-6">
-                    <i data-lucide="book-open" class="text-purple-400"></i>
+            <div class="absolute bottom-1/4 right-10 animate-float" style="animation-delay: 2s;">
+                <div class="glass-card p-4 rounded-2xl flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-500">
+                        <i data-lucide="layout"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-400 mono">Epsilon Azure</p>
+                        <p class="text-sm font-bold">B2B Marketplace Active</p>
+                    </div>
                 </div>
-                <h3 class="text-2xl font-bold mb-3 italic">Stories</h3>
-                <p class="text-gray-400 leading-relaxed mb-6">
-                    Dive into a collection of shared experiences, experiments, and narratives written by our core team
-                    and community members.
-                </p>
-                <a href="#"
-                    class="text-purple-400 font-bold text-sm uppercase tracking-widest flex items-center gap-2 group">
-                    Read More <i data-lucide="arrow-right"
-                        class="w-4 h-4 group-hover:translate-x-2 transition-transform"></i>
-                </a>
-            </div>
-
-            <!-- Feature 2 -->
-            <div class="glass p-8 rounded-[2rem] reveal stagger-2">
-                <div class="w-12 h-12 bg-indigo-600/20 rounded-xl flex items-center justify-center mb-6">
-                    <i data-lucide="users" class="text-indigo-400"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-3 italic">Community</h3>
-                <p class="text-gray-400 leading-relaxed mb-6">
-                    Connect with like-minded individuals. Our ecosystem is built on the collective intelligence of
-                    creators like Ethan and Richard.
-                </p>
-                <a href="#"
-                    class="text-indigo-400 font-bold text-sm uppercase tracking-widest flex items-center gap-2 group">
-                    Join Us <i data-lucide="arrow-right"
-                        class="w-4 h-4 group-hover:translate-x-2 transition-transform"></i>
-                </a>
-            </div>
-
-            <!-- Feature 3 -->
-            <div class="glass p-8 rounded-[2rem] reveal stagger-3">
-                <div class="w-12 h-12 bg-pink-600/20 rounded-xl flex items-center justify-center mb-6">
-                    <i data-lucide="flask-conical" class="text-pink-400"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-3 italic">Labs</h3>
-                <p class="text-gray-400 leading-relaxed mb-6">
-                    Experimental projects and digital tools developed by the Epsilon Team. Where the future is built,
-                    one line of code at a time.
-                </p>
-                <a href="#"
-                    class="text-pink-400 font-bold text-sm uppercase tracking-widest flex items-center gap-2 group">
-                    Explore Labs <i data-lucide="arrow-right"
-                        class="w-4 h-4 group-hover:translate-x-2 transition-transform"></i>
-                </a>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="py-20 px-6 border-t border-white/5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-            <div class="text-center md:text-left">
-                <h1 class="text-2xl font-extrabold tracking-tighter italic mb-2">
-                    EPSILON<span class="text-purple-500">.</span>
-                </h1>
-                <p class="text-gray-500 text-xs uppercase tracking-widest">© 2026 Warren Adrian & Epsilon Team</p>
+    <!-- What's Inside Section -->
+    <section id="ecosystem" class="py-24 px-6 max-w-7xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+            <div class="max-w-2xl">
+                <h2 class="mono text-purple-500 text-sm font-bold tracking-[0.3em] uppercase mb-4">Inside the Hub</h2>
+                <h3 class="text-4xl md:text-5xl font-bold tracking-tight">A universe of possibilities.</h3>
+            </div>
+            <p class="text-purple-200/50 max-w-xs text-right hidden md:block">
+                From creative editing to advanced programming frameworks, Epsilon covers every facet of the digital world.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- AI -->
+            <div class="glass-card p-8 rounded-3xl group">
+                <div class="w-14 h-14 bg-pink-500/10 rounded-2xl flex items-center justify-center text-pink-500 mb-6 group-hover:scale-110 transition-transform">
+                    <i data-lucide="cpu" class="w-8 h-8"></i>
+                </div>
+                <h4 class="text-xl font-bold mb-3">Epsilon AI</h4>
+                <p class="text-slate-400 text-sm leading-relaxed mb-6">Advanced neural models for image generation, coding assistance, and natural conversation.</p>
+                <div class="flex gap-2">
+                    <span class="text-[10px] mono px-2 py-1 bg-pink-500/10 text-pink-500 rounded border border-pink-500/20">INTELLIGENT</span>
+                </div>
             </div>
 
+            <!-- Azure -->
+            <div class="glass-card p-8 rounded-3xl group">
+                <div class="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500 mb-6 group-hover:scale-110 transition-transform">
+                    <i data-lucide="shopping-bag" class="w-8 h-8"></i>
+                </div>
+                <h4 class="text-xl font-bold mb-3">Epsilon Azure</h4>
+                <p class="text-slate-400 text-sm leading-relaxed mb-6">A high-performance B2B marketplace bridging the gap between business and technology.</p>
+                <div class="flex gap-2">
+                    <span class="text-[10px] mono px-2 py-1 bg-blue-500/10 text-blue-500 rounded border border-blue-500/20">ENTERPRISE</span>
+                </div>
+            </div>
+
+            <!-- Heckle -->
+            <div class="glass-card p-8 rounded-3xl group">
+                <div class="w-14 h-14 bg-red-500/10 rounded-2xl flex items-center justify-center text-red-500 mb-6 group-hover:scale-110 transition-transform">
+                    <i data-lucide="gamepad-2" class="w-8 h-8"></i>
+                </div>
+                <h4 class="text-xl font-bold mb-3">Epsilon Heckle</h4>
+                <p class="text-slate-400 text-sm leading-relaxed mb-6">The ultimate gaming library and engine designed to nurture the next generation of developers.</p>
+                <div class="flex gap-2">
+                    <span class="text-[10px] mono px-2 py-1 bg-red-500/10 text-red-500 rounded border border-red-500/20">GAMING</span>
+                </div>
+            </div>
+
+            <!-- Neote -->
+            <div class="glass-card p-8 rounded-3xl group">
+                <div class="w-14 h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-500 mb-6 group-hover:scale-110 transition-transform">
+                    <i data-lucide="code" class="w-8 h-8"></i>
+                </div>
+                <h4 class="text-xl font-bold mb-3">Epsilon Neote</h4>
+                <p class="text-slate-400 text-sm leading-relaxed mb-6">A revolutionary prototype JS framework and custom programming language for rapid development.</p>
+                <div class="flex gap-2">
+                    <span class="text-[10px] mono px-2 py-1 bg-purple-500/10 text-purple-400 rounded border border-purple-500/20">DEV TOOLS</span>
+                </div>
+            </div>
+
+            <!-- Editz -->
+            <div class="glass-card p-8 rounded-3xl group">
+                <div class="w-14 h-14 bg-yellow-500/10 rounded-2xl flex items-center justify-center text-yellow-500 mb-6 group-hover:scale-110 transition-transform">
+                    <i data-lucide="palette" class="w-8 h-8"></i>
+                </div>
+                <h4 class="text-xl font-bold mb-3">Epsilon Editz</h4>
+                <p class="text-slate-400 text-sm leading-relaxed mb-6">Professional-grade digital tools for artists, designers, and visual storytellers.</p>
+                <div class="flex gap-2">
+                    <span class="text-[10px] mono px-2 py-1 bg-yellow-500/10 text-yellow-500 rounded border border-yellow-500/20">CREATIVE</span>
+                </div>
+            </div>
+
+            <!-- Learn -->
+            <div class="glass-card p-8 rounded-3xl group">
+                <div class="w-14 h-14 bg-green-500/10 rounded-2xl flex items-center justify-center text-green-500 mb-6 group-hover:scale-110 transition-transform">
+                    <i data-lucide="book-open" class="w-8 h-8"></i>
+                </div>
+                <h4 class="text-xl font-bold mb-3">Epsilon Learn</h4>
+                <p class="text-slate-400 text-sm leading-relaxed mb-6">Democratizing education with a free, open platform for learning anything, anywhere.</p>
+                <div class="flex gap-2">
+                    <span class="text-[10px] mono px-2 py-1 bg-green-500/10 text-green-500 rounded border border-green-500/20">EDUCATION</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team / CTA Section -->
+    <section id="vision" class="py-24 px-6">
+        <div class="max-w-4xl mx-auto glass-card rounded-[40px] p-12 md:p-20 text-center relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-purple-600/20 blur-[100px] -z-10"></div>
+            
+            <h2 class="text-4xl md:text-6xl font-bold mb-8 tracking-tighter">Built by the youth, <br>for the future.</h2>
+            <p class="text-purple-200/60 text-lg mb-12 max-w-2xl mx-auto">
+                Founded by Warren Adrian at age 12, Epsilon is driven by a team of young visionaries (ages 12-14) who believe that age is no barrier to innovation.
+            </p>
+            
+            <div class="flex flex-wrap justify-center gap-4 mb-16">
+                <div class="flex -space-x-4">
+                    <div class="w-12 h-12 rounded-full border-2 border-deep bg-purple-900 flex items-center justify-center text-xs font-bold">WA</div>
+                    <div class="w-12 h-12 rounded-full border-2 border-deep bg-blue-900 flex items-center justify-center text-xs font-bold">GN</div>
+                    <div class="w-12 h-12 rounded-full border-2 border-deep bg-red-900 flex items-center justify-center text-xs font-bold">DG</div>
+                    <div class="w-12 h-12 rounded-full border-2 border-deep bg-green-900 flex items-center justify-center text-xs font-bold">+10</div>
+                </div>
+                <div class="h-12 w-px bg-white/10 mx-4"></div>
+                <div class="text-left">
+                    <p class="text-sm font-bold">14+ Visionaries</p>
+                    <p class="text-xs text-slate-500 mono">Active Core Team</p>
+                </div>
+            </div>
+
+            <a href="#" class="inline-block px-12 py-5 bg-white text-black rounded-2xl font-black text-xl hover:bg-purple-400 hover:scale-105 transition-all btn-glow uppercase tracking-tighter">
+                Enter the Epsilon Hub
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-6 border-t border-white/5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-purple-600 rounded flex items-center justify-center">
+                    <i data-lucide="zap" class="text-white w-5 h-5"></i>
+                </div>
+                <span class="text-xl font-bold tracking-tighter mono uppercase">Epsilon</span>
+            </div>
+            
+            <p class="text-slate-500 text-sm mono">
+                &copy; 2026 EPSILON ECOSYSTEM. ALL RIGHTS RESERVED.
+            </p>
+
             <div class="flex gap-6">
-                <a href="#"
-                    class="w-10 h-10 glass rounded-full flex items-center justify-center hover:bg-purple-600 transition-colors">
-                    <i data-lucide="github" class="w-5 h-5"></i>
-                </a>
-                <a href="#"
-                    class="w-10 h-10 glass rounded-full flex items-center justify-center hover:bg-purple-600 transition-colors">
-                    <i data-lucide="twitter" class="w-5 h-5"></i>
-                </a>
-                <a href="#"
-                    class="w-10 h-10 glass rounded-full flex items-center justify-center hover:bg-purple-600 transition-colors">
-                    <i data-lucide="instagram" class="w-5 h-5"></i>
-                </a>
+                <a href="#" class="text-slate-400 hover:text-white transition-colors"><i data-lucide="github"></i></a>
+                <a href="#" class="text-slate-400 hover:text-white transition-colors"><i data-lucide="twitter"></i></a>
+                <a href="#" class="text-slate-400 hover:text-white transition-colors"><i data-lucide="instagram"></i></a>
             </div>
         </div>
     </footer>
@@ -296,7 +294,7 @@
         // Initialize Lucide Icons
         lucide.createIcons();
 
-        // Simple scroll reveal
+        // Scroll Reveal Animation
         const observerOptions = {
             threshold: 0.1
         };
@@ -304,13 +302,28 @@
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('reveal');
+                    entry.target.classList.add('active');
                 }
             });
         }, observerOptions);
 
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        document.querySelectorAll('section').forEach(section => {
+            section.classList.add('reveal');
+            observer.observe(section);
+        });
+
+        // Smooth scroll for anchors
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
     </script>
 </body>
-
 </html>
