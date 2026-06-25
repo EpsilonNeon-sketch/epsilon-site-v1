@@ -31,769 +31,920 @@
         })();
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #000000;
-            color: #f3e8ff;
-            overflow-x: hidden;
-        }
-
-        .purple-glow {
-            box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
-        }
-
-        .card-gradient:hover {
-            background: linear-gradient(145deg, #1e1b4b 0%, #312e81 100%);
-            border-color: rgba(192, 132, 252, 0.6);
-            transform: translateY(-8px) scale(1.02);
-        }
-
-        .glass {
-            background: rgba(13, 10, 25, 0.75);
-            backdrop-filter: blur(15px) saturate(160%);
-            border: 1px solid rgba(168, 85, 247, 0.25);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
-        }
-
-        .bg-mesh {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background:
-                radial-gradient(circle at 20% 20%, #2e1065 0%, transparent 40%),
-                radial-gradient(circle at 80% 80%, #4c1d95 0%, transparent 40%),
-                radial-gradient(circle at 50% 50%, #1e1b4b 0%, #000000 100%);
-        }
-
-        .img {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        /* Epsilon Link Spacing */
-        .flex.flex-wrap.gap-4 a {
-            margin: 0.5rem;
-            /* The 'just give me space' vibes */
-            display: inline-block;
-        }
-
-        /* Or the cleaner Flexbox approach if you prefer */
-        .epsilon-link-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            /* Adjust this until it looks less cluttered */
-            justify-content: center;
-        }
-
-        #members {
-            margin-bottom: 40px;
-        }
-
-        .mb {
-            margin-bottom: 20px;
-        }
-
-        .inpu-s {
-            height: 44px;
-            width: 100%;
-            max-width: 600px;
-            margin-bottom: 40px;
-            padding: 0 1rem;
-            border-radius: 12px;
-            background: rgba(168, 85, 247, 0.1);
-            border: 1px solid rgba(168, 85, 247, 0.3);
-            color: #f3e8ff;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .inpu-s:focus {
-            border-color: #a855f7;
-            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
-            background: rgba(168, 85, 247, 0.15);
-        }
-
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        .post-card {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(168, 85, 247, 0.1);
-        }
-
-        .post-card:hover {
-            transform: translateY(-8px) scale(1.01);
-            box-shadow: 0 20px 40px rgba(168, 85, 247, 0.25);
-            border-color: rgba(168, 85, 247, 0.4);
-            background: rgba(30, 20, 50, 0.4);
-        }
-
-        .profile-pic-preview {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin: 0 auto 15px;
-            display: block;
-            border: 3px solid #a855f7;
-        }
-
-        .story-textarea {
-            min-height: 150px;
-            resize: vertical;
-        }
-
-        .notification {
-            position: fixed;
-            top: 24px;
-            right: 24px;
-            padding: 16px 24px;
-            border-radius: 12px;
-            color: white;
-            font-weight: 600;
-            z-index: 1000;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(8px);
-            animation: slideIn 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-        }
-
-        .notification.success {
-            background-color: #10b981;
-        }
-
-        .notification.error {
-            background-color: #ef4444;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        /* Mobile Optimizations */
-        @media (max-width: 768px) {
-
-            /* Navigation adjustments */
-            .fixed.top-6.right-6 {
-                top: 1rem;
-                right: 1rem;
-                flex-wrap: wrap;
-                max-width: calc(100% - 2rem);
-                justify-content: flex-end;
-            }
-
-            .fixed.top-6.right-6 button {
-                padding: 0.5rem 0.75rem;
-                font-size: 0.75rem;
-            }
-
-            .fixed.top-6.right-6 button span {
-                display: none;
-            }
-
-            /* Search input */
-            .inpu-s {
-                width: 100%;
-                max-width: 100%;
-            }
-
-            /* Card adjustments */
-            .glass.p-6.md\:p-8 {
-                padding: 1.5rem;
-            }
-
-            /* Profile images */
-            .img {
-                width: 120px;
-                height: 120px;
-            }
-
-            /* Dialogs for mobile */
-            dialog {
-                width: 95vw;
-                max-width: 95vw;
-                margin: auto;
-            }
-
-            /* Post cards */
-            .post-card {
-                margin-bottom: 1rem;
-            }
-
-            /* Form inputs */
-            input,
-            textarea,
-            select {
-                font-size: 16px;
-                /* Prevents zoom on iOS */
-            }
-
-            /* Footer */
-            footer {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
-
-            /* Settings page */
-            #settingsPage .flex-col.md\:flex-row {
-                flex-direction: column;
-            }
-
-            /* Admin panel */
-            #adminPanel {
-                width: 95vw;
-            }
-
-            /* Modal content */
-            .bg-gray-900.text-purple-100.rounded-xl.p-8 {
-                padding: 1.5rem;
-                max-height: 90vh;
-                overflow-y: auto;
-            }
-        }
-
-        /* Touch-friendly tap targets */
-        @media (pointer: coarse) {
-
-            button,
-            a {
-                min-height: 44px;
-                min-width: 44px;
-            }
-        }
-
-        /* Prevent horizontal scroll */
-        body {
-            overflow-x: hidden;
-            width: 100%;
-        }
-
-        /* Better mobile typography */
-        @media (max-width: 640px) {
-            h1 {
-                font-size: 2.5rem;
-                line-height: 1.2;
-            }
-
-            h2 {
-                font-size: 1.5rem;
-                line-height: 1.3;
-            }
-
-            p {
-                font-size: 0.95rem;
-                line-height: 1.5;
-            }
-        }
-
-        /* Mobile-safe dialog positioning */
-        dialog[open] {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-
-        /* Better mobile form experience */
-        @media (max-width: 768px) {
-            .grid.grid-cols-1.md\:grid-cols-2.gap-4 {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Mobile-specific styles for Stories Page */
-        @media (max-width: 768px) {
-
-            /* Posts container adjustments */
-            #postsPage .grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3 {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            /* Post cards optimization */
-            .post-card {
-                padding: 1rem !important;
-                border-radius: 1.5rem !important;
-            }
-
-            /* Author info in post cards */
-            .post-card .flex.items-center.mb-4 {
-                margin-bottom: 0.75rem !important;
-            }
-
-            .post-card .w-10.h-10 {
-                width: 2.5rem !important;
-                height: 2.5rem !important;
-            }
-
-            /* Post title and content */
-            .post-card h2 {
-                font-size: 1.25rem !important;
-                line-height: 1.4 !important;
-                margin-bottom: 0.75rem !important;
-            }
-
-            .post-card p {
-                font-size: 0.9rem !important;
-                line-height: 1.5 !important;
-                margin-bottom: 1rem !important;
-            }
-
-            /* Category tags */
-            .post-card .mb-3 {
-                margin-bottom: 0.75rem !important;
-            }
-
-            .post-card .text-xs.px-2.py-1 {
-                font-size: 0.7rem !important;
-                padding: 0.25rem 0.5rem !important;
-            }
-
-            /* Action buttons */
-            .post-card .flex.justify-between.items-center {
-                margin-top: 1rem !important;
-            }
-
-            .post-card .like-btn,
-            .post-card .read-more-btn {
-                padding: 0.5rem !important;
-                font-size: 0.8rem !important;
-            }
-
-            /* Filter buttons */
-            #postsPage .flex.gap-2 {
-                flex-wrap: wrap;
-                gap: 0.5rem !important;
-                margin-bottom: 1rem !important;
-            }
-
-            #postsPage .filter-btn {
-                padding: 0.5rem 0.75rem !important;
-                font-size: 0.75rem !important;
-                border-radius: 9999px !important;
-            }
-
-            /* Create post form */
-            #createPostSection {
-                padding: 1rem !important;
-                margin-bottom: 1rem !important;
-            }
-
-            #createPostSection h2 {
-                font-size: 1.25rem !important;
-                margin-bottom: 1rem !important;
-            }
-
-            #postForm .space-y-4>div {
-                margin-bottom: 0.75rem !important;
-            }
-
-            #postForm label {
-                font-size: 0.75rem !important;
-                margin-bottom: 0.5rem !important;
-            }
-
-            #postForm input,
-            #postForm textarea,
-            #postForm select {
-                padding: 0.75rem !important;
-                font-size: 0.9rem !important;
-            }
-
-            #postForm .flex.justify-end.gap-2 {
-                margin-top: 1rem !important;
-            }
-
-            #postForm button {
-                padding: 0.75rem 1rem !important;
-                font-size: 0.9rem !important;
-            }
-
-            /* Empty state */
-            #emptyState {
-                padding: 2rem 1rem !important;
-            }
-
-            #emptyState h3 {
-                font-size: 1.25rem !important;
-                margin-bottom: 0.75rem !important;
-            }
-
-            #emptyState p {
-                font-size: 0.9rem !important;
-                margin-bottom: 1.5rem !important;
-            }
-
-            /* Modal for full posts */
-            dialog .bg-gray-900 {
-                padding: 1.5rem !important;
-                max-width: 95vw !important;
-                max-height: 90vh !important;
-                overflow-y: auto !important;
-            }
-
-            dialog .flex.justify-between.items-start.mb-6 {
-                margin-bottom: 1rem !important;
-            }
-
-            dialog .w-12.h-12 {
-                width: 3rem !important;
-                height: 3rem !important;
-            }
-
-            dialog h2 {
-                font-size: 1.5rem !important;
-                margin-bottom: 0.75rem !important;
-            }
-
-            dialog .text-purple-200 {
-                font-size: 0.9rem !important;
-                line-height: 1.5 !important;
-            }
-
-            dialog .flex.justify-between.items-center.pt-4 {
-                padding-top: 1rem !important;
-            }
-
-            dialog button {
-                padding: 0.75rem 1rem !important;
-                font-size: 0.9rem !important;
-            }
-        }
-
-        /* Small phones specific adjustments */
-        @media (max-width: 480px) {
-
-            /* Even more compact post cards */
-            .post-card {
-                padding: 0.75rem !important;
-            }
-
-            .post-card h2 {
-                font-size: 1.1rem !important;
-            }
-
-            .post-card p {
-                font-size: 0.85rem !important;
-            }
-
-            /* Smaller touch targets but still accessible */
-            .post-card .like-btn,
-            .post-card .read-more-btn {
-                padding: 0.4rem 0.6rem !important;
-                font-size: 0.75rem !important;
-            }
-
-            /* More compact form */
-            #createPostSection {
-                padding: 0.75rem !important;
-            }
-
-            #postForm input,
-            #postForm textarea,
-            #postForm select {
-                padding: 0.6rem !important;
-                font-size: 0.85rem !important;
-            }
-        }
-
-        /* Mobile-specific styles for Users Page */
-        @media (max-width: 768px) {
-
-            /* Users container adjustments */
-            #usersPage .grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3 {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            /* User cards optimization */
-            .user-card {
-                padding: 1rem !important;
-                border-radius: 1.5rem !important;
-            }
-
-            .user-card .w-16.h-16 {
-                width: 4rem !important;
-                height: 4rem !important;
-            }
-
-            /* User name and username */
-            .user-card h3 {
-                font-size: 1.1rem !important;
-                margin-bottom: 0.25rem !important;
-            }
-
-            .user-card .text-purple-400 {
-                font-size: 0.8rem !important;
-                margin-bottom: 0.75rem !important;
-            }
-
-            /* User bio */
-            .user-card .text-purple-200 {
-                font-size: 0.85rem !important;
-                line-height: 1.4 !important;
-                margin-bottom: 1rem !important;
-            }
-
-            /* View profile button */
-            .user-card .view-profile-btn {
-                padding: 0.5rem !important;
-                font-size: 0.8rem !important;
-            }
-
-            /* Search and filter section */
-            #usersPage .flex.gap-4.mb-6 {
-                flex-direction: column;
-                gap: 1rem !important;
-                margin-bottom: 1rem !important;
-            }
-
-            #usersPage .search-input {
-                width: 100% !important;
-            }
-
-            #usersPage .flex.gap-2 {
-                flex-wrap: wrap;
-                gap: 0.5rem !important;
-            }
-
-            #usersPage .filter-btn {
-                padding: 0.5rem 0.75rem !important;
-                font-size: 0.75rem !important;
-            }
-
-            /* Empty state */
-            #usersEmptyState {
-                padding: 2rem 1rem !important;
-            }
-
-            #usersEmptyState h3 {
-                font-size: 1.25rem !important;
-                margin-bottom: 0.75rem !important;
-            }
-
-            #usersEmptyState p {
-                font-size: 0.9rem !important;
-            }
-
-            /* User profile modal */
-            #userProfileModal .bg-gray-900 {
-                padding: 1.5rem !important;
-                max-width: 95vw !important;
-                max-height: 90vh !important;
-                overflow-y: auto !important;
-            }
-
-            #userProfileModal .w-20.h-20 {
-                width: 5rem !important;
-                height: 5rem !important;
-            }
-
-            #userProfileModal h2 {
-                font-size: 1.5rem !important;
-                margin-bottom: 0.5rem !important;
-            }
-
-            #userProfileModal .text-purple-400 {
-                font-size: 0.9rem !important;
-                margin-bottom: 1rem !important;
-            }
-
-            #userProfileModal .text-purple-200 {
-                font-size: 0.9rem !important;
-                line-height: 1.5 !important;
-            }
-
-            #userProfileModal .space-y-4>div {
-                margin-bottom: 0.75rem !important;
-            }
-
-            #userProfileModal .grid.grid-cols-1.md\\:grid-cols-2 {
-                grid-template-columns: 1fr !important;
-            }
-        }
-
-        /* Fix for Epsilon Spark image being a total unit */
-        #homePage .group img[src*="epsilonsparkimg.png"] {
-            width: 400px;
-            max-width: 400px;
-            /* Adjust this if you want it even smaller */
-            height: auto;
-            border-radius: 1.5rem;
-            margin-bottom: 1.5rem;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .card-gradient {
-            backface-visibility: hidden;
-            -webkit-font-smoothing: subpixel-antialiased;
-            transform: translateZ(0);
-        }
-
-        /* New Sidebar Styling */
-        .nav-sidebar {
-            position: fixed;
-            left: 1.5rem;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            z-index: 100;
-            padding: 0.75rem;
-            border-radius: 2rem;
-            background: rgba(13, 10, 25, 0.8);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(168, 85, 247, 0.2);
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
-        }
-
-        .nav-item {
-            position: relative;
-            width: 3rem;
-            height: 3rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 1.5rem;
-            color: #c084fc;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            background: transparent;
-            cursor: pointer;
-        }
-
-        .nav-item:hover {
-            width: 10rem;
-            justify-content: flex-start;
-            padding-left: 1rem;
-            background: rgba(168, 85, 247, 0.15);
-            color: #f3e8ff;
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
-        }
-
-        .nav-item i {
-            min-width: 1.25rem;
-            transition: transform 0.3s ease;
-        }
-
-        .nav-item:hover i {
-            transform: scale(1.1);
-        }
-
-        /* Epsilon Site Link Spacing */
-        #homePage a.group {
-            display: block;
-            /* Ensures they behave as full cards */
-            margin-bottom: 2rem;
-            /* Adds vertical space between items */
-        }
-
-        /* If they are in a grid (like your Partners section) */
-        #homePage .grid {
-            gap: 1.5rem !important;
-            /* Forces horizontal and vertical space */
-        }
-
-        /* Extra padding for the container so they don't hit the screen edges */
-        #homePage section {
-            padding: 1rem 0;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .nav-label {
-            position: absolute;
-            left: 3.5rem;
-            opacity: 0;
-            white-space: nowrap;
-            font-size: 0.875rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            pointer-events: none;
-        }
-
-        .nav-item:hover .nav-label {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .nav-item.active {
-            background: #a855f7;
-            color: white;
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
-        }
-
-        .view-toggle-btn.active {
-            background: #a855f7;
-            color: white;
-        }
-
-        /* Mobile Adjustments for New Sidebar */
-        @media (max-width: 768px) {
-            .nav-sidebar {
-                left: 0;
-                bottom: 0;
-                top: auto;
-                transform: none;
-                width: 100%;
-                height: 4rem;
-                flex-direction: row;
-                justify-content: space-around;
-                border-radius: 1.5rem 1.5rem 0 0;
-                padding: 0 0.5rem;
-                border-left: none;
-                border-right: none;
-                border-bottom: none;
-            }
-
-            .nav-item {
-                width: 3.5rem;
-                height: 3.5rem;
-            }
-
-            .nav-item:hover {
-                width: 3.5rem;
-                justify-content: center;
-                padding-left: 0;
-            }
-
-            .nav-label {
-                display: none;
-            }
-
-            body {
-                padding-bottom: 5rem;
-            }
-        }
+    
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+    --bg-deep: #04040a;
+    --bg-surface: #0a0912;
+    --bg-elevated: #111020;
+    --bg-hover: #16142a;
+    --border-dim: rgba(139, 92, 246, 0.07);
+    --border-default: rgba(139, 92, 246, 0.14);
+    --border-hover: rgba(139, 92, 246, 0.45);
+    --border-active: rgba(139, 92, 246, 0.7);
+    --purple-deep: #5b21b6;
+    --purple-mid: #7c3aed;
+    --purple-bright: #a78bfa;
+    --purple-neon: #c4b5fd;
+    --purple-glow: rgba(124, 58, 237, 0.25);
+    --text-primary: #ede9fe;
+    --text-secondary: #a78bfa;
+    --text-muted: #5e4f82;
+}
+
+body {
+    font-family: 'Space Grotesk', sans-serif;
+    background-color: var(--bg-deep);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    width: 100%;
+}
+
+/* ── Purple-black gradient background ── */
+.bg-mesh {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background:
+        radial-gradient(ellipse 80% 60% at 15% 10%, rgba(91, 33, 182, 0.35) 0%, transparent 60%),
+        radial-gradient(ellipse 70% 50% at 85% 90%, rgba(124, 58, 237, 0.2) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 50% 50%, rgba(88, 28, 135, 0.15) 0%, transparent 50%),
+        linear-gradient(160deg, #0a0015 0%, #050008 25%, #020004 50%, #080012 75%, #0a0015 100%);
+}
+
+/* ── Glow utility ── */
+.purple-glow {
+    box-shadow: 0 0 0 1px var(--border-active), 0 0 24px var(--purple-glow);
+}
+
+/* ── Glass → solid dark surface with accent top line ── */
+.glass {
+    background: rgba(10, 9, 18, 0.85);
+    border: 1px solid var(--border-default);
+    border-top: 2px solid var(--purple-mid);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Card hover: border lights up, subtle top-glow ── */
+.card-gradient {
+    position: relative;
+    border: 1px solid var(--border-dim);
+    border-top: 2px solid transparent;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    backface-visibility: hidden;
+    -webkit-font-smoothing: subpixel-antialiased;
+    transform: translateZ(0);
+}
+
+.card-gradient:hover {
+    background: rgba(22, 20, 42, 0.8);
+    border-color: var(--border-hover);
+    border-top-color: var(--purple-bright);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px -8px var(--purple-glow), 0 0 0 1px var(--border-hover);
+}
+
+/* ── Profile images ── */
+.img {
+    width: 150px;
+    height: 150px;
+    border-radius: 16px;
+    object-fit: cover;
+    border: 2px solid var(--border-default);
+}
+
+/* ── Link spacing ── */
+.flex.flex-wrap.gap-4 a {
+    margin: 0.5rem;
+    display: inline-block;
+}
+
+.epsilon-link-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+#members {
+    margin-bottom: 40px;
+}
+
+.mb {
+    margin-bottom: 20px;
+}
+
+/* ── Search input: bottom-border only style ── */
+.inpu-s {
+    height: 48px;
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 40px;
+    padding: 0 1rem;
+    border-radius: 6px;
+    background: rgba(10, 9, 18, 0.7);
+    border: 1px solid var(--border-dim);
+    border-bottom: 2px solid var(--border-default);
+    color: var(--text-primary);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.3s ease;
+    letter-spacing: 0.02em;
+}
+
+.inpu-s::placeholder {
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: lowercase;
+}
+
+.inpu-s:focus {
+    border-color: var(--border-hover);
+    border-bottom-color: var(--purple-bright);
+    box-shadow: 0 4px 20px -4px var(--purple-glow);
+    background: rgba(17, 16, 32, 0.85);
+}
+
+/* ── Page visibility ── */
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+/* ── Post cards ── */
+.post-card {
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--border-dim);
+    border-left: 3px solid var(--purple-deep);
+    background: rgba(10, 9, 18, 0.85);
+}
+
+.post-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px -8px var(--purple-glow);
+    border-color: var(--border-hover);
+    border-left-color: var(--purple-bright);
+    background: rgba(22, 20, 42, 0.8);
+}
+
+/* ── Profile pic preview ── */
+.profile-pic-preview {
+    width: 100px;
+    height: 100px;
+    border-radius: 16px;
+    object-fit: cover;
+    margin: 0 auto 15px;
+    display: block;
+    border: 2px solid var(--purple-mid);
+}
+
+/* ── Story textarea ── */
+.story-textarea {
+    min-height: 150px;
+    resize: vertical;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+/* ── Notifications ── */
+.notification {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    padding: 14px 22px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+    z-index: 1000;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    animation: notifSlide 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    border: 1px solid transparent;
+}
+
+.notification.success {
+    background: linear-gradient(135deg, #064e3b, #065f46);
+    border-color: rgba(52, 211, 153, 0.3);
+}
+
+.notification.error {
+    background: linear-gradient(135deg, #450a0a, #7f1d1d);
+    border-color: rgba(248, 113, 113, 0.3);
+}
+
+@keyframes notifSlide {
+    from {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* ══════════════════════════════════════
+   SIDEBAR — thin rail with pill indicators
+   ══════════════════════════════════════ */
+.nav-sidebar {
+    position: fixed;
+    left: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    z-index: 100;
+    padding: 0.6rem;
+    border-radius: 14px;
+    background: rgba(10, 9, 18, 0.9);
+    border: 1px solid var(--border-dim);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
+}
+
+.nav-item {
+    position: relative;
+    width: 2.75rem;
+    height: 2.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: var(--text-muted);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: transparent;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.nav-item:hover {
+    width: 9.5rem;
+    justify-content: flex-start;
+    padding-left: 0.85rem;
+    background: rgba(17, 16, 32, 0.9);
+    color: var(--purple-bright);
+    border-color: var(--border-dim);
+}
+
+.nav-item i {
+    min-width: 1.15rem;
+    width: 1.15rem;
+    height: 1.15rem;
+    transition: all 0.3s ease;
+    stroke-width: 1.8;
+}
+
+.nav-item:hover i {
+    transform: scale(1.05);
+    color: var(--purple-bright);
+}
+
+.nav-label {
+    position: absolute;
+    left: 3rem;
+    opacity: 0;
+    white-space: nowrap;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: all 0.25s ease;
+    pointer-events: none;
+    color: var(--text-secondary);
+}
+
+.nav-item:hover .nav-label {
+    opacity: 1;
+}
+
+.nav-item.active {
+    background: var(--purple-mid);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 0 16px var(--purple-glow);
+}
+
+.nav-item.active i {
+    color: #fff;
+    stroke-width: 2.2;
+}
+
+.nav-item.active .nav-label {
+    color: #fff;
+}
+
+/* ── View toggle buttons ── */
+.view-toggle-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem !important;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid var(--border-default);
+    border-radius: 6px !important;
+    transition: all 0.25s ease;
+}
+
+.view-toggle-btn.active {
+    background: var(--purple-mid) !important;
+    color: #fff !important;
+    border-color: var(--purple-mid) !important;
+    box-shadow: 0 0 12px var(--purple-glow);
+}
+
+/* ── Home page link cards spacing ── */
+#homePage a.group {
+    display: block;
+    margin-bottom: 1rem;
+}
+
+#homePage .grid {
+    gap: 1.25rem !important;
+}
+
+#homePage section {
+    padding: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* ── Epsilon Spark image ── */
+#homePage .group img[src*="epsilonsparkimg.png"] {
+    width: 400px;
+    max-width: 400px;
+    height: auto;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid var(--border-default);
+}
+
+/* ── Headings: monospace for that blueprint feel ── */
+h1 {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
+h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+h3 {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+/* ── Form inputs global override ── */
+input,
+textarea,
+select {
+    font-family: 'Space Grotesk', sans-serif;
+    border-radius: 8px !important;
+    transition: all 0.25s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--purple-mid) !important;
+    box-shadow: 0 0 0 3px var(--purple-glow) !important;
+}
+
+/* ── Buttons global ── */
+button {
+    font-family: 'Space Grotesk', sans-serif;
+    border-radius: 8px !important;
+    transition: all 0.25s ease;
+}
+
+/* ══════════════════════════════════════
+   MOBILE RESPONSIVE
+   ══════════════════════════════════════ */
+@media (max-width: 768px) {
+    .fixed.top-6.right-6 {
+        top: 1rem;
+        right: 1rem;
+        flex-wrap: wrap;
+        max-width: calc(100% - 2rem);
+        justify-content: flex-end;
+    }
+
+    .fixed.top-6.right-6 button {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+    }
+
+    .fixed.top-6.right-6 button span {
+        display: none;
+    }
+
+    .inpu-s {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .glass.p-6.md\:p-8 {
+        padding: 1.5rem;
+    }
+
+    .img {
+        width: 120px;
+        height: 120px;
+    }
+
+    dialog {
+        width: 95vw;
+        max-width: 95vw;
+        margin: auto;
+    }
+
+    .post-card {
+        margin-bottom: 1rem;
+    }
+
+    input,
+    textarea,
+    select {
+        font-size: 16px;
+    }
+
+    footer {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    #settingsPage .flex-col.md\:flex-row {
+        flex-direction: column;
+    }
+
+    #adminPanel {
+        width: 95vw;
+    }
+
+    .bg-gray-900.text-purple-100.rounded-xl.p-8 {
+        padding: 1.5rem;
+        max-height: 90vh;
+        overflow-y: auto;
+        border-radius: 12px !important;
+    }
+
+    /* ── Mobile sidebar: bottom pill bar ── */
+    .nav-sidebar {
+        left: 0;
+        bottom: 0;
+        top: auto;
+        transform: none;
+        width: 100%;
+        height: 3.75rem;
+        flex-direction: row;
+        justify-content: space-around;
+        border-radius: 18px 18px 0 0;
+        padding: 0.4rem 0.5rem;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        background: rgba(10, 9, 18, 0.95);
+        border-top: 1px solid var(--border-default);
+        box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.6);
+        gap: 0.15rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-item {
+        width: 3rem;
+        height: 3rem;
+        flex-shrink: 0;
+        border-radius: 10px;
+    }
+
+    .nav-item:hover {
+        width: 3rem;
+        justify-content: center;
+        padding-left: 0;
+    }
+
+    .nav-label {
+        display: none;
+    }
+
+    .nav-item.active {
+        background: var(--purple-mid);
+        box-shadow: 0 0 12px var(--purple-glow);
+    }
+
+    body {
+        padding-bottom: 5rem;
+    }
+}
+
+@media (pointer: coarse) {
+    button,
+    a {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+@media (max-width: 640px) {
+    h1 {
+        font-size: 2rem;
+        line-height: 1.2;
+    }
+
+    h2 {
+        font-size: 1.35rem;
+        line-height: 1.3;
+    }
+
+    h3 {
+        font-size: 0.85rem;
+    }
+
+    p {
+        font-size: 0.9rem;
+        line-height: 1.55;
+    }
+}
+
+dialog[open] {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+@media (max-width: 768px) {
+    .grid.grid-cols-1.md\:grid-cols-2.gap-4 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ══════════════════════════════════════
+   MOBILE — POSTS PAGE
+   ══════════════════════════════════════ */
+@media (max-width: 768px) {
+    #postsPage .grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3 {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .post-card {
+        padding: 1rem !important;
+        border-radius: 12px !important;
+    }
+
+    .post-card .flex.items-center.mb-4 {
+        margin-bottom: 0.75rem !important;
+    }
+
+    .post-card .w-10.h-10 {
+        width: 2.5rem !important;
+        height: 2.5rem !important;
+        border-radius: 8px !important;
+    }
+
+    .post-card h2 {
+        font-size: 1.15rem !important;
+        line-height: 1.4 !important;
+        margin-bottom: 0.6rem !important;
+    }
+
+    .post-card p {
+        font-size: 0.85rem !important;
+        line-height: 1.5 !important;
+        margin-bottom: 0.85rem !important;
+    }
+
+    .post-card .mb-3 {
+        margin-bottom: 0.6rem !important;
+    }
+
+    .post-card .text-xs.px-2.py-1 {
+        font-size: 0.65rem !important;
+        padding: 0.2rem 0.45rem !important;
+        border-radius: 4px !important;
+        font-family: 'JetBrains Mono', monospace;
+        letter-spacing: 0.04em;
+    }
+
+    .post-card .flex.justify-between.items-center {
+        margin-top: 0.85rem !important;
+    }
+
+    .post-card .like-btn,
+    .post-card .read-more-btn {
+        padding: 0.45rem !important;
+        font-size: 0.78rem !important;
+        border-radius: 6px !important;
+    }
+
+    #postsPage .flex.gap-2 {
+        flex-wrap: wrap;
+        gap: 0.4rem !important;
+        margin-bottom: 0.85rem !important;
+    }
+
+    #postsPage .filter-btn {
+        padding: 0.4rem 0.65rem !important;
+        font-size: 0.65rem !important;
+        border-radius: 6px !important;
+        font-family: 'JetBrains Mono', monospace;
+        letter-spacing: 0.06em;
+    }
+
+    #createPostSection {
+        padding: 1rem !important;
+        margin-bottom: 1rem !important;
+        border-radius: 12px !important;
+    }
+
+    #createPostSection h2 {
+        font-size: 1.15rem !important;
+        margin-bottom: 0.85rem !important;
+    }
+
+    #postForm .space-y-4 > div {
+        margin-bottom: 0.7rem !important;
+    }
+
+    #postForm label {
+        font-size: 0.65rem !important;
+        margin-bottom: 0.4rem !important;
+        font-family: 'JetBrains Mono', monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    #postForm input,
+    #postForm textarea,
+    #postForm select {
+        padding: 0.7rem !important;
+        font-size: 0.85rem !important;
+        border-radius: 8px !important;
+    }
+
+    #postForm .flex.justify-end.gap-2 {
+        margin-top: 0.85rem !important;
+    }
+
+    #postForm button {
+        padding: 0.65rem 0.85rem !important;
+        font-size: 0.85rem !important;
+        border-radius: 8px !important;
+    }
+
+    #emptyState {
+        padding: 2rem 1rem !important;
+    }
+
+    #emptyState h3 {
+        font-size: 1.1rem !important;
+        margin-bottom: 0.6rem !important;
+    }
+
+    #emptyState p {
+        font-size: 0.85rem !important;
+        margin-bottom: 1.25rem !important;
+    }
+
+    dialog .bg-gray-900 {
+        padding: 1.25rem !important;
+        max-width: 95vw !important;
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+        border-radius: 12px !important;
+    }
+
+    dialog .flex.justify-between.items-start.mb-6 {
+        margin-bottom: 0.85rem !important;
+    }
+
+    dialog .w-12.h-12 {
+        width: 2.75rem !important;
+        height: 2.75rem !important;
+        border-radius: 8px !important;
+    }
+
+    dialog h2 {
+        font-size: 1.35rem !important;
+        margin-bottom: 0.6rem !important;
+    }
+
+    dialog .text-purple-200 {
+        font-size: 0.85rem !important;
+        line-height: 1.55 !important;
+    }
+
+    dialog .flex.justify-between.items-center.pt-4 {
+        padding-top: 0.85rem !important;
+    }
+
+    dialog button {
+        padding: 0.65rem 0.85rem !important;
+        font-size: 0.85rem !important;
+        border-radius: 8px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .post-card {
+        padding: 0.75rem !important;
+    }
+
+    .post-card h2 {
+        font-size: 1.05rem !important;
+    }
+
+    .post-card p {
+        font-size: 0.8rem !important;
+    }
+
+    .post-card .like-btn,
+    .post-card .read-more-btn {
+        padding: 0.35rem 0.55rem !important;
+        font-size: 0.72rem !important;
+    }
+
+    #createPostSection {
+        padding: 0.75rem !important;
+    }
+
+    #postForm input,
+    #postForm textarea,
+    #postForm select {
+        padding: 0.55rem !important;
+        font-size: 0.8rem !important;
+    }
+}
+
+/* ══════════════════════════════════════
+   MOBILE — USERS PAGE
+   ══════════════════════════════════════ */
+@media (max-width: 768px) {
+    #usersPage .grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3 {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .user-card {
+        padding: 1rem !important;
+        border-radius: 12px !important;
+    }
+
+    .user-card .w-16.h-16 {
+        width: 3.5rem !important;
+        height: 3.5rem !important;
+        border-radius: 10px !important;
+    }
+
+    .user-card h3 {
+        font-size: 1.05rem !important;
+        margin-bottom: 0.2rem !important;
+    }
+
+    .user-card .text-purple-400 {
+        font-size: 0.75rem !important;
+        margin-bottom: 0.65rem !important;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    .user-card .text-purple-200 {
+        font-size: 0.82rem !important;
+        line-height: 1.4 !important;
+        margin-bottom: 0.85rem !important;
+    }
+
+    .user-card .view-profile-btn {
+        padding: 0.45rem !important;
+        font-size: 0.78rem !important;
+        border-radius: 6px !important;
+    }
+
+    #usersPage .flex.gap-4.mb-6 {
+        flex-direction: column;
+        gap: 0.75rem !important;
+        margin-bottom: 0.85rem !important;
+    }
+
+    #usersPage .search-input {
+        width: 100% !important;
+    }
+
+    #usersPage .flex.gap-2 {
+        flex-wrap: wrap;
+        gap: 0.4rem !important;
+    }
+
+    #usersPage .filter-btn {
+        padding: 0.4rem 0.65rem !important;
+        font-size: 0.65rem !important;
+        border-radius: 6px !important;
+        font-family: 'JetBrains Mono', monospace;
+        letter-spacing: 0.06em;
+    }
+
+    #usersEmptyState {
+        padding: 2rem 1rem !important;
+    }
+
+    #usersEmptyState h3 {
+        font-size: 1.1rem !important;
+        margin-bottom: 0.6rem !important;
+    }
+
+    #usersEmptyState p {
+        font-size: 0.85rem !important;
+    }
+
+    #userProfileModal .bg-gray-900 {
+        padding: 1.25rem !important;
+        max-width: 95vw !important;
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+        border-radius: 12px !important;
+    }
+
+    #userProfileModal .w-20.h-20 {
+        width: 4.5rem !important;
+        height: 4.5rem !important;
+        border-radius: 12px !important;
+    }
+
+    #userProfileModal h2 {
+        font-size: 1.35rem !important;
+        margin-bottom: 0.4rem !important;
+    }
+
+    #userProfileModal .text-purple-400 {
+        font-size: 0.85rem !important;
+        margin-bottom: 0.85rem !important;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    #userProfileModal .text-purple-200 {
+        font-size: 0.85rem !important;
+        line-height: 1.55 !important;
+    }
+
+    #userProfileModal .space-y-4 > div {
+        margin-bottom: 0.65rem !important;
+    }
+
+    #userProfileModal .grid.grid-cols-1.md\\:grid-cols-2 {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ══════════════════════════════════════
+   SCROLLBAR & SELECTION
+   ══════════════════════════════════════ */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-deep);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-default);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--purple-deep);
+}
+
+::selection {
+    background: var(--purple-mid);
+    color: #fff;
+}
     </style>
 </head>
 
@@ -6012,34 +6163,37 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
              * Edit the systemMessage below to control what the AI knows and how it behaves.
              * This is the ONLY thing you need to change to customize the assistant.
              */
-            const systemMessage = `You are the Epsiai, built into the Epsilon Hub website with a purple and black theme. 
-            You are helpful, concise, and friendly.
-             You know about Epsilon's ecosystem of apps:
-            Epsilon AI (basic ai that can make images, respond and code) theme: pink,
-            Epsilon Azure (BMS, business to business marketplace) theme: blue,
-            Epsilon Heckle (gaming library and website, game engine for children) theme: red,
-            Epsilon Editz (editing tools,digital tools for artists and designers) theme: yellow,
-            Epsilon Motor (automobile community for cars,planes,ships,trucks and bikes) theme: grey,
-            Epsilon Neote (programming language, prototype js framework) theme: purple,
-            Epsilon Sport (fitness tracker, sport lovers community) theme: orange,
-            Epsilon Panel (web domain agency) theme: purple,
-            Epsilon Basic (basic tools for children and adults, library for 3d and 2d designing tools for games,cars interior etc) theme: lightgray,
-            and Epsilon Learn (free learning platform) theme: green.
-            All epsilon apps are free and open source platforms to use.
-             You also know about Epsilon's client projects like NTK Services (movers/logistics) and Zerah (stationary/clothing).
-              Epsilon was built by Warren Adrian and the Epsilon team who inculde members:
-              Warren Adian - Owner,
-              Glenn Njoroge - vital asset still in training but is to be responsible for epsilon panel,
-              Dylan Gikundi - responsible for epsilon apple apps,
-              Ethan Gitimu - responsible for epsilons android apps and epsilon learn,
-              Philip Hinga - responsible for epsilon sport,
-              Victor Mwaura - vital asset still in training,
-              Jaydon Kuria - responsible for epsilon heckle,
-              Jayden Mwangi - responsible for epsilon azure,
-              Casey Mwenda - responsible for epsilon editz,
-              Jabali Mwaniki - responsible for epsilon absic.
-              All of an age bracket of 12 years and 14 years the owner of epsilon is Warren Adrian at 14 years of age who build epsilon in June 6 of 2024 when he was 12 years of age
-              . Keep answers short and to the point and use examples and refferences to help the user understand. Do not make up information about features that don't exist or are not mentioned to you.`;
+            const systemMessage = `You are the Epsiai, built into the Epsilon Hub website with a purple and black theme. You are helpful, concise, and friendly. 
+
+You know about Epsilon's ecosystem of free and open-source apps:
+- Epsilon AI (basic ai that can make images, respond and code) | Theme: pink
+- Epsilon Azure (BMS, business to business marketplace) | Theme: blue
+- Epsilon Heckle (gaming library/website, game engine for children) | Theme: red
+- Epsilon Editz (editing tools, digital tools for artists and designers) | Theme: yellow
+- Epsilon Motor (automobile community for cars, planes, ships, trucks and bikes) | Theme: grey
+- Epsilon Neote (programming language, prototype js framework) | Theme: purple
+- Epsilon Sport (fitness tracker, sport lovers community) | Theme: orange
+- Epsilon Panel (web domain agency) | Theme: purple
+- Epsilon Basic (basic tools for kids/adults, library for 3d/2d designing tools for games, car interiors etc) | Theme: lightgray
+- Epsilon Learn (free learning platform) | Theme: green
+
+Client Projects:
+- NTK Services (movers/logistics)
+- Zerah (stationary/clothing)
+
+The Epsilon Team (Age bracket: 12-14 years old):
+- Warren Adrian (14 yrs old) - Owner. Built Epsilon on June 6, 2024, when he was 12.
+- Glenn Njoroge - Vital asset in training, responsible for Epsilon Panel.
+- Dylan Gikundi - Responsible for Epsilon Apple apps.
+- Ethan Gitimu - Responsible for Epsilon Android apps and Epsilon Learn.
+- Philip Hinga - Responsible for Epsilon Sport.
+- Victor Mwaura - Vital asset still in training.
+- Jaydon Kuria - Responsible for Epsilon Heckle.
+- Jayden Mwangi - Responsible for Epsilon Azure.
+- Casey Mwenda - Responsible for Epsilon Editz.
+- Jabali Mwaniki - Responsible for Epsilon Basic.
+
+Rules: Keep answers short and to the point. Always use clear examples and references to help the user understand. Format your responses beautifully using Markdown (bold text, lists, and headers where necessary). Do not make up information about features that don't exist or are not explicitly mentioned to you.`;
 
             /* ====== DOM REFS ====== */
             const btn = document.getElementById('epsilon-ai-btn');
