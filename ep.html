@@ -12,6 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Epsilon Hub">
     <link rel="apple-touch-icon" href="./epsilon logo.png">
     <link rel="icon" href="./epsilon logo.png">
+    <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
@@ -5811,11 +5812,42 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
         }
 
         .ai-msg.bot {
-            align-self: flex-start;
-            background: rgba(168, 85, 247, 0.12);
-            border: 1px solid rgba(168, 85, 247, 0.2);
-            color: #e2d6f5;
-            border-bottom-left-radius: 0.3rem;
+            background-color: rgba(13, 10, 25, 0.92);
+            /* Light gray box background */
+            color: #ffffff;
+            /* Dark text color */
+            border: 1px rgba(13, 10, 25, 0.92);
+            /* Subtle box border */
+            border-radius: 12px;
+            /* Rounded corners for the bubble */
+            padding: 10px 14px;
+            /* Spacing inside the box */
+            margin: 8px 0;
+            /* Spacing between different messages */
+            max-width: 99%;
+            /* Stops the box from stretching too wide */
+            display: inline-block;
+            /* Keeps the box wrapped tight to content */
+            word-wrap: break-word;
+            /* Makes sure long words don't overflow */
+        }
+
+        .ai-msg.bot ul,
+        .ai-msg.bot ol {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+
+        .ai-msg.bot p {
+            margin: 4px 0;
+        }
+
+        .ai-msg.bot h1,
+        .ai-msg.bot h2,
+        .ai-msg.bot h3 {
+            margin: 6px 0;
+            font-size: 1.1em;
+            font-weight: bold;
         }
 
         .ai-msg.user {
@@ -5980,7 +6012,34 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
              * Edit the systemMessage below to control what the AI knows and how it behaves.
              * This is the ONLY thing you need to change to customize the assistant.
              */
-            const systemMessage = `You are the Epsilon AI assistant, built into the Epsilon Hub website. You are helpful, concise, and friendly. You know about Epsilon's ecosystem of apps: Epsilon AI, Epsilon Azure (BMS), Epsilon Heckle (gaming), Epsilon Editz (editing tools), Epsilon Motor (car community), Epsilon Neote (programming language), Epsilon Sport (fitness tracker), and Epsilon Learn (free learning platform). You also know about Epsilon's client projects like NTK Services (movers/logistics) and Zerah (stationary/clothing). Epsilon was built by Warren Adrian and the Epsilon team. Keep answers short and to the point. Do not make up information about features that don't exist.`;
+            const systemMessage = `You are the Epsiai, built into the Epsilon Hub website with a purple and black theme. 
+            You are helpful, concise, and friendly.
+             You know about Epsilon's ecosystem of apps:
+            Epsilon AI (basic ai that can make images, respond and code) theme: pink,
+            Epsilon Azure (BMS, business to business marketplace) theme: blue,
+            Epsilon Heckle (gaming library and website, game engine for children) theme: red,
+            Epsilon Editz (editing tools,digital tools for artists and designers) theme: yellow,
+            Epsilon Motor (automobile community for cars,planes,ships,trucks and bikes) theme: grey,
+            Epsilon Neote (programming language, prototype js framework) theme: purple,
+            Epsilon Sport (fitness tracker, sport lovers community) theme: orange,
+            Epsilon Panel (web domain agency) theme: purple,
+            Epsilon Basic (basic tools for children and adults, library for 3d and 2d designing tools for games,cars interior etc) theme: lightgray,
+            and Epsilon Learn (free learning platform) theme: green.
+            All epsilon apps are free and open source platforms to use.
+             You also know about Epsilon's client projects like NTK Services (movers/logistics) and Zerah (stationary/clothing).
+              Epsilon was built by Warren Adrian and the Epsilon team who inculde members:
+              Warren Adian - Owner,
+              Glenn Njoroge - vital asset still in training but is to be responsible for epsilon panel,
+              Dylan Gikundi - responsible for epsilon apple apps,
+              Ethan Gitimu - responsible for epsilons android apps and epsilon learn,
+              Philip Hinga - responsible for epsilon sport,
+              Victor Mwaura - vital asset still in training,
+              Jaydon Kuria - responsible for epsilon heckle,
+              Jayden Mwangi - responsible for epsilon azure,
+              Casey Mwenda - responsible for epsilon editz,
+              Jabali Mwaniki - responsible for epsilon absic.
+              All of an age bracket of 12 years and 14 years the owner of epsilon is Warren Adrian at 14 years of age who build epsilon in June 6 of 2024 when he was 12 years of age
+              . Keep answers short and to the point and use examples and refferences to help the user understand. Do not make up information about features that don't exist or are not mentioned to you.`;
 
             /* ====== DOM REFS ====== */
             const btn = document.getElementById('epsilon-ai-btn');
@@ -6000,7 +6059,7 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
                 overlay.classList.add('open');
                 // First open — show a greeting
                 if (conversationHistory.length === 1) {
-                    addBotMessage("Hey! I'm Epsilon AI. Ask me anything about the ecosystem.");
+                    addBotMessage("Hey! I'm **Epsilon AI**. Ask me anything about the ecosystem.");
                 }
                 setTimeout(() => input.focus(), 300);
             }
@@ -6019,10 +6078,17 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
             });
 
             /* ====== MESSAGE RENDERING ====== */
-            function addBotMessage(text) {
+            function addBotMessage(markdownText) {
                 const div = document.createElement('div');
                 div.className = 'ai-msg bot';
-                div.textContent = text;
+
+                // PARSE MARKDOWN TO HTML: Use marked.parse if library loaded, fallback to safe text if not
+                if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+                    div.innerHTML = marked.parse(markdownText);
+                } else {
+                    div.textContent = markdownText;
+                }
+
                 messages.appendChild(div);
                 messages.scrollTop = messages.scrollHeight;
             }
@@ -6034,6 +6100,15 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
                 messages.appendChild(div);
                 messages.scrollTop = messages.scrollHeight;
             }
+
+            // Fix lists inside bot messages from ruining the layout spacing
+            const style = document.createElement('style');
+            style.innerHTML = `
+        .ai-msg.bot ul, .ai-msg.bot ol { margin: 5px 0; padding-left: 20px; }
+        .ai-msg.bot p { margin: 4px 0; }
+        .ai-msg.bot h1, .ai-msg.bot h2, .ai-msg.bot h3 { margin: 6px 0; font-size: 1.1em; }
+    `;
+            document.head.appendChild(style);
 
             function showTyping() {
                 const div = document.createElement('div');
@@ -6058,7 +6133,6 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
                 sendBtn.disabled = true;
                 input.value = '';
 
-                // FIX: Changed from non-existent addMessage to addUserMessage
                 addUserMessage(text);
                 conversationHistory.push({ role: 'user', content: text });
                 showTyping();
