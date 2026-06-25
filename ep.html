@@ -2054,7 +2054,9 @@
             <form id="surveyForm" class="space-y-6">
                 <div>
                     <label class="text-sm font-semibold mb-3 block">What interests you most?</label>
-                    <select id="surveyInterest" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required>
+                    <select id="surveyInterest"
+                        class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                        required>
                         <option value="">Select an option</option>
                         <option value="ai">Artificial Intelligence & Learning</option>
                         <option value="gaming">Gaming & Entertainment</option>
@@ -2068,7 +2070,9 @@
                 </div>
                 <div>
                     <label class="text-sm font-semibold mb-3 block">What do you enjoy doing?</label>
-                    <select id="surveyActivity" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required>
+                    <select id="surveyActivity"
+                        class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                        required>
                         <option value="">Select an option</option>
                         <option value="chat">Chatting with AI assistants</option>
                         <option value="play">Playing games</option>
@@ -2082,7 +2086,9 @@
                 </div>
                 <div>
                     <label class="text-sm font-semibold mb-3 block">What's your goal?</label>
-                    <select id="surveyGoal" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required>
+                    <select id="surveyGoal"
+                        class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600"
+                        required>
                         <option value="">Select an option</option>
                         <option value="learn">Learn something new</option>
                         <option value="fun">Have fun & relax</option>
@@ -2093,15 +2099,19 @@
                     </select>
                 </div>
                 <div class="flex gap-3">
-                    <button type="button" id="surveySkip" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-4 py-3 rounded-lg font-semibold">Skip</button>
-                    <button type="submit" class="flex-1 bg-purple-700 hover:bg-purple-800 text-white px-4 py-3 rounded-lg font-semibold">Get Recommendation</button>
+                    <button type="button" id="surveySkip"
+                        class="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-4 py-3 rounded-lg font-semibold">Skip</button>
+                    <button type="submit"
+                        class="flex-1 bg-purple-700 hover:bg-purple-800 text-white px-4 py-3 rounded-lg font-semibold">Get
+                        Recommendation</button>
                 </div>
             </form>
         </div>
     </dialog>
 
     <!-- Recommendation Modal -->
-    <dialog id="recommendationModal" class="rounded-xl p-0 border-0 shadow-2xl bg-transparent" style="max-width: 500px;">
+    <dialog id="recommendationModal" class="rounded-xl p-0 border-0 shadow-2xl bg-transparent"
+        style="max-width: 500px;">
         <div class="bg-gray-900 text-purple-100 rounded-xl p-8 glass border border-purple-800 text-center">
             <div class="mb-6">
                 <div class="w-20 h-20 mx-auto mb-4 bg-purple-600 rounded-full flex items-center justify-center">
@@ -2116,8 +2126,12 @@
                 <p id="recSiteDesc" class="text-purple-300 text-sm mb-4"></p>
             </div>
             <div class="flex gap-3">
-                <button id="recClose" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-4 py-3 rounded-lg font-semibold">Maybe Later</button>
-                <button id="recVisit" class="flex-1 bg-purple-700 hover:bg-purple-800 text-white px-4 py-3 rounded-lg font-semibold">Visit Now</button>
+                <button id="recClose"
+                    class="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-4 py-3 rounded-lg font-semibold">Maybe
+                    Later</button>
+                <button id="recVisit"
+                    class="flex-1 bg-purple-700 hover:bg-purple-800 text-white px-4 py-3 rounded-lg font-semibold">Visit
+                    Now</button>
             </div>
         </div>
     </dialog>
@@ -5575,6 +5589,523 @@ const followers = await api.getUserFollowers('warren_epsilon');</code></pre>
             </div>
         </div>
     </dialog>
+    <!-- ========== EPSILON AI ASSISTANT WIDGET ========== -->
+    <style>
+        /* --- Floating Button --- */
+        #epsilon-ai-btn {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 9999;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 1px solid rgba(168, 85, 247, 0.5);
+            background: rgba(13, 10, 25, 0.85);
+            backdrop-filter: blur(16px);
+            color: #c084fc;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 24px rgba(168, 85, 247, 0.35), 0 4px 16px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, background 0.3s ease;
+        }
+
+        #epsilon-ai-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 36px rgba(168, 85, 247, 0.55), 0 6px 24px rgba(0, 0, 0, 0.6);
+            background: rgba(168, 85, 247, 0.25);
+        }
+
+        #epsilon-ai-btn:active {
+            transform: scale(0.95);
+        }
+
+        #epsilon-ai-btn svg {
+            width: 22px;
+            height: 22px;
+            pointer-events: none;
+        }
+
+        /* Pulse ring animation */
+        #epsilon-ai-btn::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px solid rgba(168, 85, 247, 0.4);
+            animation: ai-pulse 2.5s ease-out infinite;
+        }
+
+        @keyframes ai-pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+
+            70% {
+                transform: scale(1.4);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1.4);
+                opacity: 0;
+            }
+        }
+
+        /* --- Modal Overlay --- */
+        #epsilon-ai-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: flex-end;
+            justify-content: flex-end;
+            padding: 1.5rem;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        #epsilon-ai-overlay.open {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* --- Chat Panel --- */
+        #epsilon-ai-panel {
+            width: 100%;
+            max-width: 400px;
+            max-height: 560px;
+            border-radius: 1.25rem;
+            background: rgba(13, 10, 25, 0.92);
+            backdrop-filter: blur(20px) saturate(150%);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), 0 0 40px rgba(168, 85, 247, 0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: translateY(20px) scale(0.96);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #epsilon-ai-overlay.open #epsilon-ai-panel {
+            transform: translateY(0) scale(1);
+        }
+
+        /* Header */
+        .ai-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.15);
+            flex-shrink: 0;
+        }
+
+        .ai-header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+        }
+
+        .ai-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #a855f7;
+            box-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
+            animation: ai-dot-glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes ai-dot-glow {
+            from {
+                box-shadow: 0 0 6px rgba(168, 85, 247, 0.4);
+            }
+
+            to {
+                box-shadow: 0 0 14px rgba(168, 85, 247, 0.8);
+            }
+        }
+
+        .ai-header h3 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: #f3e8ff;
+        }
+
+        .ai-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            background: transparent;
+            color: #c084fc;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .ai-close:hover {
+            background: rgba(168, 85, 247, 0.2);
+            color: #fff;
+        }
+
+        .ai-close svg {
+            width: 16px;
+            height: 16px;
+            pointer-events: none;
+        }
+
+        /* Messages Area */
+        .ai-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(168, 85, 247, 0.3) transparent;
+        }
+
+        .ai-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .ai-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .ai-messages::-webkit-scrollbar-thumb {
+            background: rgba(168, 85, 247, 0.3);
+            border-radius: 4px;
+        }
+
+        .ai-msg {
+            max-width: 85%;
+            padding: 0.7rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.85rem;
+            line-height: 1.55;
+            word-break: break-word;
+            animation: msg-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes msg-in {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .ai-msg.bot {
+            align-self: flex-start;
+            background: rgba(168, 85, 247, 0.12);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            color: #e2d6f5;
+            border-bottom-left-radius: 0.3rem;
+        }
+
+        .ai-msg.user {
+            align-self: flex-end;
+            background: #a855f7;
+            color: #fff;
+            border-bottom-right-radius: 0.3rem;
+        }
+
+        .ai-msg.typing span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #c084fc;
+            margin: 0 2px;
+            animation: typing-bounce 1.2s ease-in-out infinite;
+        }
+
+        .ai-msg.typing span:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .ai-msg.typing span:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes typing-bounce {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+
+            30% {
+                transform: translateY(-5px);
+                opacity: 1;
+            }
+        }
+
+        /* Input Area */
+        .ai-input-area {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.85rem 1.25rem;
+            border-top: 1px solid rgba(168, 85, 247, 0.15);
+            flex-shrink: 0;
+        }
+
+        .ai-input {
+            flex: 1;
+            background: rgba(168, 85, 247, 0.08);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 0.75rem;
+            padding: 0.6rem 1rem;
+            color: #f3e8ff;
+            font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .ai-input::placeholder {
+            color: rgba(192, 132, 252, 0.4);
+        }
+
+        .ai-input:focus {
+            border-color: #a855f7;
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.25);
+        }
+
+        .ai-send {
+            width: 38px;
+            height: 38px;
+            border-radius: 0.75rem;
+            border: none;
+            background: #a855f7;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, transform 0.15s;
+            flex-shrink: 0;
+        }
+
+        .ai-send:hover {
+            background: #9333ea;
+        }
+
+        .ai-send:active {
+            transform: scale(0.92);
+        }
+
+        .ai-send:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .ai-send svg {
+            width: 16px;
+            height: 16px;
+            pointer-events: none;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 480px) {
+            #epsilon-ai-overlay {
+                padding: 0.75rem;
+                align-items: flex-end;
+            }
+
+            #epsilon-ai-panel {
+                max-height: 75vh;
+                border-radius: 1.25rem 1.25rem 0 0;
+            }
+        }
+    </style>
+
+    <!-- Floating Button -->
+    <button id="epsilon-ai-btn" aria-label="Open AI Assistant">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
+        </svg>
+    </button>
+
+    <!-- Chat Modal -->
+    <div id="epsilon-ai-overlay">
+        <div id="epsilon-ai-panel">
+            <div class="ai-header">
+                <div class="ai-header-left">
+                    <div class="ai-dot"></div>
+                    <h3>Epsilon AI</h3>
+                </div>
+                <button class="ai-close" id="epsilon-ai-close" aria-label="Close chat">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="ai-messages" id="ai-messages"></div>
+            <div class="ai-input-area">
+                <input type="text" class="ai-input" id="ai-input" placeholder="Ask me anything..." autocomplete="off">
+                <button class="ai-send" id="ai-send" aria-label="Send message">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            /* ====== CONFIGURATION ======
+             * Edit the systemMessage below to control what the AI knows and how it behaves.
+             * This is the ONLY thing you need to change to customize the assistant.
+             */
+            const systemMessage = `You are the Epsilon AI assistant, built into the Epsilon Hub website. You are helpful, concise, and friendly. You know about Epsilon's ecosystem of apps: Epsilon AI, Epsilon Azure (BMS), Epsilon Heckle (gaming), Epsilon Editz (editing tools), Epsilon Motor (car community), Epsilon Neote (programming language), Epsilon Sport (fitness tracker), and Epsilon Learn (free learning platform). You also know about Epsilon's client projects like NTK Services (movers/logistics) and Zerah (stationary/clothing). Epsilon was built by Warren Adrian and the Epsilon team. Keep answers short and to the point. Do not make up information about features that don't exist.`;
+
+            /* ====== DOM REFS ====== */
+            const btn = document.getElementById('epsilon-ai-btn');
+            const overlay = document.getElementById('epsilon-ai-overlay');
+            const closeBtn = document.getElementById('epsilon-ai-close');
+            const messages = document.getElementById('ai-messages');
+            const input = document.getElementById('ai-input');
+            const sendBtn = document.getElementById('ai-send');
+
+            let conversationHistory = [
+                { role: 'system', content: systemMessage }
+            ];
+            let isWaiting = false;
+
+            /* ====== OPEN / CLOSE ====== */
+            function openChat() {
+                overlay.classList.add('open');
+                // First open — show a greeting
+                if (conversationHistory.length === 1) {
+                    addBotMessage("Hey! I'm Epsilon AI. Ask me anything about the ecosystem.");
+                }
+                setTimeout(() => input.focus(), 300);
+            }
+
+            function closeChat() {
+                overlay.classList.remove('open');
+            }
+
+            btn.addEventListener('click', openChat);
+            closeBtn.addEventListener('click', closeChat);
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) closeChat();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && overlay.classList.contains('open')) closeChat();
+            });
+
+            /* ====== MESSAGE RENDERING ====== */
+            function addBotMessage(text) {
+                const div = document.createElement('div');
+                div.className = 'ai-msg bot';
+                div.textContent = text;
+                messages.appendChild(div);
+                messages.scrollTop = messages.scrollHeight;
+            }
+
+            function addUserMessage(text) {
+                const div = document.createElement('div');
+                div.className = 'ai-msg user';
+                div.textContent = text;
+                messages.appendChild(div);
+                messages.scrollTop = messages.scrollHeight;
+            }
+
+            function showTyping() {
+                const div = document.createElement('div');
+                div.className = 'ai-msg bot typing';
+                div.id = 'ai-typing';
+                div.innerHTML = '<span></span><span></span><span></span>';
+                messages.appendChild(div);
+                messages.scrollTop = messages.scrollHeight;
+            }
+
+            function removeTyping() {
+                const el = document.getElementById('ai-typing');
+                if (el) el.remove();
+            }
+
+            /* ====== SEND MESSAGE ====== */
+            async function sendMessage() {
+                const text = input.value.trim();
+                if (!text || isWaiting) return;
+
+                isWaiting = true;
+                sendBtn.disabled = true;
+                input.value = '';
+
+                // FIX: Changed from non-existent addMessage to addUserMessage
+                addUserMessage(text);
+                conversationHistory.push({ role: 'user', content: text });
+                showTyping();
+
+                try {
+                    // Format the history so the AI remembers context via the GET endpoint
+                    const promptContext = conversationHistory
+                        .map(msg => {
+                            if (msg.role === 'system') return `System instructions: ${msg.content}`;
+                            return `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`;
+                        })
+                        .join('\n');
+
+                    // Clean and encode the prompt for the URL
+                    const encodedPrompt = encodeURIComponent(promptContext + "\nAssistant:");
+
+                    // Correct Pollinations GET endpoint with no API key needed
+                    const res = await fetch(`https://text.pollinations.ai/${encodedPrompt}?model=openai&cache=false`);
+
+                    if (!res.ok) throw new Error(`API returned ${res.status}`);
+
+                    const replyText = await res.text();
+                    removeTyping();
+                    addBotMessage(replyText);
+                    conversationHistory.push({ role: 'assistant', content: replyText });
+
+                } catch (err) {
+                    removeTyping();
+                    addBotMessage("Something went wrong. Please try again.");
+                    console.error('Epsilon AI error:', err);
+                }
+
+                isWaiting = false;
+                sendBtn.disabled = false;
+                input.focus();
+            }
+
+            sendBtn.addEventListener('click', sendMessage);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        })();
+    </script>
+    <!-- ========== END EPSILON AI ASSISTANT WIDGET ========== -->
 </body>
 
 </html>
