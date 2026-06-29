@@ -10,268 +10,630 @@
     <!-- Add PeerJS library -->
     <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
-/* Customers table */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root {
+    --purple-400: #c084fc;
+    --purple-500: #a855f7;
+    --purple-600: #9333ea;
+    --purple-700: #7e22ce;
+    --purple-800: #6b21a8;
+    --black: #050505;
+    --black-card: #0d0d0d;
+    --black-raised: #111111;
+    --black-input: #0a0a0a;
+    --white: #ffffff;
+    --white-soft: #f0f0f0;
+    --white-muted: #a3a3a3;
+    --white-dim: #525252;
+    --border: rgba(168, 85, 247, 0.1);
+    --border-hover: rgba(168, 85, 247, 0.25);
+    --glow: rgba(168, 85, 247, 0.15);
+    --glow-strong: rgba(168, 85, 247, 0.35);
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(168, 85, 247, 0.15) transparent;
+}
+
+*::-webkit-scrollbar { width: 5px; height: 5px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: rgba(168, 85, 247, 0.15); border-radius: 99px; }
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--black);
+    color: var(--white-soft);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+}
+
+::selection {
+    background: var(--purple-600);
+    color: var(--white);
+}
+
+/* ─── Background ─── */
+.bg-mesh {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background:
+        radial-gradient(ellipse 50% 40% at 0% 0%, rgba(88, 28, 135, 0.2) 0%, transparent 100%),
+        radial-gradient(ellipse 40% 30% at 100% 100%, rgba(88, 28, 135, 0.15) 0%, transparent 100%),
+        var(--black);
+}
+
+.bg-mesh::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(168, 85, 247, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(168, 85, 247, 0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,0,0,0.8) 0%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,0,0,0.8) 0%, transparent 70%);
+}
+
+.bg-mesh::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--purple-500) 50%, transparent 100%);
+    opacity: 0.4;
+}
+
+/* ─── Glass ─── */
+.glass {
+    background: var(--black-card);
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 0 0 rgba(255,255,255,0.02) inset, 0 4px 24px -4px rgba(0,0,0,0.5);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass:hover {
+    border-color: var(--border-hover);
+    box-shadow: 0 1px 0 0 rgba(255,255,255,0.03) inset, 0 8px 32px -4px rgba(168, 85, 247, 0.06);
+}
+
+/* ─── Pages ─── */
+.page { display: none; }
+.page.active { display: flex; }
+
+#loginPage {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+}
+
+#dashboardPage { display: none; }
+#dashboardPage.active { display: block; }
+
+.section {
+    animation: sectionIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes sectionIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Sidebar ─── */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 260px;
+    background: var(--black);
+    border-right: 1px solid var(--border);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 100;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.sidebar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -1px;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent 0%, var(--purple-500) 20%, var(--purple-400) 50%, var(--purple-500) 80%, transparent 100%);
+    opacity: 0.2;
+}
+
+.sidebar.closed { transform: translateX(-100%); }
+
+.main-content {
+    margin-left: 260px;
+    transition: margin-left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 2rem 2.5rem 4rem;
+    min-height: 100vh;
+}
+
+.main-content.expanded { margin-left: 0; }
+
+.menu-toggle {
+    position: fixed;
+    top: 1.25rem;
+    left: 1.25rem;
+    z-index: 101;
+    background: var(--black-raised);
+    border: 1px solid var(--border);
+    padding: 0.55rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    color: var(--purple-400);
+}
+
+.menu-toggle:hover {
+    background: var(--purple-600);
+    border-color: var(--purple-600);
+    color: var(--white);
+    box-shadow: 0 0 20px var(--glow-strong);
+}
+
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 99;
+    display: none;
+}
+
+.sidebar-overlay.active { display: block; }
+
+/* ─── Sidebar Brand ─── */
+.sidebar h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--white);
+    text-transform: uppercase;
+}
+
+.sidebar h2 span {
+    color: var(--purple-400);
+}
+
+/* ─── Nav Buttons ─── */
+.nav-btn {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--white-dim);
+    border-radius: 0.5rem;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.nav-btn::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 15%;
+    height: 70%;
+    width: 2.5px;
+    background: var(--purple-500);
+    border-radius: 0 3px 3px 0;
+    transform: scaleY(0);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 0 8px var(--glow-strong);
+}
+
+.nav-btn:hover {
+    background: rgba(168, 85, 247, 0.06) !important;
+    color: var(--white-soft) !important;
+}
+
+.nav-btn:hover svg { color: var(--purple-400); }
+
+.nav-btn.bg-purple-600 {
+    background: rgba(168, 85, 247, 0.1) !important;
+    color: var(--white) !important;
+    border: 1px solid var(--border-hover);
+}
+
+.nav-btn.bg-purple-600::before { transform: scaleY(1); }
+.nav-btn.bg-purple-600 svg { color: var(--purple-400) !important; }
+
+.nav-btn svg {
+    color: var(--white-dim);
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+}
+
+/* ─── Sidebar Divider ─── */
+.sidebar .border-t { border-color: var(--border) !important; }
+
+/* ─── Logout ─── */
+#logoutBtn {
+    color: var(--white-dim);
+    font-size: 0.8rem;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+#logoutBtn:hover {
+    background: rgba(239, 68, 68, 0.08) !important;
+    color: #f87171 !important;
+}
+
+#logoutBtn svg { color: var(--white-dim); transition: color 0.2s; }
+#logoutBtn:hover svg { color: #f87171; }
+
+/* ─── Header ─── */
+header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 1.625rem;
+    letter-spacing: -0.02em;
+    color: var(--white);
+}
+
+/* ─── Section Titles ─── */
+.section h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 1.125rem;
+    color: var(--white);
+    letter-spacing: -0.01em;
+}
+
+/* ─── Inputs ─── */
+input, textarea, select {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8125rem;
+    background: var(--black-input) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--white-soft) !important;
+    border-radius: 0.5rem !important;
+    transition: all 0.25s ease !important;
+    outline: none !important;
+}
+
+input::placeholder, textarea::placeholder {
+    color: var(--white-dim) !important;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: var(--purple-500) !important;
+    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1), 0 0 24px rgba(168, 85, 247, 0.06) !important;
+}
+
+select option {
+    background: var(--black-raised);
+    color: var(--white-soft);
+}
+
+/* ─── Submit Buttons ─── */
+button[type="submit"] {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    background: var(--purple-600) !important;
+    border: 1px solid rgba(168, 85, 247, 0.3) !important;
+    color: var(--white) !important;
+    border-radius: 0.5rem !important;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s ease !important;
+}
+
+button[type="submit"]::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+    transform: translateX(-110%);
+    transition: transform 0.6s ease;
+}
+
+button[type="submit"]:hover {
+    background: var(--purple-500) !important;
+    border-color: rgba(168, 85, 247, 0.5) !important;
+    box-shadow: 0 0 24px var(--glow-strong) !important;
+    transform: translateY(-1px);
+}
+
+button[type="submit"]:hover::after { transform: translateX(110%); }
+button[type="submit"]:active { transform: translateY(0); }
+
+/* ─── User Cards ─── */
+#usersList > div {
+    border-radius: 0.75rem;
+    transition: all 0.25s ease;
+}
+
+#usersList > div:hover {
+    border-color: var(--border-hover) !important;
+    background: rgba(168, 85, 247, 0.03) !important;
+    transform: translateX(3px);
+}
+
+#usersList > div img {
+    border: 2px solid var(--border);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    border-radius: 50%;
+}
+
+#usersList > div:hover img {
+    border-color: var(--purple-500);
+    box-shadow: 0 0 12px var(--glow);
+}
+
+/* ─── Chat Messages ─── */
+#chatMessages > div {
+    border-radius: 0.625rem;
+    transition: border-color 0.2s ease;
+}
+
+#chatMessages > div:hover { border-color: var(--border-hover); }
+
+#chatMessages img {
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    transition: border-color 0.2s;
+}
+
+#chatMessages > div:hover img { border-color: var(--purple-500); }
+
+/* ─── Project Cards ─── */
+#projectsList > div {
+    border-radius: 0.875rem;
+    transition: all 0.3s ease;
+}
+
+#projectsList > div:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(168, 85, 247, 0.08);
+}
+
+/* ─── Customers Table ─── */
 #customersTableBody tr {
-    border-bottom: 1px solid rgba(168, 85, 247, 0.1);
+    border-bottom: 1px solid var(--border);
     transition: background 0.15s ease;
 }
 
-#customersTableBody tr:hover {
-    background: rgba(168, 85, 247, 0.07);
+#customersTableBody tr:hover { background: rgba(168, 85, 247, 0.04); }
+#customersTableBody tr:last-child { border-bottom: none; }
+
+/* ─── Welcome Cards ─── */
+#welcomeSection .grid > div {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
-#customersTableBody tr:last-child {
-    border-bottom: none;
+#welcomeSection .grid > div::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--purple-500);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
 }
 
-/* Spinner animation */
-@keyframes spin {
-    to { transform: rotate(360deg); }
+#welcomeSection .grid > div:hover::after { transform: scaleX(1); }
+
+#welcomeSection .grid > div:hover {
+    border-color: var(--border-hover);
+    background: rgba(168, 85, 247, 0.04);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(168, 85, 247, 0.06);
 }
 
-.animate-spin {
-    animation: spin 0.8s linear infinite;
+#welcomeSection .grid > div:hover svg {
+    color: var(--purple-400) !important;
+    filter: drop-shadow(0 0 6px var(--glow-strong));
+    transform: scale(1.08);
 }
 
-/* Toast notification */
+#welcomeSection .grid > div svg { transition: all 0.3s ease; }
+
+/* ─── Spinner ─── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.animate-spin { animation: spin 0.8s linear infinite; }
+
+/* ─── Toasts ─── */
 .toast {
     position: fixed;
     top: 1.5rem;
     right: 1.5rem;
     z-index: 9999;
     padding: 0.75rem 1.25rem;
-    border-radius: 0.75rem;
-    font-size: 0.875rem;
+    border-radius: 0.625rem;
+    font-size: 0.8rem;
     font-weight: 600;
-    animation: toastIn 0.3s ease-out, toastOut 0.3s ease-in 2.5s forwards;
+    backdrop-filter: blur(16px);
+    animation: toastIn 0.4s cubic-bezier(0.16, 1, 0.3, 1), toastOut 0.3s ease-in 2.5s forwards;
     pointer-events: none;
 }
 
 .toast-success {
-    background: rgba(22, 163, 74, 0.9);
-    border: 1px solid rgba(74, 222, 128, 0.4);
-    color: #fff;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.25);
+    color: #4ade80;
 }
 
 .toast-error {
-    background: rgba(220, 38, 38, 0.9);
-    border: 1px solid rgba(239, 68, 68, 0.4);
-    color: #fff;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: #f87171;
 }
 
 @keyframes toastIn {
-    from { transform: translateX(100%); opacity: 0; }
+    from { transform: translateX(120%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
 }
 
 @keyframes toastOut {
     from { opacity: 1; }
-    to { opacity: 0; }
+    to { opacity: 0; transform: translateY(-6px); }
 }
 
-/* Modal fade-in */
+/* ─── Modals ─── */
 #editCustomerModal.active,
-#deleteCustomerModal.active {
-    display: flex !important;
+#deleteCustomerModal.active { display: flex !important; }
+
+/* ─── Call UI ─── */
+.call-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #000;
-            color: #f3e8ff;
-        }
 
-        .glass {
-            background: rgba(17, 24, 39, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(168, 85, 247, 0.2);
-        }
+@keyframes slideIn {
+    from { transform: translateX(120%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
 
-        .bg-mesh {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background-image: radial-gradient(at 0% 0%, #1e1b4b 0, transparent 50%), radial-gradient(at 100% 100%, #312e81 0, transparent 50%);
-        }
+.call-active {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    z-index: 999;
+}
 
-        .page {
-            display: none;
-        }
+.audio-level {
+    height: 3px;
+    background: var(--purple-500);
+    border-radius: 99px;
+    transition: width 0.1s;
+    box-shadow: 0 0 8px var(--glow);
+}
 
-        .page.active {
-            display: flex;
-        }
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    background: var(--black);
+    border-radius: 0.875rem;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+}
 
-        #loginPage {
-            position: fixed;
-            inset: 0;
-            z-index: 200;
-            align-items: center;
-            justify-content: center;
-        }
+.local-video {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    width: 120px;
+    height: 90px;
+    background: var(--black-raised);
+    border-radius: 0.5rem;
+    border: 2px solid var(--purple-500);
+    z-index: 10;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.5), 0 0 16px var(--glow);
+}
 
-        #dashboardPage {
-            display: none;
-        }
+.remote-video { width: 100%; height: 100%; object-fit: cover; }
 
-        #dashboardPage.active {
-            display: block;
-        }
+.video-controls {
+    position: absolute;
+    bottom: 1.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.625rem;
+    z-index: 20;
+    padding: 0.5rem 0.875rem;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(16px);
+    border-radius: 0.875rem;
+    border: 1px solid var(--border);
+}
 
-        /* Call notification styles */
-        .call-notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-            animation: slideIn 0.3s ease-out;
-        }
+.video-controls button {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--black-raised);
+    border: 1px solid var(--border);
+    color: var(--white-soft);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
 
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
+.video-controls button:hover {
+    background: var(--purple-600);
+    border-color: var(--purple-500);
+    color: var(--white);
+    box-shadow: 0 0 16px var(--glow-strong);
+}
 
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
+/* ─── Tailwind Color Overrides ─── */
+.text-purple-200 { color: var(--white-muted) !important; }
+.text-purple-300 { color: var(--white-muted) !important; }
+.text-purple-400 { color: var(--white-dim) !important; }
+.text-purple-600 { color: var(--purple-500) !important; }
+.text-purple-700 { color: var(--purple-700) !important; }
+.text-green-400 { color: #4ade80 !important; }
+.text-red-500 { color: #f87171 !important; }
+.text-white { color: var(--white) !important; }
 
-        .call-active {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            z-index: 999;
-        }
+.border-purple-600 { border-color: var(--purple-500) !important; }
+.border-purple-700 { border-color: rgba(126, 34, 206, 0.3) !important; }
 
-        .audio-level {
-            height: 4px;
-            background-color: #a855f7;
-            transition: width 0.1s;
-        }
+.bg-purple-600 { background: var(--purple-600) !important; }
+.bg-purple-700 { background: var(--purple-700) !important; }
+.bg-gray-700 { background: var(--black-raised) !important; }
+.bg-gray-800 { background: var(--black-input) !important; }
+.bg-green-600 { background: #22c55e !important; }
+.bg-red-600 { background: #ef4444 !important; }
 
-        .video-container {
-            position: relative;
-            width: 100%;
-            height: 400px;
-            background: #111;
-            border-radius: 1rem;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+.hover\:bg-purple-600:hover { background: var(--purple-600) !important; }
+.hover\:bg-purple-700:hover { background: var(--purple-700) !important; }
+.hover\:bg-purple-800:hover { background: var(--purple-800) !important; }
+.hover\:bg-gray-700:hover { background: var(--black-raised) !important; }
+.hover\:bg-green-700:hover { background: #16a34a !important; }
+.hover\:bg-red-600:hover { background: #ef4444 !important; }
+.hover\:bg-red-700:hover { background: #b91c1c !important; }
+.hover\:text-purple-200:hover { color: var(--white-soft) !important; }
+.hover\:text-purple-300:hover { color: var(--white-muted) !important; }
+.hover\:text-white:hover { color: var(--white) !important; }
+.hover\:text-green-300:hover { color: #4ade80 !important; }
 
-        .local-video {
-            position: absolute;
-            bottom: 1rem;
-            right: 1rem;
-            width: 120px;
-            height: 90px;
-            background: #222;
-            border-radius: 0.5rem;
-            border: 2px solid #a855f7;
-            z-index: 10;
-        }
+.focus\:ring-purple-600:focus { --tw-ring-color: var(--purple-500) !important; }
 
-        .remote-video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .video-controls {
-            position: absolute;
-            bottom: 1.5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 1rem;
-            z-index: 20;
-        }
-
-        /* Sidebar styles */
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            height: 100vh;
-            width: 280px;
-            background: rgba(17, 24, 39, 0.95);
-            backdrop-filter: blur(10px);
-            border-right: 1px solid rgba(168, 85, 247, 0.2);
-            transition: transform 0.3s ease;
-            z-index: 100;
-            overflow-y: auto;
-        }
-
-        .sidebar.closed {
-            transform: translateX(-100%);
-        }
-
-        .main-content {
-            margin-left: 280px;
-            transition: margin-left 0.3s ease;
-            padding: 2rem;
-        }
-
-        .main-content.expanded {
-            margin-left: 0;
-        }
-
-        .menu-toggle {
-            position: fixed;
-            top: 1rem;
-            left: 1rem;
-            z-index: 101;
-            background: rgba(168, 85, 247, 0.9);
-            border: none;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .menu-toggle:hover {
-            background: rgba(168, 85, 247, 1);
-        }
-
-        .sidebar-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 99;
-            display: none;
-        }
-
-        .sidebar-overlay.active {
-            display: block;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0;
-            }
-        }
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-left: 0; padding: 1.25rem 1rem 3rem; }
+    header h1 { font-size: 1.25rem; }
+}
     </style>
-
-<body class="min-h-screen">
     <div class="bg-mesh"></div>
 
     <!-- Menu Toggle Button -->
-    <button id="menuToggle" class="menu-toggle hidden">
+    <button id="menuToggle" class="menu-toggle">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="menu" aria-hidden="true" class="lucide lucide-menu w-6 h-6 text-white"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
     </button>
 
@@ -279,7 +641,7 @@
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
     <!-- Sidebar Navigation -->
-    <aside id="sidebar" class="sidebar closed">
+    <aside id="sidebar" class="sidebar">
         <div class="p-6">
             <div class="flex items-center justify-between mb-8">
                 <h2 class="text-2xl font-bold">EPSILON<span class="text-purple-600"> ADMIN</span></h2>
@@ -289,7 +651,7 @@
             </div>
             
             <nav class="space-y-2">
-                <button class="nav-btn w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-600 transition text-left" data-page="chat">
+                <button class="nav-btn w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-600 transition text-left bg-purple-600" data-page="chat">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="message-circle" aria-hidden="true" class="lucide lucide-message-circle w-5 h-5"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"></path></svg>
                     <span>Admin Chat</span>
                 </button>
@@ -333,7 +695,7 @@
     </aside>
 
     <!-- Login Page -->
-    <div id="loginPage" class="page active px-6">
+    <div id="loginPage" class="page px-6">
         <div class="max-w-md w-full">
             <div class="glass p-8 rounded-3xl">
                 <h1 class="text-3xl font-bold mb-6 text-center">EPSILON<span class="text-purple-600"> ADMIN</span></h1>
@@ -349,14 +711,14 @@
     
 
     <!-- Dashboard Page -->
-    <div id="dashboardPage" class="page">
-        <div id="mainContent" class="main-content expanded">
+    <div id="dashboardPage" class="page active">
+        <div id="mainContent" class="main-content">
             <header class="flex justify-between items-center mb-8">
                 <h1 class="text-4xl font-bold">Admin Dashboard</h1>
             </header>
 
             <!-- Welcome Section -->
-            <div id="welcomeSection" class="section">
+            <div id="welcomeSection" class="section hidden">
                 <div class="glass p-8 rounded-3xl text-center">
                     <h2 class="text-3xl font-bold mb-4">Welcome to Epsilon Admin Panel</h2>
                     <p class="text-purple-300 mb-6">Select a section from the sidebar to get started</p>
@@ -382,10 +744,59 @@
             </div>
 
         <!-- Chat Section -->
-        <div id="chatSection" class="section hidden">
+        <div id="chatSection" class="section">
             <div class="glass p-6 rounded-3xl">
                 <h2 class="text-2xl font-bold mb-4">Admin Chat Room</h2>
-                <div id="chatMessages" class="h-96 overflow-y-auto mb-4 space-y-3"></div>
+                <div id="chatMessages" class="h-96 overflow-y-auto mb-4 space-y-3"><div class="flex items-start gap-3 glass p-3 rounded-lg">
+                    <img src="https://epsilonneon-sketch.github.io/epsilon-site-v1/epsilon%20logo.png" class="w-10 h-10 rounded-full">
+                    <div class="flex-1">
+                        <p class="font-bold text-sm">warrenseye</p>
+                        <p class="text-purple-200">hello jason</p>
+                        <p class="text-xs text-purple-400">12:01:04 PM</p>
+                    </div>
+                </div><div class="flex items-start gap-3 glass p-3 rounded-lg">
+                    <img src="https://picsum.photos/seed/038965c7-8e70-4ccb-9e93-f84f3e1fb3b9/200/200.jpg" class="w-10 h-10 rounded-full">
+                    <div class="flex-1">
+                        <p class="font-bold text-sm">eclipseeye</p>
+                        <p class="text-purple-200">hello warren</p>
+                        <p class="text-xs text-purple-400">12:05:01 PM</p>
+                    </div>
+                </div><div class="flex items-start gap-3 glass p-3 rounded-lg">
+                    <img src="https://picsum.photos/seed/038965c7-8e70-4ccb-9e93-f84f3e1fb3b9/200/200.jpg" class="w-10 h-10 rounded-full">
+                    <div class="flex-1">
+                        <p class="font-bold text-sm">eclipseeye</p>
+                        <p class="text-purple-200">warren</p>
+                        <p class="text-xs text-purple-400">12:06:06 PM</p>
+                    </div>
+                </div><div class="flex items-start gap-3 glass p-3 rounded-lg">
+                    <img src="https://picsum.photos/seed/038965c7-8e70-4ccb-9e93-f84f3e1fb3b9/200/200.jpg" class="w-10 h-10 rounded-full">
+                    <div class="flex-1">
+                        <p class="font-bold text-sm">eclipseeye</p>
+                        <p class="text-purple-200">are you there</p>
+                        <p class="text-xs text-purple-400">12:06:18 PM</p>
+                    </div>
+                </div><div class="flex items-start gap-3 glass p-3 rounded-lg">
+                    <img src="https://epsilonneon-sketch.github.io/epsilon-site-v1/epsilon%20logo.png" class="w-10 h-10 rounded-full">
+                    <div class="flex-1">
+                        <p class="font-bold text-sm">warrenseye</p>
+                        <p class="text-purple-200">yes</p>
+                        <p class="text-xs text-purple-400">12:07:55 PM</p>
+                    </div>
+                </div><div class="flex items-start gap-3 glass p-3 rounded-lg">
+                    <img src="https://picsum.photos/200" class="w-10 h-10 rounded-full">
+                    <div class="flex-1">
+                        <p class="font-bold text-sm">Eye</p>
+                        <p class="text-purple-200">hello warren</p>
+                        <p class="text-xs text-purple-400">12:16:15 PM</p>
+                    </div>
+                </div><div class="flex items-start gap-3 glass p-3 rounded-lg">
+                    <img src="https://picsum.photos/200" class="w-10 h-10 rounded-full">
+                    <div class="flex-1">
+                        <p class="font-bold text-sm">Eye</p>
+                        <p class="text-purple-200">this is my new account that you created for me</p>
+                        <p class="text-xs text-purple-400">12:16:36 PM</p>
+                    </div>
+                </div></div>
                 <form id="chatForm" class="flex gap-2">
                     <input id="chatInput" type="text" placeholder="Type a message..." class="flex-1 rounded-lg px-4 py-3 bg-gray-800 border border-purple-700" required="">
                     <button type="submit" class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-3 rounded-lg">Send</button>
@@ -416,7 +827,223 @@
         <div id="usersSection" class="section hidden">
             <div class="glass p-6 rounded-3xl">
                 <h2 class="text-2xl font-bold mb-4">User Management</h2>
-                <div id="usersList" class="space-y-3"></div>
+                <div id="usersList" class="space-y-3"><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/200" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">see</p>
+                            <p class="text-xs text-purple-400">@user_fd1f7156</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">6/28/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/200" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">Eye</p>
+                            <p class="text-xs text-purple-400">@Eye</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">6/21/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/5fedcf44-99fc-4174-be40-611f5f954b9a/200/200.jpg" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">Stew_Art</p>
+                            <p class="text-xs text-purple-400">@Stew_Art</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">3/30/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/038965c7-8e70-4ccb-9e93-f84f3e1fb3b9/200/200.jpg" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">eclipseeye</p>
+                            <p class="text-xs text-purple-400">@eclipseeye</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">3/7/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/a8a71032-695b-4c4f-bef3-ee3d231cb437/200/200.jpg" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">Myra</p>
+                            <p class="text-xs text-purple-400">@myra k</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">2/28/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/3ee9c472-d35e-4cab-b247-8deebedc8fcb/200/200.jpg" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">Debbienjr </p>
+                            <p class="text-xs text-purple-400">@Debbienjr </p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">2/15/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/149793b0-a331-4aff-86a5-7cfd2a3d00da/200/200.jpg" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">ιѕяαєℓ</p>
+                            <p class="text-xs text-purple-400">@Ashley </p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">2/14/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/11a6921c-0c75-4081-a742-87134a763bd2/200/200.jpg" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">Tess</p>
+                            <p class="text-xs text-purple-400">@Tess67676767</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">2/14/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/d93fec7a-a258-4baa-8ab2-b91b8ed23936/200/200.jpg" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">Mary</p>
+                            <p class="text-xs text-purple-400">@Mary Margaret </p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">2/14/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/3421d7e5-c08d-441f-9074-b9fba967ec6d/200/200.jpg" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">Glion200 ☑</p>
+                            <p class="text-xs text-purple-400">@GLION200</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">2/14/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/ba5eabc8-fea9-4f1d-88e4-5a19e7496c4f/200/200.jpg" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">dy1an rg ☑</p>
+                            <p class="text-xs text-purple-400">@xmas+</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">2/14/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/25c2f62b-1a72-4e5d-bc65-b7cd9e2b5e20/200/200.jpg" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">Kokii</p>
+                            <p class="text-xs text-purple-400">@Regy_zerah.corp</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">2/14/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/e2beb36a-bebe-4624-b06b-48cb65bd96c8/200/200.jpg" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">P.k</p>
+                            <p class="text-xs text-purple-400">@P.k_epsilon</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">2/13/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/62f70682-cff2-41d0-91d1-f5e8777ede5d/200/200.jpg" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">richard njoroge ☑</p>
+                            <p class="text-xs text-purple-400">@rich_epsilon</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">2/13/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/bdd419d3-a997-423d-8d19-446f4aabc79c/200/200.jpg" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">Rayy fvv</p>
+                            <p class="text-xs text-purple-400">@Rxyiisheyasss say</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">2/13/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/758db3e2-d12d-4aee-92a1-03caf22a4a3d/200/200.jpg" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">Jay_linx</p>
+                            <p class="text-xs text-purple-400">@Jay_linx</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">2/13/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/6d9ca272-9647-4e43-9c2f-502aba602cad/200/200.jpg" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">ℓєє</p>
+                            <p class="text-xs text-purple-400">@ѕнєяℓєтє ιѕяαєℓ</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">2/12/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/f547b66e-ce90-4430-bde0-5c905710f40f/200/200.jpg" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">jabalim</p>
+                            <p class="text-xs text-purple-400">@jabali_epil</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">2/12/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/85d5d3a1-2ef1-4b6f-aa3b-f4d94c85f541/200/200.jpg" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">Nyx RyZe</p>
+                            <p class="text-xs text-purple-400">@Falcon_RyZe</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">2/12/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/c1522d4c-28a7-404f-bfe3-559ce8ab9962/200/200.jpg" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">Kushmann ☑</p>
+                            <p class="text-xs text-purple-400">@Jaydon</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">2/12/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://epsilonneon-sketch.github.io/epsilon-site-v1/epsilon%20logo.png" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">Ethan (ADMIN) ☑</p>
+                            <p class="text-xs text-purple-400">@Ethan</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">2/11/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/95eb713a-2467-4121-8a77-d5188221f7dd/200/200.jpg" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">Phillip ☑</p>
+                            <p class="text-xs text-purple-400">@El-rosco</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">2/7/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://picsum.photos/seed/2d2d6fa1-9ed0-4ffd-bd7c-a79c9e8edb36/200/200.jpg" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">epsilon</p>
+                            <p class="text-xs text-purple-400">@epsilon</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">2/7/2026</span>
+                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <img src="https://epsilonneon-sketch.github.io/epsilon-site-v1/epsilon%20logo.png" class="w-12 h-12 rounded-full">
+                        <div>
+                            <p class="font-bold">warren ☑</p>
+                            <p class="text-xs text-purple-400">@warrenseye</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-purple-400">2/7/2026</span>
+                </div></div>
             </div>
         </div>
 
@@ -425,11 +1052,11 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="glass p-6 rounded-3xl">
                     <h3 class="text-lg font-bold mb-2">Total Users</h3>
-                    <p id="totalUsers" class="text-4xl font-bold text-purple-400">0</p>
+                    <p id="totalUsers" class="text-4xl font-bold text-purple-400">24</p>
                 </div>
                 <div class="glass p-6 rounded-3xl">
                     <h3 class="text-lg font-bold mb-2">Total Posts</h3>
-                    <p id="totalPosts" class="text-4xl font-bold text-purple-400">0</p>
+                    <p id="totalPosts" class="text-4xl font-bold text-purple-400">2</p>
                 </div>
                 <div class="glass p-6 rounded-3xl">
                     <h3 class="text-lg font-bold mb-2">Active Projects</h3>
@@ -490,7 +1117,7 @@
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-2xl font-bold">Add Customer</h2>
             <button id="toggleCustomerFormBtn" class="text-purple-400 hover:text-purple-300 transition text-sm flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"></path></svg>
                 Collapse
             </button>
         </div>
@@ -498,7 +1125,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm text-purple-300 mb-1">Full Name *</label>
-                    <input id="custName" type="text" placeholder="John Doe" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required>
+                    <input id="custName" type="text" placeholder="John Doe" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required="">
                 </div>
                 <div>
                     <label class="block text-sm text-purple-300 mb-1">Company</label>
@@ -506,7 +1133,7 @@
                 </div>
                 <div>
                     <label class="block text-sm text-purple-300 mb-1">Phone Number *</label>
-                    <input id="custPhone" type="tel" placeholder="+1 555 123 4567" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required>
+                    <input id="custPhone" type="tel" placeholder="+1 555 123 4567" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required="">
                 </div>
                 <div>
                     <label class="block text-sm text-purple-300 mb-1">Email</label>
@@ -536,7 +1163,7 @@
                 <input id="customerSearch" type="text" placeholder="Search by name, company, or phone..." class="w-full rounded-lg pl-10 pr-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600">
             </div>
             <div class="flex items-center gap-2">
-                <span id="customerCount" class="text-sm text-purple-300">0 customers</span>
+                <span id="customerCount" class="text-sm text-purple-300">4 customers</span>
             </div>
         </div>
     </div>
@@ -555,9 +1182,111 @@
                         <th class="px-6 py-4 text-sm font-bold text-purple-300 uppercase tracking-wider text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody id="customersTableBody">
-                    <!-- Rows injected by JS -->
-                </tbody>
+                <tbody id="customersTableBody"><tr>
+            <td class="px-6 py-4">
+                <span class="font-semibold text-white">gogroup</span>
+            </td>
+            <td class="px-6 py-4">
+                <span class="text-purple-300">gogroup</span>
+            </td>
+            <td class="px-6 py-4">
+                <a href="tel:+92 309 9154938" class="text-green-400 hover:text-green-300 transition">+92 309 9154938</a>
+            </td>
+            <td class="px-6 py-4 hidden md:table-cell">
+                <span class="text-purple-300"><a href="mailto:gogroupofcompany@gmail.com" class="hover:text-purple-200 transition">gogroupofcompany@gmail.com</a></span>
+            </td>
+            <td class="px-6 py-4 hidden lg:table-cell">
+                <span class="text-purple-400 text-sm">Jun 29, 2026</span>
+            </td>
+            <td class="px-6 py-4 text-right">
+                <div class="flex items-center justify-end gap-2">
+                    <button onclick="openEditModal('3d0fa8a6-6486-452c-9967-9030f1c9c482')" class="p-2 rounded-lg hover:bg-purple-700 transition" title="Edit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path><path d="m15 5 4 4"></path></svg>
+                    </button>
+                    <button onclick="openDeleteModal('3d0fa8a6-6486-452c-9967-9030f1c9c482', 'gogroup')" class="p-2 rounded-lg hover:bg-red-600 transition" title="Delete">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                    </button>
+                </div>
+            </td>
+        </tr><tr>
+            <td class="px-6 py-4">
+                <span class="font-semibold text-white">client3</span>
+            </td>
+            <td class="px-6 py-4">
+                <span class="text-purple-300">Gombe farm</span>
+            </td>
+            <td class="px-6 py-4">
+                <a href="tel:0704974897" class="text-green-400 hover:text-green-300 transition">0704974897</a>
+            </td>
+            <td class="px-6 py-4 hidden md:table-cell">
+                <span class="text-purple-300"><a href="mailto:ogombefarm@gmail.com" class="hover:text-purple-200 transition">ogombefarm@gmail.com</a></span>
+            </td>
+            <td class="px-6 py-4 hidden lg:table-cell">
+                <span class="text-purple-400 text-sm">Jun 29, 2026</span>
+            </td>
+            <td class="px-6 py-4 text-right">
+                <div class="flex items-center justify-end gap-2">
+                    <button onclick="openEditModal('82d4b173-11d4-4c85-b51c-ae4086a058f1')" class="p-2 rounded-lg hover:bg-purple-700 transition" title="Edit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path><path d="m15 5 4 4"></path></svg>
+                    </button>
+                    <button onclick="openDeleteModal('82d4b173-11d4-4c85-b51c-ae4086a058f1', 'client3')" class="p-2 rounded-lg hover:bg-red-600 transition" title="Delete">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                    </button>
+                </div>
+            </td>
+        </tr><tr>
+            <td class="px-6 py-4">
+                <span class="font-semibold text-white">client2</span>
+            </td>
+            <td class="px-6 py-4">
+                <span class="text-purple-300">KSR</span>
+            </td>
+            <td class="px-6 py-4">
+                <a href="tel:+91 7036373186" class="text-green-400 hover:text-green-300 transition">+91 7036373186</a>
+            </td>
+            <td class="px-6 py-4 hidden md:table-cell">
+                <span class="text-purple-300"><a href="mailto:empty@gmail.com" class="hover:text-purple-200 transition">empty@gmail.com</a></span>
+            </td>
+            <td class="px-6 py-4 hidden lg:table-cell">
+                <span class="text-purple-400 text-sm">Jun 29, 2026</span>
+            </td>
+            <td class="px-6 py-4 text-right">
+                <div class="flex items-center justify-end gap-2">
+                    <button onclick="openEditModal('c893d4fa-2a87-44de-94b4-ecdd0ece3ce8')" class="p-2 rounded-lg hover:bg-purple-700 transition" title="Edit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path><path d="m15 5 4 4"></path></svg>
+                    </button>
+                    <button onclick="openDeleteModal('c893d4fa-2a87-44de-94b4-ecdd0ece3ce8', 'client2')" class="p-2 rounded-lg hover:bg-red-600 transition" title="Delete">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                    </button>
+                </div>
+            </td>
+        </tr><tr>
+            <td class="px-6 py-4">
+                <span class="font-semibold text-white">client1</span>
+            </td>
+            <td class="px-6 py-4">
+                <span class="text-purple-300">Kashmir</span>
+            </td>
+            <td class="px-6 py-4">
+                <a href="tel:+91 98765 43210" class="text-green-400 hover:text-green-300 transition">+91 98765 43210</a>
+            </td>
+            <td class="px-6 py-4 hidden md:table-cell">
+                <span class="text-purple-300"><a href="mailto:empty@gmail.com" class="hover:text-purple-200 transition">empty@gmail.com</a></span>
+            </td>
+            <td class="px-6 py-4 hidden lg:table-cell">
+                <span class="text-purple-400 text-sm">Jun 29, 2026</span>
+            </td>
+            <td class="px-6 py-4 text-right">
+                <div class="flex items-center justify-end gap-2">
+                    <button onclick="openEditModal('ffbed34e-47b9-43d9-a873-1bc157d43b03')" class="p-2 rounded-lg hover:bg-purple-700 transition" title="Edit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path><path d="m15 5 4 4"></path></svg>
+                    </button>
+                    <button onclick="openDeleteModal('ffbed34e-47b9-43d9-a873-1bc157d43b03', 'client1')" class="p-2 rounded-lg hover:bg-red-600 transition" title="Delete">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                    </button>
+                </div>
+            </td>
+        </tr></tbody>
             </table>
         </div>
         <!-- Empty State -->
@@ -567,7 +1296,7 @@
             <p class="text-purple-300 text-sm">Add your first customer using the form above.</p>
         </div>
         <!-- Loading State -->
-        <div id="customersLoading" class="hidden p-12 text-center">
+        <div id="customersLoading" class="p-12 text-center hidden">
             <div class="inline-block w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin mb-3"></div>
             <p class="text-purple-300 text-sm">Loading customers...</p>
         </div>
@@ -579,14 +1308,14 @@
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-xl font-bold">Edit Customer</h3>
                 <button id="closeEditModal" class="text-purple-400 hover:text-white transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
                 </button>
             </div>
             <form id="editCustomerForm" class="space-y-4">
                 <input type="hidden" id="editCustId">
                 <div>
                     <label class="block text-sm text-purple-300 mb-1">Full Name *</label>
-                    <input id="editCustName" type="text" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required>
+                    <input id="editCustName" type="text" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required="">
                 </div>
                 <div>
                     <label class="block text-sm text-purple-300 mb-1">Company</label>
@@ -594,7 +1323,7 @@
                 </div>
                 <div>
                     <label class="block text-sm text-purple-300 mb-1">Phone Number *</label>
-                    <input id="editCustPhone" type="tel" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required>
+                    <input id="editCustPhone" type="tel" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required="">
                 </div>
                 <div>
                     <label class="block text-sm text-purple-300 mb-1">Email</label>
@@ -619,7 +1348,7 @@
     <!-- Delete Confirmation Modal -->
     <div id="deleteCustomerModal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(4px);">
         <div class="glass p-6 rounded-3xl w-full max-w-sm text-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4 text-red-500"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4 text-red-500"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
             <h3 class="text-xl font-bold mb-2">Delete Customer?</h3>
             <p id="deleteCustName" class="text-purple-300 text-sm mb-6">This action cannot be undone.</p>
             <input type="hidden" id="deleteCustId">
@@ -640,23 +1369,23 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="glass p-6 rounded-3xl">
                     <h3 class="text-lg font-bold mb-4">User Growth (Last 7 Days)</h3>
-                    <canvas id="userGrowthChart"></canvas>
+                    <canvas id="userGrowthChart" width="441" height="220" style="display: block; box-sizing: border-box; height: 220.8px; width: 441.5px;"></canvas>
                 </div>
                 <div class="glass p-6 rounded-3xl">
                     <h3 class="text-lg font-bold mb-4">Project Status Distribution</h3>
-                    <canvas id="projectStatusChart"></canvas>
+                    <canvas id="projectStatusChart" width="441" height="441" style="display: block; box-sizing: border-box; height: 441.5px; width: 441.5px;"></canvas>
                 </div>
                 <div class="glass p-6 rounded-3xl">
                     <h3 class="text-lg font-bold mb-4">Posts Activity (Last 7 Days)</h3>
-                    <canvas id="postsActivityChart"></canvas>
+                    <canvas id="postsActivityChart" width="441" height="220" style="display: block; box-sizing: border-box; height: 220.8px; width: 441.5px;"></canvas>
                 </div>
                 <div class="glass p-6 rounded-3xl">
                     <h3 class="text-lg font-bold mb-4">Admin Messages Volume</h3>
-                    <canvas id="messagesChart"></canvas>
+                    <canvas id="messagesChart" width="441" height="220" style="display: block; box-sizing: border-box; height: 220.8px; width: 441.5px;"></canvas>
                 </div>
                 <div class="glass p-6 rounded-3xl md:col-span-2">
                     <h3 class="text-lg font-bold mb-4">User Engagement Overview</h3>
-                    <canvas id="engagementChart"></canvas>
+                    <canvas id="engagementChart" width="957" height="478" style="display: block; box-sizing: border-box; height: 478.5px; width: 957px;"></canvas>
                 </div>
             </div>
         </div>
@@ -675,9 +1404,7 @@
                         Call All (Video)
                     </button>
                 </div>
-                <div id="onlineAdmins" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Online admins will be listed here -->
-                </div>
+                <div id="onlineAdmins" class="grid grid-cols-1 md:grid-cols-2 gap-4"><p class="text-purple-300">No other admins are currently online.</p></div>
             </div>
         </div>
     </div>
@@ -1641,4 +2368,5 @@ document.getElementById('deleteCustomerModal').addEventListener('click', (e) => 
     if (e.target === e.currentTarget) closeDeleteModal();
 });
     </script>
-</div></body></html>
+</div>
+</body></html>
