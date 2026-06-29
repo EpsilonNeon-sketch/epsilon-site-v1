@@ -1191,5 +1191,816 @@
         /* ── INIT ── */
         initAuth();
     </script>
+    <!-- ========== EPSILON AI ASSISTANT WIDGET ========== -->
+    <style>
+        /* --- Floating Button --- */
+        #epsilon-ai-btn {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 9999;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 1px solid rgba(168, 85, 247, 0.5);
+            background: rgba(13, 10, 25, 0.85);
+            backdrop-filter: blur(16px);
+            color: #c084fc;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 24px rgba(168, 85, 247, 0.35), 0 4px 16px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, background 0.3s ease;
+        }
+
+        #epsilon-ai-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 36px rgba(168, 85, 247, 0.55), 0 6px 24px rgba(0, 0, 0, 0.6);
+            background: rgba(168, 85, 247, 0.25);
+        }
+
+        #epsilon-ai-btn:active {
+            transform: scale(0.95);
+        }
+
+        #epsilon-ai-btn svg {
+            width: 22px;
+            height: 22px;
+            pointer-events: none;
+        }
+
+        /* Pulse ring animation */
+        #epsilon-ai-btn::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px solid rgba(168, 85, 247, 0.4);
+            animation: ai-pulse 2.5s ease-out infinite;
+        }
+
+        @keyframes ai-pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+
+            70% {
+                transform: scale(1.4);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1.4);
+                opacity: 0;
+            }
+        }
+
+        /* --- Modal Overlay --- */
+        #epsilon-ai-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: flex-end;
+            justify-content: flex-end;
+            padding: 1.5rem;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        #epsilon-ai-overlay.open {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* --- Chat Panel --- */
+        #epsilon-ai-panel {
+            width: 100%;
+            max-width: 400px;
+            max-height: 560px;
+            border-radius: 1.25rem;
+            background: rgba(13, 10, 25, 0.92);
+            backdrop-filter: blur(20px) saturate(150%);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), 0 0 40px rgba(168, 85, 247, 0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: translateY(20px) scale(0.96);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #epsilon-ai-overlay.open #epsilon-ai-panel {
+            transform: translateY(0) scale(1);
+        }
+
+        /* Header */
+        .ai-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.15);
+            flex-shrink: 0;
+        }
+
+        .ai-header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+        }
+
+        .ai-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #a855f7;
+            box-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
+            animation: ai-dot-glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes ai-dot-glow {
+            from {
+                box-shadow: 0 0 6px rgba(168, 85, 247, 0.4);
+            }
+
+            to {
+                box-shadow: 0 0 14px rgba(168, 85, 247, 0.8);
+            }
+        }
+
+        .ai-header h3 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: #f3e8ff;
+        }
+
+        .ai-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            background: transparent;
+            color: #c084fc;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .ai-close:hover {
+            background: rgba(168, 85, 247, 0.2);
+            color: #fff;
+        }
+
+        .ai-close svg {
+            width: 16px;
+            height: 16px;
+            pointer-events: none;
+        }
+
+        /* Messages Area */
+        .ai-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(168, 85, 247, 0.3) transparent;
+        }
+
+        .ai-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .ai-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .ai-messages::-webkit-scrollbar-thumb {
+            background: rgba(168, 85, 247, 0.3);
+            border-radius: 4px;
+        }
+
+        .ai-msg {
+            max-width: 85%;
+            padding: 0.7rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.85rem;
+            line-height: 1.55;
+            word-break: break-word;
+            animation: msg-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes msg-in {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .ai-msg.bot {
+            background-color: rgba(13, 10, 25, 0.92);
+            /* Light gray box background */
+            color: #ffffff;
+            /* Dark text color */
+            border: 1px rgba(13, 10, 25, 0.92);
+            /* Subtle box border */
+            border-radius: 12px;
+            /* Rounded corners for the bubble */
+            padding: 10px 14px;
+            /* Spacing inside the box */
+            margin: 8px 0;
+            /* Spacing between different messages */
+            max-width: 99%;
+            /* Stops the box from stretching too wide */
+            display: inline-block;
+            /* Keeps the box wrapped tight to content */
+            word-wrap: break-word;
+            /* Makes sure long words don't overflow */
+        }
+
+        .ai-msg.bot ul,
+        .ai-msg.bot ol {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+
+        .ai-msg.bot p {
+            margin: 4px 0;
+        }
+
+        .ai-msg.bot h1,
+        .ai-msg.bot h2,
+        .ai-msg.bot h3 {
+            margin: 6px 0;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .ai-msg.user {
+            align-self: flex-end;
+            background: #a855f7;
+            color: #fff;
+            border-bottom-right-radius: 0.3rem;
+        }
+
+        .ai-msg.typing span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #c084fc;
+            margin: 0 2px;
+            animation: typing-bounce 1.2s ease-in-out infinite;
+        }
+
+        .ai-msg.typing span:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .ai-msg.typing span:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes typing-bounce {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+
+            30% {
+                transform: translateY(-5px);
+                opacity: 1;
+            }
+        }
+
+        /* Input Area */
+        .ai-input-area {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.85rem 1.25rem;
+            border-top: 1px solid rgba(168, 85, 247, 0.15);
+            flex-shrink: 0;
+        }
+
+        .ai-input {
+            flex: 1;
+            background: rgba(168, 85, 247, 0.08);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 0.75rem;
+            padding: 0.6rem 1rem;
+            color: #f3e8ff;
+            font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .ai-input::placeholder {
+            color: rgba(192, 132, 252, 0.4);
+        }
+
+        .ai-input:focus {
+            border-color: #a855f7;
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.25);
+        }
+
+        .ai-send {
+            width: 38px;
+            height: 38px;
+            border-radius: 0.75rem;
+            border: none;
+            background: #a855f7;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, transform 0.15s;
+            flex-shrink: 0;
+        }
+
+        .ai-send:hover {
+            background: #9333ea;
+        }
+
+        .ai-send:active {
+            transform: scale(0.92);
+        }
+
+        .ai-send:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .ai-send svg {
+            width: 16px;
+            height: 16px;
+            pointer-events: none;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 480px) {
+            #epsilon-ai-overlay {
+                padding: 0.75rem;
+                align-items: flex-end;
+            }
+
+            #epsilon-ai-panel {
+                max-height: 75vh;
+                border-radius: 1.25rem 1.25rem 0 0;
+            }
+        }
+    </style>
+
+    <!-- Floating Button -->
+    <button id="epsilon-ai-btn" aria-label="Open AI Assistant">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"></path>
+        </svg>
+    </button>
+
+    <!-- Chat Modal -->
+    <div id="epsilon-ai-overlay">
+        <div id="epsilon-ai-panel">
+            <div class="ai-header">
+                <div class="ai-header-left">
+                    <div class="ai-dot"></div>
+                    <h3>Epsilon AI</h3>
+                </div>
+                <button class="ai-close" id="epsilon-ai-close" aria-label="Close chat">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="ai-messages" id="ai-messages"></div>
+            <div class="ai-input-area">
+                <input type="text" class="ai-input" id="ai-input" placeholder="Ask me anything..." autocomplete="off">
+                <button class="ai-send" id="ai-send" aria-label="Send message">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            /* ====== CONFIGURATION ======
+             * Edit the systemMessage below to control what the AI knows and how it behaves.
+             * This is the ONLY thing you need to change to customize the assistant.
+             */
+            const systemMessage = `You are the Admin Epsiai,you are built in the epsilon admin panel website.
+Epsilon is a web solution maker for kenyans
+You know about Epsilon's ecosystem of free and open-source apps:
+- Epsilon AI (basic ai that can make images, respond and code) | Theme: pink
+- Epsilon Azure (BMS, business to business marketplace) | Theme: blue
+- Epsilon Heckle (gaming library/website, game engine for children) | Theme: red
+- Epsilon Editz (editing tools, digital tools for artists and designers) | Theme: yellow
+- Epsilon Motor (automobile community for cars, planes, ships, trucks and bikes) | Theme: grey
+- Epsilon Neote (programming language, prototype js framework) | Theme: purple
+- Epsilon Sport (fitness tracker, sport lovers community) | Theme: orange
+- Epsilon Panel (web domain agency) | Theme: purple
+- Epsilon Basic (basic tools for kids/adults, library for 3d/2d designing tools for games, car interiors etc) | Theme: lightgray
+- Epsilon Learn (free learning platform) | Theme: green
+
+Client Projects:
+- NTK Services (movers/logistics)
+- Zerah (stationary/clothing)
+
+The Epsilon Team (Age bracket: 12-14 years old):
+- Warren Adrian (14 yrs old) - Owner. Built Epsilon on June 6, 2024, when he was 12.
+- Glenn Njoroge - Vital asset in training, responsible for Epsilon Panel.
+- Dylan Gikundi - Responsible for Epsilon Apple apps.
+- Ethan Gitimu - Responsible for Epsilon Android apps and Epsilon Learn.
+- Philip Hinga - Responsible for Epsilon Sport.
+- Victor Mwaura - Vital asset still in training.
+- Jaydon Kuria - Responsible for Epsilon Heckle.
+- Jayden Mwangi - Responsible for Epsilon Azure.
+- Casey Mwenda - Responsible for Epsilon Editz.
+- Jabali Mwaniki - Responsible for Epsilon Basic.
+
+Another thing to note it is the admins language,wendrom:
+{
+  "me": "dali",
+  "we": "dalit",
+  "you": "dalo",
+  "yall": "dalot",
+  "him": "ali",
+  "her": "ale",
+  "them": "dalu",
+  "are": "lo",
+  "was": "li",
+  "were": "lot",
+  "they": "dalut",
+  "might": "anxa",
+  "will": "enxe",
+  "am": "daliz",
+  "hello": "indre",
+  "bye": "oundre",
+  "ours": "dalitem",
+  "this": "rio",
+  "that": "rao",
+  "these": "riot",
+  "those": "raot",
+  "is": "ji",
+  "if": "karka",
+  "else": "kirki",
+  "year": "fwaza",
+  "month": "fwezi",
+  "week": "fwizi",
+  "day": "fwuzu",
+  "of": "tad",
+  "for": "tud",
+  "to": "qua",
+  "age": "xana",
+  "name": "yuyu",
+  "color": "raz",
+  "height": "urej",
+  "width": "arej",
+  "boy": "parsim",
+  "girl": "parsem",
+  "good": "zerai",
+  "bad": "zeroi",
+  "one": "oja",
+  "two": "oji",
+  "three": "oje",
+  "four": "ojo",
+  "five": "ano",
+  "six": "etes",
+  "seven": "etez",
+  "eight": "nanos",
+  "nine": "tirz",
+  "ten": "kums",
+  "my": "dalim",
+  "father": "mori",
+  "mother": "more",
+  "parents": "mort",
+  "fathers": "morit",
+  "mothers": "moret",
+  "grandfather": "goli",
+  "grandmother": "gole",
+  "grandparents": "golt",
+  "brother": "feni",
+  "sister": "fene",
+  "siblings": "fent",
+  "son": "vili",
+  "daughter": "vile",
+  "children": "vilt",
+  "uncle": "treni",
+  "aunt": "trene",
+  "uncles_and_aunts": "trent",
+  "male_cousin": "flari",
+  "female_cousin": "flare",
+  "cousins": "flart",
+  "male_friend": "peli",
+  "female_friend": "pele",
+  "friends": "pelt",
+  "male_enemy": "kraki",
+  "female_enemy": "krake",
+  "enemies": "krakt",
+  "boyfriend_husband": "somi",
+  "girlfriend_wife": "some",
+  "partners": "somt",
+  "male_stranger": "woki",
+  "female_stranger": "woke",
+  "strangers": "wokt",
+  "male_neighbor": "nemi",
+  "female_neighbor": "neme",
+  "neighbors": "nemt",
+  "who": "naa",
+  "fruit": "fruve",
+  "fruits": "fruvet",
+  "apple": "kapi",
+  "apples": "kapit",
+  "banana": "lune",
+  "bananas": "lunet",
+  "orange": "narane",
+  "oranges": "naranet",
+  "berry": "beli",
+  "berries": "belit",
+  "grape": "uvile",
+  "grapes": "uvilet",
+  "vegetable": "nali",
+  "vegetables": "nalit",
+  "carrot": "kore",
+  "carrots": "koret",
+  "potato": "tapi",
+  "potatoes": "tapit",
+  "tomato": "tomali",
+  "tomatoes": "tomalit",
+  "lettuce": "letue",
+  "onion": "zali",
+  "onions": "zalit",
+  "meat": "kari",
+  "meats": "karit",
+  "beef": "vakare",
+  "chicken": "koki",
+  "pork": "pige",
+  "fish": "piski",
+  "fish_plural": "piskit",
+  "red": "rova",
+  "blue": "suli",
+  "green": "fani",
+  "yellow": "suna",
+  "black": "nori",
+  "white": "koya",
+  "purple": "vula",
+  "pink": "pela",
+  "brown": "kani",
+  "gray": "gira",
+  "big": "goma",
+  "small": "mika",
+  "hot": "kala",
+  "cold": "frena",
+  "fast": "zuka",
+  "slow": "tama",
+  "strong": "dorma",
+  "weak": "fili",
+  "happy": "joxa",
+  "sad": "moxa",
+  "beautiful": "lura",
+  "ugly": "groka",
+  "hard": "tarka",
+  "soft": "pula",
+  "new": "niva",
+  "old": "vora",
+  "young": "pini",
+  "quickly": "zukax",
+  "slowly": "tamax",
+  "very": "fwa",
+  "always": "olra",
+  "never": "onra",
+  "here": "rin",
+  "there": "ran",
+  "now": "nux",
+  "then": "lux",
+  "today": "fwuzux",
+  "tomorrow": "fwuzan",
+  "yesterday": "fwuzal",
+  "please": "plira",
+  "yes": "yo",
+  "no": "na",
+  "maybe": "kaxa",
+  "also": "dwa",
+  "not": "nu",
+  "cook": "pivi",
+  "cooking": "pivivirta",
+  "eat": "noma",
+  "eating": "nomavirta",
+  "drink": "bila",
+  "drinking": "bilavirta",
+  "sleep": "soma",
+  "sleeping": "somavirta",
+  "run": "kori",
+  "running": "korivirta",
+  "walk": "waka",
+  "walking": "wakavirta",
+  "speak": "toka",
+  "speaking": "tokavirta",
+  "listen": "skuna",
+  "listening": "skunavirta",
+  "see": "veya",
+  "seeing": "veyavirta",
+  "give": "dona",
+  "giving": "donavirta",
+  "take": "reka",
+  "taking": "rekavirta",
+  "love": "ama",
+  "loving": "amavirta",
+  "hate": "noka",
+  "hating": "nokavirta",
+  "know": "saba",
+  "knowing": "sabavirta",
+  "think": "pena",
+  "thinking": "penavirta",
+  "want": "vela",
+  "wanting": "velavirta",
+  "make": "faka",
+  "making": "fakavirta",
+  "break": "broka",
+  "breaking": "brokavirta",
+  "buy": "koma",
+  "buying": "komavirta",
+  "read": "lexa",
+  "reading": "lexavirta",
+  "write": "skriba",
+  "writing": "skribavirta",
+  "sing": "kanta",
+  "singing": "kantavirta",
+  "fight": "luka",
+  "fighting": "lukavirta",
+  "play": "luda",
+  "playing": "ludavirta",
+  "work": "traba",
+  "working": "trabavirta",
+  "do": "fasa",
+  "what": "nii",
+  "and": "gaa",
+  "i": "dali"
+}
+
+Rules: Every person you talk to is an admin of epsilon most of the time it is warren himself the creator of epsilon.
+Do not speak first until whoever you are talking to speaks it first to you.
+ Format your responses beautifully using Markdown (bold text, lists, and headers where necessary). Do not make up information about features that don't exist or are not explicitly mentioned to you.`;
+
+            /* ====== DOM REFS ====== */
+            const btn = document.getElementById('epsilon-ai-btn');
+            const overlay = document.getElementById('epsilon-ai-overlay');
+            const closeBtn = document.getElementById('epsilon-ai-close');
+            const messages = document.getElementById('ai-messages');
+            const input = document.getElementById('ai-input');
+            const sendBtn = document.getElementById('ai-send');
+
+            let conversationHistory = [
+                { role: 'system', content: systemMessage }
+            ];
+            let isWaiting = false;
+
+            /* ====== OPEN / CLOSE ====== */
+            function openChat() {
+                overlay.classList.add('open');
+                // First open — show a greeting
+                if (conversationHistory.length === 1) {
+                    addBotMessage("Hey! I'm **Epsilon AI**. Ask me anything about the ecosystem.");
+                }
+                setTimeout(() => input.focus(), 300);
+            }
+
+            function closeChat() {
+                overlay.classList.remove('open');
+            }
+
+            btn.addEventListener('click', openChat);
+            closeBtn.addEventListener('click', closeChat);
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) closeChat();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && overlay.classList.contains('open')) closeChat();
+            });
+
+            /* ====== MESSAGE RENDERING ====== */
+            function addBotMessage(markdownText) {
+                const div = document.createElement('div');
+                div.className = 'ai-msg bot';
+
+                // PARSE MARKDOWN TO HTML: Use marked.parse if library loaded, fallback to safe text if not
+                if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+                    div.innerHTML = marked.parse(markdownText);
+                } else {
+                    div.textContent = markdownText;
+                }
+
+                messages.appendChild(div);
+                messages.scrollTop = messages.scrollHeight;
+            }
+
+            function addUserMessage(text) {
+                const div = document.createElement('div');
+                div.className = 'ai-msg user';
+                div.textContent = text;
+                messages.appendChild(div);
+                messages.scrollTop = messages.scrollHeight;
+            }
+
+            // Fix lists inside bot messages from ruining the layout spacing
+            const style = document.createElement('style');
+            style.innerHTML = `
+        .ai-msg.bot ul, .ai-msg.bot ol { margin: 5px 0; padding-left: 20px; }
+        .ai-msg.bot p { margin: 4px 0; }
+        .ai-msg.bot h1, .ai-msg.bot h2, .ai-msg.bot h3 { margin: 6px 0; font-size: 1.1em; }
+    `;
+            document.head.appendChild(style);
+
+            function showTyping() {
+                const div = document.createElement('div');
+                div.className = 'ai-msg bot typing';
+                div.id = 'ai-typing';
+                div.innerHTML = '<span></span><span></span><span></span>';
+                messages.appendChild(div);
+                messages.scrollTop = messages.scrollHeight;
+            }
+
+            function removeTyping() {
+                const el = document.getElementById('ai-typing');
+                if (el) el.remove();
+            }
+
+            /* ====== SEND MESSAGE ====== */
+            async function sendMessage() {
+                const text = input.value.trim();
+                if (!text || isWaiting) return;
+
+                isWaiting = true;
+                sendBtn.disabled = true;
+                input.value = '';
+
+                addUserMessage(text);
+                conversationHistory.push({ role: 'user', content: text });
+                showTyping();
+
+                try {
+                    // Format the history so the AI remembers context via the GET endpoint
+                    const promptContext = conversationHistory
+                        .map(msg => {
+                            if (msg.role === 'system') return `System instructions: ${msg.content}`;
+                            return `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`;
+                        })
+                        .join('\n');
+
+                    // Clean and encode the prompt for the URL
+                    const encodedPrompt = encodeURIComponent(promptContext + "\nAssistant:");
+
+                    // Correct Pollinations GET endpoint with no API key needed
+                    const res = await fetch(`https://text.pollinations.ai/${encodedPrompt}?model=openai&cache=false`);
+
+                    if (!res.ok) throw new Error(`API returned ${res.status}`);
+
+                    const replyText = await res.text();
+                    removeTyping();
+                    addBotMessage(replyText);
+                    conversationHistory.push({ role: 'assistant', content: replyText });
+
+                } catch (err) {
+                    removeTyping();
+                    addBotMessage("Something went wrong. Please try again.");
+                    console.error('Epsilon AI error:', err);
+                }
+
+                isWaiting = false;
+                sendBtn.disabled = false;
+                input.focus();
+            }
+
+            sendBtn.addEventListener('click', sendMessage);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        })();
+    </script>
+   
 </body>
 </html>
