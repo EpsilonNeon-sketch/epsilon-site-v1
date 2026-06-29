@@ -1,7 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
+<html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Epsilon Admin Panel</title>
@@ -14,7 +11,70 @@
     <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+/* Customers table */
+#customersTableBody tr {
+    border-bottom: 1px solid rgba(168, 85, 247, 0.1);
+    transition: background 0.15s ease;
+}
 
+#customersTableBody tr:hover {
+    background: rgba(168, 85, 247, 0.07);
+}
+
+#customersTableBody tr:last-child {
+    border-bottom: none;
+}
+
+/* Spinner animation */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+    animation: spin 0.8s linear infinite;
+}
+
+/* Toast notification */
+.toast {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 9999;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    animation: toastIn 0.3s ease-out, toastOut 0.3s ease-in 2.5s forwards;
+    pointer-events: none;
+}
+
+.toast-success {
+    background: rgba(22, 163, 74, 0.9);
+    border: 1px solid rgba(74, 222, 128, 0.4);
+    color: #fff;
+}
+
+.toast-error {
+    background: rgba(220, 38, 38, 0.9);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #fff;
+}
+
+@keyframes toastIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes toastOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* Modal fade-in */
+#editCustomerModal.active,
+#deleteCustomerModal.active {
+    display: flex !important;
+}
         body {
             font-family: 'Inter', sans-serif;
             background-color: #000;
@@ -206,14 +266,13 @@
             }
         }
     </style>
-</head>
 
 <body class="min-h-screen">
     <div class="bg-mesh"></div>
 
     <!-- Menu Toggle Button -->
     <button id="menuToggle" class="menu-toggle hidden">
-        <i data-lucide="menu" class="w-6 h-6 text-white"></i>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="menu" aria-hidden="true" class="lucide lucide-menu w-6 h-6 text-white"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
     </button>
 
     <!-- Sidebar Overlay -->
@@ -225,44 +284,48 @@
             <div class="flex items-center justify-between mb-8">
                 <h2 class="text-2xl font-bold">EPSILON<span class="text-purple-600"> ADMIN</span></h2>
                 <button id="closeSidebar" class="md:hidden">
-                    <i data-lucide="x" class="w-6 h-6"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="x" aria-hidden="true" class="lucide lucide-x w-6 h-6"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
                 </button>
             </div>
             
             <nav class="space-y-2">
                 <button class="nav-btn w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-600 transition text-left" data-page="chat">
-                    <i data-lucide="message-circle" class="w-5 h-5"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="message-circle" aria-hidden="true" class="lucide lucide-message-circle w-5 h-5"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"></path></svg>
                     <span>Admin Chat</span>
                 </button>
                 <button class="nav-btn w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-600 transition text-left" data-page="projects">
-                    <i data-lucide="folder" class="w-5 h-5"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="folder" aria-hidden="true" class="lucide lucide-folder w-5 h-5"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg>
                     <span>Projects</span>
                 </button>
                 <button class="nav-btn w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-600 transition text-left" data-page="users">
-                    <i data-lucide="users" class="w-5 h-5"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="users" aria-hidden="true" class="lucide lucide-users w-5 h-5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><path d="M16 3.128a4 4 0 0 1 0 7.744"></path><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><circle cx="9" cy="7" r="4"></circle></svg>
                     <span>Manage Users</span>
                 </button>
+                <button class="nav-btn w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-600 transition text-left" data-page="customers">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" x2="19" y1="8" y2="14"></line><line x1="22" x2="16" y1="11" y2="11"></line></svg>
+    <span>Customers</span>
+</button>
                 <button class="nav-btn w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-600 transition text-left" data-page="analytics">
-                    <i data-lucide="bar-chart" class="w-5 h-5"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="bar-chart" aria-hidden="true" class="lucide lucide-bar-chart w-5 h-5"><path d="M5 21v-6"></path><path d="M12 21V9"></path><path d="M19 21V3"></path></svg>
                     <span>Analytics</span>
                 </button>
                 <button class="nav-btn w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-600 transition text-left" data-page="charts">
-                    <i data-lucide="pie-chart" class="w-5 h-5"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="pie-chart" aria-hidden="true" class="lucide lucide-pie-chart w-5 h-5"><path d="M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z"></path><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path></svg>
                     <span>Charts</span>
                 </button>
                 <button class="nav-btn w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-600 transition text-left" data-page="servers">
-                    <i data-lucide="shield-off" class="w-5 h-5"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="shield-off" aria-hidden="true" class="lucide lucide-shield-off w-5 h-5"><path d="m2 2 20 20"></path><path d="M5 5a1 1 0 0 0-1 1v7c0 5 3.5 7.5 7.67 8.94a1 1 0 0 0 .67.01c2.35-.82 4.48-1.97 5.9-3.71"></path><path d="M9.309 3.652A12.252 12.252 0 0 0 11.24 2.28a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1v7a9.784 9.784 0 0 1-.08 1.264"></path></svg>
                     <span>Block Servers</span>
                 </button>
                 <button class="nav-btn w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-600 transition text-left" data-page="calls">
-                    <i data-lucide="phone" class="w-5 h-5"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="phone" aria-hidden="true" class="lucide lucide-phone w-5 h-5"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"></path></svg>
                     <span>Admin Calls</span>
                 </button>
             </nav>
 
             <div class="mt-8 pt-8 border-t border-purple-700">
                 <button id="logoutBtn" class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-red-600 transition text-left">
-                    <i data-lucide="log-out" class="w-5 h-5"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="log-out" aria-hidden="true" class="lucide lucide-log-out w-5 h-5"><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path></svg>
                     <span>Logout</span>
                 </button>
             </div>
@@ -275,20 +338,15 @@
             <div class="glass p-8 rounded-3xl">
                 <h1 class="text-3xl font-bold mb-6 text-center">EPSILON<span class="text-purple-600"> ADMIN</span></h1>
                 <form id="loginForm" class="space-y-4">
-                    <input id="adminEmail" type="email" placeholder="Admin Email"
-                        class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600"
-                        required>
-                    <input id="adminPassword" type="password" placeholder="Password"
-                        class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600"
-                        required>
-                    <button type="submit"
-                        class="w-full bg-purple-700 hover:bg-purple-800 text-white py-3 rounded-lg font-bold">Login</button>
+                    <input id="adminEmail" type="email" placeholder="Admin Email" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required="">
+                    <input id="adminPassword" type="password" placeholder="Password" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required="">
+                    <button type="submit" class="w-full bg-purple-700 hover:bg-purple-800 text-white py-3 rounded-lg font-bold">Login</button>
                     <p id="loginError" class="text-red-500 text-sm hidden"></p>
                 </form>
             </div>
         </div>
     </div>
-    </div>
+    
 
     <!-- Dashboard Page -->
     <div id="dashboardPage" class="page">
@@ -304,19 +362,19 @@
                     <p class="text-purple-300 mb-6">Select a section from the sidebar to get started</p>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
                         <div class="glass p-4 rounded-lg">
-                            <i data-lucide="users" class="w-8 h-8 mx-auto mb-2 text-purple-400"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="users" aria-hidden="true" class="lucide lucide-users w-8 h-8 mx-auto mb-2 text-purple-400"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><path d="M16 3.128a4 4 0 0 1 0 7.744"></path><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><circle cx="9" cy="7" r="4"></circle></svg>
                             <p class="text-sm">Manage Users</p>
                         </div>
                         <div class="glass p-4 rounded-lg">
-                            <i data-lucide="message-circle" class="w-8 h-8 mx-auto mb-2 text-purple-400"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="message-circle" aria-hidden="true" class="lucide lucide-message-circle w-8 h-8 mx-auto mb-2 text-purple-400"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"></path></svg>
                             <p class="text-sm">Admin Chat</p>
                         </div>
                         <div class="glass p-4 rounded-lg">
-                            <i data-lucide="bar-chart" class="w-8 h-8 mx-auto mb-2 text-purple-400"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="bar-chart" aria-hidden="true" class="lucide lucide-bar-chart w-8 h-8 mx-auto mb-2 text-purple-400"><path d="M5 21v-6"></path><path d="M12 21V9"></path><path d="M19 21V3"></path></svg>
                             <p class="text-sm">Analytics</p>
                         </div>
                         <div class="glass p-4 rounded-lg">
-                            <i data-lucide="phone" class="w-8 h-8 mx-auto mb-2 text-purple-400"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="phone" aria-hidden="true" class="lucide lucide-phone w-8 h-8 mx-auto mb-2 text-purple-400"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"></path></svg>
                             <p class="text-sm">Admin Calls</p>
                         </div>
                     </div>
@@ -329,10 +387,8 @@
                 <h2 class="text-2xl font-bold mb-4">Admin Chat Room</h2>
                 <div id="chatMessages" class="h-96 overflow-y-auto mb-4 space-y-3"></div>
                 <form id="chatForm" class="flex gap-2">
-                    <input id="chatInput" type="text" placeholder="Type a message..."
-                        class="flex-1 rounded-lg px-4 py-3 bg-gray-800 border border-purple-700" required>
-                    <button type="submit"
-                        class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-3 rounded-lg">Send</button>
+                    <input id="chatInput" type="text" placeholder="Type a message..." class="flex-1 rounded-lg px-4 py-3 bg-gray-800 border border-purple-700" required="">
+                    <button type="submit" class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-3 rounded-lg">Send</button>
                 </form>
             </div>
         </div>
@@ -342,18 +398,14 @@
             <div class="glass p-6 rounded-3xl mb-6">
                 <h2 class="text-2xl font-bold mb-4">Create Project</h2>
                 <form id="projectForm" class="space-y-4">
-                    <input id="projectName" type="text" placeholder="Project Name"
-                        class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700" required>
-                    <textarea id="projectDesc" placeholder="Description"
-                        class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700" rows="3"
-                        required></textarea>
+                    <input id="projectName" type="text" placeholder="Project Name" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700" required="">
+                    <textarea id="projectDesc" placeholder="Description" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700" rows="3" required=""></textarea>
                     <select id="projectStatus" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700">
                         <option value="planning">Planning</option>
                         <option value="in-progress">In Progress</option>
                         <option value="completed">Completed</option>
                     </select>
-                    <button type="submit"
-                        class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-3 rounded-lg">Create
+                    <button type="submit" class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-3 rounded-lg">Create
                         Project</button>
                 </form>
             </div>
@@ -392,54 +444,196 @@
                 <h2 class="text-2xl font-bold mb-4">Block Epsilon Sites</h2>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
 
-                    <button onclick="toggleSiteBlock('epsilon')"
-                        class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition col-span-2"
-                        data-site="epsilon">
+                    <button onclick="toggleSiteBlock('epsilon')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition col-span-2" data-site="epsilon">
                         <p class="font-bold text-lg">🚨 Epsilon Main Site</p>
                         <p class="text-xs text-purple-400 mt-1" id="status-epsilon">Active</p>
                     </button>
-                    <button onclick="blockAllSites()"
-                        class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition">
+                    <button onclick="blockAllSites()" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition">
                         <p class="font-bold">Toggle All</p>
                     </button>
-                    <button onclick="toggleSiteBlock('aproxi')"
-                        class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="aproxi">
+                    <button onclick="toggleSiteBlock('aproxi')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="aproxi">
                         <p class="font-bold">Aproxi</p>
                         <p class="text-xs text-purple-400 mt-1" id="status-aproxi">Active</p>
                     </button>
-                    <button onclick="toggleSiteBlock('neote')"
-                        class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="neote">
+                    <button onclick="toggleSiteBlock('neote')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="neote">
                         <p class="font-bold">Neote</p>
                         <p class="text-xs text-purple-400 mt-1" id="status-neote">Active</p>
                     </button>
-                    <button onclick="toggleSiteBlock('edits')"
-                        class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="edits">
+                    <button onclick="toggleSiteBlock('edits')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="edits">
                         <p class="font-bold">Edits</p>
                         <p class="text-xs text-purple-400 mt-1" id="status-edits">Active</p>
                     </button>
-                    <button onclick="toggleSiteBlock('academics')"
-                        class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="academics">
+                    <button onclick="toggleSiteBlock('academics')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="academics">
                         <p class="font-bold">Academics</p>
                         <p class="text-xs text-purple-400 mt-1" id="status-academics">Active</p>
                     </button>
-                    <button onclick="toggleSiteBlock('sports')"
-                        class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="sports">
+                    <button onclick="toggleSiteBlock('sports')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="sports">
                         <p class="font-bold">Sports</p>
                         <p class="text-xs text-purple-400 mt-1" id="status-sports">Active</p>
                     </button>
-                    <button onclick="toggleSiteBlock('earth')"
-                        class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="earth">
+                    <button onclick="toggleSiteBlock('earth')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="earth">
                         <p class="font-bold">Earth</p>
                         <p class="text-xs text-purple-400 mt-1" id="status-earth">Active</p>
                     </button>
-                    <button onclick="toggleSiteBlock('heckle')"
-                        class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="heckle">
+                    <button onclick="toggleSiteBlock('heckle')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="heckle">
                         <p class="font-bold">Heckle</p>
                         <p class="text-xs text-purple-400 mt-1" id="status-heckle">Active</p>
                     </button>
                 </div>
             </div>
         </div>
+
+<!-- Customers Section -->
+<div id="customersSection" class="section hidden">
+    <!-- Add Customer Form -->
+    <div class="glass p-6 rounded-3xl mb-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-2xl font-bold">Add Customer</h2>
+            <button id="toggleCustomerFormBtn" class="text-purple-400 hover:text-purple-300 transition text-sm flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                Collapse
+            </button>
+        </div>
+        <form id="customerForm" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm text-purple-300 mb-1">Full Name *</label>
+                    <input id="custName" type="text" placeholder="John Doe" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required>
+                </div>
+                <div>
+                    <label class="block text-sm text-purple-300 mb-1">Company</label>
+                    <input id="custCompany" type="text" placeholder="Acme Inc." class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600">
+                </div>
+                <div>
+                    <label class="block text-sm text-purple-300 mb-1">Phone Number *</label>
+                    <input id="custPhone" type="tel" placeholder="+1 555 123 4567" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required>
+                </div>
+                <div>
+                    <label class="block text-sm text-purple-300 mb-1">Email</label>
+                    <input id="custEmail" type="email" placeholder="john@acme.com" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm text-purple-300 mb-1">Notes</label>
+                <textarea id="custNotes" placeholder="Optional notes about this customer..." class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" rows="2"></textarea>
+            </div>
+            <div class="flex gap-3">
+                <button type="submit" class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-3 rounded-lg font-bold transition">
+                    Add Customer
+                </button>
+                <button type="reset" class="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-bold transition border border-purple-700">
+                    Clear
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="glass p-4 rounded-3xl mb-6">
+        <div class="flex flex-col md:flex-row gap-3 items-center justify-between">
+            <div class="relative flex-1 w-full">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 text-purple-400"><circle cx="11" cy="11" r="8"></circle><line x1="21" x2="16.65" y1="21" y2="16.65"></line></svg>
+                <input id="customerSearch" type="text" placeholder="Search by name, company, or phone..." class="w-full rounded-lg pl-10 pr-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600">
+            </div>
+            <div class="flex items-center gap-2">
+                <span id="customerCount" class="text-sm text-purple-300">0 customers</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customers Table -->
+    <div class="glass rounded-3xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="border-b border-purple-700">
+                        <th class="px-6 py-4 text-sm font-bold text-purple-300 uppercase tracking-wider">Name</th>
+                        <th class="px-6 py-4 text-sm font-bold text-purple-300 uppercase tracking-wider">Company</th>
+                        <th class="px-6 py-4 text-sm font-bold text-purple-300 uppercase tracking-wider">Phone</th>
+                        <th class="px-6 py-4 text-sm font-bold text-purple-300 uppercase tracking-wider hidden md:table-cell">Email</th>
+                        <th class="px-6 py-4 text-sm font-bold text-purple-300 uppercase tracking-wider hidden lg:table-cell">Added</th>
+                        <th class="px-6 py-4 text-sm font-bold text-purple-300 uppercase tracking-wider text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="customersTableBody">
+                    <!-- Rows injected by JS -->
+                </tbody>
+            </table>
+        </div>
+        <!-- Empty State -->
+        <div id="customersEmpty" class="hidden p-12 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4 text-purple-700"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" x2="19" y1="8" y2="14"></line><line x1="22" x2="16" y1="11" y2="11"></line></svg>
+            <p class="text-purple-400 text-lg font-bold mb-1">No customers yet</p>
+            <p class="text-purple-300 text-sm">Add your first customer using the form above.</p>
+        </div>
+        <!-- Loading State -->
+        <div id="customersLoading" class="hidden p-12 text-center">
+            <div class="inline-block w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin mb-3"></div>
+            <p class="text-purple-300 text-sm">Loading customers...</p>
+        </div>
+    </div>
+
+    <!-- Edit Customer Modal -->
+    <div id="editCustomerModal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(4px);">
+        <div class="glass p-6 rounded-3xl w-full max-w-lg">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold">Edit Customer</h3>
+                <button id="closeEditModal" class="text-purple-400 hover:text-white transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+            <form id="editCustomerForm" class="space-y-4">
+                <input type="hidden" id="editCustId">
+                <div>
+                    <label class="block text-sm text-purple-300 mb-1">Full Name *</label>
+                    <input id="editCustName" type="text" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required>
+                </div>
+                <div>
+                    <label class="block text-sm text-purple-300 mb-1">Company</label>
+                    <input id="editCustCompany" type="text" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600">
+                </div>
+                <div>
+                    <label class="block text-sm text-purple-300 mb-1">Phone Number *</label>
+                    <input id="editCustPhone" type="tel" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required>
+                </div>
+                <div>
+                    <label class="block text-sm text-purple-300 mb-1">Email</label>
+                    <input id="editCustEmail" type="email" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600">
+                </div>
+                <div>
+                    <label class="block text-sm text-purple-300 mb-1">Notes</label>
+                    <textarea id="editCustNotes" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" rows="2"></textarea>
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button type="submit" class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-3 rounded-lg font-bold transition flex-1">
+                        Save Changes
+                    </button>
+                    <button type="button" id="cancelEditBtn" class="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-bold transition border border-purple-700">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteCustomerModal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(4px);">
+        <div class="glass p-6 rounded-3xl w-full max-w-sm text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4 text-red-500"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+            <h3 class="text-xl font-bold mb-2">Delete Customer?</h3>
+            <p id="deleteCustName" class="text-purple-300 text-sm mb-6">This action cannot be undone.</p>
+            <input type="hidden" id="deleteCustId">
+            <div class="flex gap-3">
+                <button id="confirmDeleteBtn" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold transition flex-1">
+                    Delete
+                </button>
+                <button id="cancelDeleteBtn" class="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-bold transition border border-purple-700 flex-1">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
         <!-- Charts Section -->
         <div id="chartsSection" class="section hidden">
@@ -472,14 +666,12 @@
             <div class="glass p-6 rounded-3xl mb-6">
                 <h2 class="text-2xl font-bold mb-4">Admin Audio Calls</h2>
                 <div class="mb-6 flex gap-2">
-                    <button id="callAllBtn"
-                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-bold">
-                        <i data-lucide="phone" class="inline w-5 h-5 mr-2"></i>
+                    <button id="callAllBtn" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-bold">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="phone" aria-hidden="true" class="lucide lucide-phone inline w-5 h-5 mr-2"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"></path></svg>
                         Call All (Audio)
                     </button>
-                    <button id="videoCallAllBtn"
-                        class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-bold">
-                        <i data-lucide="video" class="inline w-5 h-5 mr-2"></i>
+                    <button id="videoCallAllBtn" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-bold">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="video" aria-hidden="true" class="lucide lucide-video inline w-5 h-5 mr-2"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path><rect x="2" y="6" width="14" height="12" rx="2"></rect></svg>
                         Call All (Video)
                     </button>
                 </div>
@@ -494,7 +686,7 @@
     <div id="callNotification" class="call-notification glass p-4 rounded-lg hidden">
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <i data-lucide="phone" class="w-8 h-8 text-green-400 animate-pulse"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="phone" aria-hidden="true" class="lucide lucide-phone w-8 h-8 text-green-400 animate-pulse"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"></path></svg>
                 <div>
                     <p class="font-bold">Incoming Call</p>
                     <p id="callerName" class="text-sm text-purple-300">Admin is calling you</p>
@@ -502,10 +694,10 @@
             </div>
             <div class="flex gap-2">
                 <button id="acceptCallBtn" class="bg-green-600 hover:bg-green-700 text-white p-2 rounded-full">
-                    <i data-lucide="phone" class="w-5 h-5"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="phone" aria-hidden="true" class="lucide lucide-phone w-5 h-5"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"></path></svg>
                 </button>
                 <button id="declineCallBtn" class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full">
-                    <i data-lucide="phone-off" class="w-5 h-5"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="phone-off" aria-hidden="true" class="lucide lucide-phone-off w-5 h-5"><path d="M10.1 13.9a14 14 0 0 0 3.732 2.668 1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2 18 18 0 0 1-12.728-5.272"></path><path d="M22 2 2 22"></path><path d="M4.76 13.582A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 .244.473"></path></svg>
                 </button>
             </div>
         </div>
@@ -515,24 +707,24 @@
     <div id="activeCallUI" class="call-active glass p-4 rounded-lg hidden">
         <div id="videoSection" class="hidden mb-4">
             <div class="video-container">
-                <video id="remoteVideo" class="remote-video" autoplay playsinline></video>
-                <video id="localVideo" class="local-video" autoplay muted playsinline></video>
+                <video id="remoteVideo" class="remote-video" autoplay="" playsinline=""></video>
+                <video id="localVideo" class="local-video" autoplay="" muted="" playsinline=""></video>
                 <div class="video-controls">
                     <button id="toggleMicBtn" class="bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-full">
-                        <i data-lucide="mic" class="w-6 h-6"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="mic" aria-hidden="true" class="lucide lucide-mic w-6 h-6"><path d="M12 19v3"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><rect x="9" y="2" width="6" height="13" rx="3"></rect></svg>
                     </button>
                     <button id="toggleVideoBtn" class="bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-full">
-                        <i data-lucide="video" class="w-6 h-6"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="video" aria-hidden="true" class="lucide lucide-video w-6 h-6"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path><rect x="2" y="6" width="14" height="12" rx="2"></rect></svg>
                     </button>
                     <button id="shareScreenBtn" class="bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-full">
-                        <i data-lucide="monitor" class="w-6 h-6"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="monitor" aria-hidden="true" class="lucide lucide-monitor w-6 h-6"><rect width="20" height="14" x="2" y="3" rx="2"></rect><line x1="8" x2="16" y1="21" y2="21"></line><line x1="12" x2="12" y1="17" y2="21"></line></svg>
                     </button>
                 </div>
             </div>
         </div>
         <div id="audioOnlyUI" class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <i data-lucide="phone" class="w-8 h-8 text-green-400 animate-pulse"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="phone" aria-hidden="true" class="lucide lucide-phone w-8 h-8 text-green-400 animate-pulse"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"></path></svg>
                 <div>
                     <p class="font-bold">Active Call</p>
                     <p id="callDuration" class="text-sm text-purple-300">00:00</p>
@@ -540,17 +732,17 @@
             </div>
             <div class="flex items-center gap-4">
                 <div class="flex items-center gap-2">
-                    <i data-lucide="mic" class="w-5 h-5"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="mic" aria-hidden="true" class="lucide lucide-mic w-5 h-5"><path d="M12 19v3"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><rect x="9" y="2" width="6" height="13" rx="3"></rect></svg>
                     <div class="w-24 bg-gray-700 rounded-full h-2">
                         <div id="audioLevel" class="audio-level rounded-full" style="width: 0%"></div>
                     </div>
                 </div>
                 <button id="endCallBtn" class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full">
-                    <i data-lucide="phone-off" class="w-5 h-5"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="phone-off" aria-hidden="true" class="lucide lucide-phone-off w-5 h-5"><path d="M10.1 13.9a14 14 0 0 0 3.732 2.668 1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2 18 18 0 0 1-12.728-5.272"></path><path d="M22 2 2 22"></path><path d="M4.76 13.582A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 .244.473"></path></svg>
                 </button>
             </div>
         </div>
-        <audio id="remoteAudio" autoplay></audio>
+        <audio id="remoteAudio" autoplay=""></audio>
     </div>
 
     <script>
@@ -1212,7 +1404,241 @@
                 document.getElementById('audioLevel').style.width = `${percentage}%`;
             };
         }
-    </script>
-</body>
+        // ==========================================
+// CUSTOMERS MODULE
+// ==========================================
 
-</html>
+let allCustomers = [];
+
+// Toast helper
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+// Load all customers from Supabase
+async function loadCustomers() {
+    const tbody = document.getElementById('customersTableBody');
+    const emptyState = document.getElementById('customersEmpty');
+    const loadingState = document.getElementById('customersLoading');
+
+    tbody.innerHTML = '';
+    emptyState.classList.add('hidden');
+    loadingState.classList.remove('hidden');
+
+    const { data, error } = await supabaseClient
+        .from('customers')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    loadingState.classList.add('hidden');
+
+    if (error) {
+        showToast('Failed to load customers', 'error');
+        console.error(error);
+        return;
+    }
+
+    allCustomers = data || [];
+    renderCustomers(allCustomers);
+}
+
+// Render customers into the table
+function renderCustomers(customers) {
+    const tbody = document.getElementById('customersTableBody');
+    const emptyState = document.getElementById('customersEmpty');
+    const countEl = document.getElementById('customerCount');
+
+    tbody.innerHTML = '';
+    countEl.textContent = `${customers.length} customer${customers.length !== 1 ? 's' : ''}`;
+
+    if (customers.length === 0) {
+        emptyState.classList.remove('hidden');
+        return;
+    }
+
+    emptyState.classList.add('hidden');
+
+    customers.forEach(c => {
+        const tr = document.createElement('tr');
+        const date = new Date(c.created_at).toLocaleDateString('en-US', {
+            month: 'short', day: 'numeric', year: 'numeric'
+        });
+
+        tr.innerHTML = `
+            <td class="px-6 py-4">
+                <span class="font-semibold text-white">${escapeHtml(c.name)}</span>
+            </td>
+            <td class="px-6 py-4">
+                <span class="text-purple-300">${escapeHtml(c.company || '—')}</span>
+            </td>
+            <td class="px-6 py-4">
+                <a href="tel:${escapeHtml(c.phone)}" class="text-green-400 hover:text-green-300 transition">${escapeHtml(c.phone)}</a>
+            </td>
+            <td class="px-6 py-4 hidden md:table-cell">
+                <span class="text-purple-300">${c.email ? `<a href="mailto:${escapeHtml(c.email)}" class="hover:text-purple-200 transition">${escapeHtml(c.email)}</a>` : '—'}</span>
+            </td>
+            <td class="px-6 py-4 hidden lg:table-cell">
+                <span class="text-purple-400 text-sm">${date}</span>
+            </td>
+            <td class="px-6 py-4 text-right">
+                <div class="flex items-center justify-end gap-2">
+                    <button onclick="openEditModal('${c.id}')" class="p-2 rounded-lg hover:bg-purple-700 transition" title="Edit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                    </button>
+                    <button onclick="openDeleteModal('${c.id}', '${escapeHtml(c.name)}')" class="p-2 rounded-lg hover:bg-red-600 transition" title="Delete">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// HTML escape helper
+function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+// Add customer
+document.getElementById('customerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const customer = {
+        name: document.getElementById('custName').value.trim(),
+        company: document.getElementById('custCompany').value.trim() || null,
+        phone: document.getElementById('custPhone').value.trim(),
+        email: document.getElementById('custEmail').value.trim() || null,
+        notes: document.getElementById('custNotes').value.trim() || null,
+        created_by: currentAdmin?.id || null
+    };
+
+    const { data, error } = await supabaseClient.from('customers').insert([customer]).select();
+
+    if (error) {
+        showToast('Failed to add customer: ' + error.message, 'error');
+        return;
+    }
+
+    showToast('Customer added successfully');
+    document.getElementById('customerForm').reset();
+    loadCustomers();
+});
+
+// Search / filter
+document.getElementById('customerSearch').addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase().trim();
+    if (!query) {
+        renderCustomers(allCustomers);
+        return;
+    }
+    const filtered = allCustomers.filter(c =>
+        (c.name && c.name.toLowerCase().includes(query)) ||
+        (c.company && c.company.toLowerCase().includes(query)) ||
+        (c.phone && c.phone.toLowerCase().includes(query)) ||
+        (c.email && c.email.toLowerCase().includes(query))
+    );
+    renderCustomers(filtered);
+});
+
+// Toggle form collapse
+document.getElementById('toggleCustomerFormBtn').addEventListener('click', () => {
+    const form = document.getElementById('customerForm');
+    const btn = document.getElementById('toggleCustomerFormBtn');
+    if (form.style.display === 'none') {
+        form.style.display = '';
+        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg> Collapse`;
+    } else {
+        form.style.display = 'none';
+        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg> Expand`;
+    }
+});
+
+// ---- Edit Modal ----
+function openEditModal(id) {
+    const c = allCustomers.find(x => x.id === id);
+    if (!c) return;
+
+    document.getElementById('editCustId').value = c.id;
+    document.getElementById('editCustName').value = c.name || '';
+    document.getElementById('editCustCompany').value = c.company || '';
+    document.getElementById('editCustPhone').value = c.phone || '';
+    document.getElementById('editCustEmail').value = c.email || '';
+    document.getElementById('editCustNotes').value = c.notes || '';
+    document.getElementById('editCustomerModal').classList.add('active');
+}
+
+function closeEditModal() {
+    document.getElementById('editCustomerModal').classList.remove('active');
+}
+
+document.getElementById('closeEditModal').addEventListener('click', closeEditModal);
+document.getElementById('cancelEditBtn').addEventListener('click', closeEditModal);
+
+document.getElementById('editCustomerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('editCustId').value;
+
+    const updates = {
+        name: document.getElementById('editCustName').value.trim(),
+        company: document.getElementById('editCustCompany').value.trim() || null,
+        phone: document.getElementById('editCustPhone').value.trim(),
+        email: document.getElementById('editCustEmail').value.trim() || null,
+        notes: document.getElementById('editCustNotes').value.trim() || null
+    };
+
+    const { error } = await supabaseClient.from('customers').update(updates).eq('id', id);
+
+    if (error) {
+        showToast('Failed to update customer: ' + error.message, 'error');
+        return;
+    }
+
+    showToast('Customer updated successfully');
+    closeEditModal();
+    loadCustomers();
+});
+
+// ---- Delete Modal ----
+function openDeleteModal(id, name) {
+    document.getElementById('deleteCustId').value = id;
+    document.getElementById('deleteCustName').textContent = `Are you sure you want to delete "${name}"? This cannot be undone.`;
+    document.getElementById('deleteCustomerModal').classList.add('active');
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteCustomerModal').classList.remove('active');
+}
+
+document.getElementById('cancelDeleteBtn').addEventListener('click', closeDeleteModal);
+
+document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+    const id = document.getElementById('deleteCustId').value;
+    const { error } = await supabaseClient.from('customers').delete().eq('id', id);
+
+    if (error) {
+        showToast('Failed to delete customer: ' + error.message, 'error');
+        return;
+    }
+
+    showToast('Customer deleted');
+    closeDeleteModal();
+    loadCustomers();
+});
+
+// Close modals on backdrop click
+document.getElementById('editCustomerModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeEditModal();
+});
+document.getElementById('deleteCustomerModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeDeleteModal();
+});
+    </script>
+</div></body></html>
