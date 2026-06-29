@@ -1,1475 +1,590 @@
-<html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Epsilon Admin Panel</title>
+    <title>Epsilon — Admin Panel</title>
+    <link rel="icon" href="./epsilon logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="icon" href="epsilon logo.png">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Add PeerJS library -->
-    <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
-
-:root {
-    --purple-400: #c084fc;
-    --purple-500: #a855f7;
-    --purple-600: #9333ea;
-    --purple-700: #7e22ce;
-    --purple-800: #6b21a8;
-    --black: #050505;
-    --black-card: #0d0d0d;
-    --black-raised: #111111;
-    --black-input: #0a0a0a;
-    --white: #ffffff;
-    --white-soft: #f0f0f0;
-    --white-muted: #a3a3a3;
-    --white-dim: #525252;
-    --border: rgba(168, 85, 247, 0.1);
-    --border-hover: rgba(168, 85, 247, 0.25);
-    --glow: rgba(168, 85, 247, 0.15);
-    --glow-strong: rgba(168, 85, 247, 0.35);
-}
-
-* {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(168, 85, 247, 0.15) transparent;
-}
-
-*::-webkit-scrollbar { width: 5px; height: 5px; }
-*::-webkit-scrollbar-track { background: transparent; }
-*::-webkit-scrollbar-thumb { background: rgba(168, 85, 247, 0.15); border-radius: 99px; }
-
-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background-color: var(--black);
-    color: var(--white-soft);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
-}
-
-::selection {
-    background: var(--purple-600);
-    color: var(--white);
-}
-
-/* ─── Background ─── */
-.bg-mesh {
-    position: fixed;
-    inset: 0;
-    z-index: -2;
-    background:
-        radial-gradient(ellipse 50% 40% at 0% 0%, rgba(88, 28, 135, 0.2) 0%, transparent 100%),
-        radial-gradient(ellipse 40% 30% at 100% 100%, rgba(88, 28, 135, 0.15) 0%, transparent 100%),
-        var(--black);
-}
-
-.bg-mesh::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-        linear-gradient(rgba(168, 85, 247, 0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(168, 85, 247, 0.025) 1px, transparent 1px);
-    background-size: 48px 48px;
-    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,0,0,0.8) 0%, transparent 70%);
-    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,0,0,0.8) 0%, transparent 70%);
-}
-
-.bg-mesh::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent 0%, var(--purple-500) 50%, transparent 100%);
-    opacity: 0.4;
-}
-
-/* ─── Glass ─── */
-.glass {
-    background: var(--black-card);
-    border: 1px solid var(--border);
-    box-shadow: 0 1px 0 0 rgba(255,255,255,0.02) inset, 0 4px 24px -4px rgba(0,0,0,0.5);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.glass:hover {
-    border-color: var(--border-hover);
-    box-shadow: 0 1px 0 0 rgba(255,255,255,0.03) inset, 0 8px 32px -4px rgba(168, 85, 247, 0.06);
-}
-
-/* ─── Pages ─── */
-.page { display: none; }
-.page.active { display: flex; }
-
-#loginPage {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    align-items: center;
-    justify-content: center;
-}
-
-#dashboardPage { display: none; }
-#dashboardPage.active { display: block; }
-
-.section {
-    animation: sectionIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes sectionIn {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* ─── Sidebar ─── */
-.sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100vh;
-    width: 260px;
-    background: var(--black);
-    border-right: 1px solid var(--border);
-    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 100;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-.sidebar::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: -1px;
-    width: 1px;
-    height: 100%;
-    background: linear-gradient(to bottom, transparent 0%, var(--purple-500) 20%, var(--purple-400) 50%, var(--purple-500) 80%, transparent 100%);
-    opacity: 0.2;
-}
-
-.sidebar.closed { transform: translateX(-100%); }
-
-.main-content {
-    margin-left: 260px;
-    transition: margin-left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    padding: 2rem 2.5rem 4rem;
-    min-height: 100vh;
-}
-
-.main-content.expanded { margin-left: 0; }
-
-.menu-toggle {
-    position: fixed;
-    top: 1.25rem;
-    left: 1.25rem;
-    z-index: 101;
-    background: var(--black-raised);
-    border: 1px solid var(--border);
-    padding: 0.55rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    color: var(--purple-400);
-}
-
-.menu-toggle:hover {
-    background: var(--purple-600);
-    border-color: var(--purple-600);
-    color: var(--white);
-    box-shadow: 0 0 20px var(--glow-strong);
-}
-
-.sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 99;
-    display: none;
-}
-
-.sidebar-overlay.active { display: block; }
-
-/* ─── Sidebar Brand ─── */
-.sidebar h2 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    color: var(--white);
-    text-transform: uppercase;
-}
-
-.sidebar h2 span {
-    color: var(--purple-400);
-}
-
-/* ─── Nav Buttons ─── */
-.nav-btn {
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--white-dim);
-    border-radius: 0.5rem;
-    position: relative;
-    transition: all 0.2s ease;
-}
-
-.nav-btn::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 15%;
-    height: 70%;
-    width: 2.5px;
-    background: var(--purple-500);
-    border-radius: 0 3px 3px 0;
-    transform: scaleY(0);
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 0 8px var(--glow-strong);
-}
-
-.nav-btn:hover {
-    background: rgba(168, 85, 247, 0.06) !important;
-    color: var(--white-soft) !important;
-}
-
-.nav-btn:hover svg { color: var(--purple-400); }
-
-.nav-btn.bg-purple-600 {
-    background: rgba(168, 85, 247, 0.1) !important;
-    color: var(--white) !important;
-    border: 1px solid var(--border-hover);
-}
-
-.nav-btn.bg-purple-600::before { transform: scaleY(1); }
-.nav-btn.bg-purple-600 svg { color: var(--purple-400) !important; }
-
-.nav-btn svg {
-    color: var(--white-dim);
-    transition: color 0.2s ease;
-    flex-shrink: 0;
-}
-
-/* ─── Sidebar Divider ─── */
-.sidebar .border-t { border-color: var(--border) !important; }
-
-/* ─── Logout ─── */
-#logoutBtn {
-    color: var(--white-dim);
-    font-size: 0.8rem;
-    font-weight: 500;
-    border-radius: 0.5rem;
-    transition: all 0.2s ease;
-}
-
-#logoutBtn:hover {
-    background: rgba(239, 68, 68, 0.08) !important;
-    color: #f87171 !important;
-}
-
-#logoutBtn svg { color: var(--white-dim); transition: color 0.2s; }
-#logoutBtn:hover svg { color: #f87171; }
-
-/* ─── Header ─── */
-header h1 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 700;
-    font-size: 1.625rem;
-    letter-spacing: -0.02em;
-    color: var(--white);
-}
-
-/* ─── Section Titles ─── */
-.section h2 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 600;
-    font-size: 1.125rem;
-    color: var(--white);
-    letter-spacing: -0.01em;
-}
-
-/* ─── Inputs ─── */
-input, textarea, select {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.8125rem;
-    background: var(--black-input) !important;
-    border: 1px solid var(--border) !important;
-    color: var(--white-soft) !important;
-    border-radius: 0.5rem !important;
-    transition: all 0.25s ease !important;
-    outline: none !important;
-}
-
-input::placeholder, textarea::placeholder {
-    color: var(--white-dim) !important;
-}
-
-input:focus, textarea:focus, select:focus {
-    border-color: var(--purple-500) !important;
-    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1), 0 0 24px rgba(168, 85, 247, 0.06) !important;
-}
-
-select option {
-    background: var(--black-raised);
-    color: var(--white-soft);
-}
-
-/* ─── Submit Buttons ─── */
-button[type="submit"] {
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 0.8125rem;
-    background: var(--purple-600) !important;
-    border: 1px solid rgba(168, 85, 247, 0.3) !important;
-    color: var(--white) !important;
-    border-radius: 0.5rem !important;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.25s ease !important;
-}
-
-button[type="submit"]::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
-    transform: translateX(-110%);
-    transition: transform 0.6s ease;
-}
-
-button[type="submit"]:hover {
-    background: var(--purple-500) !important;
-    border-color: rgba(168, 85, 247, 0.5) !important;
-    box-shadow: 0 0 24px var(--glow-strong) !important;
-    transform: translateY(-1px);
-}
-
-button[type="submit"]:hover::after { transform: translateX(110%); }
-button[type="submit"]:active { transform: translateY(0); }
-
-/* ─── User Cards ─── */
-#usersList > div {
-    border-radius: 0.75rem;
-    transition: all 0.25s ease;
-}
-
-#usersList > div:hover {
-    border-color: var(--border-hover) !important;
-    background: rgba(168, 85, 247, 0.03) !important;
-    transform: translateX(3px);
-}
-
-#usersList > div img {
-    border: 2px solid var(--border);
-    transition: border-color 0.25s ease, box-shadow 0.25s ease;
-    border-radius: 50%;
-}
-
-#usersList > div:hover img {
-    border-color: var(--purple-500);
-    box-shadow: 0 0 12px var(--glow);
-}
-
-/* ─── Chat Messages ─── */
-#chatMessages > div {
-    border-radius: 0.625rem;
-    transition: border-color 0.2s ease;
-}
-
-#chatMessages > div:hover { border-color: var(--border-hover); }
-
-#chatMessages img {
-    border: 2px solid var(--border);
-    border-radius: 50%;
-    transition: border-color 0.2s;
-}
-
-#chatMessages > div:hover img { border-color: var(--purple-500); }
-
-/* ─── Project Cards ─── */
-#projectsList > div {
-    border-radius: 0.875rem;
-    transition: all 0.3s ease;
-}
-
-#projectsList > div:hover {
-    border-color: var(--border-hover);
-    transform: translateY(-3px);
-    box-shadow: 0 12px 40px rgba(168, 85, 247, 0.08);
-}
-
-/* ─── Customers Table ─── */
-#customersTableBody tr {
-    border-bottom: 1px solid var(--border);
-    transition: background 0.15s ease;
-}
-
-#customersTableBody tr:hover { background: rgba(168, 85, 247, 0.04); }
-#customersTableBody tr:last-child { border-bottom: none; }
-
-/* ─── Welcome Cards ─── */
-#welcomeSection .grid > div {
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-#welcomeSection .grid > div::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--purple-500);
-    transform: scaleX(0);
-    transition: transform 0.3s ease;
-}
-
-#welcomeSection .grid > div:hover::after { transform: scaleX(1); }
-
-#welcomeSection .grid > div:hover {
-    border-color: var(--border-hover);
-    background: rgba(168, 85, 247, 0.04);
-    transform: translateY(-4px);
-    box-shadow: 0 8px 32px rgba(168, 85, 247, 0.06);
-}
-
-#welcomeSection .grid > div:hover svg {
-    color: var(--purple-400) !important;
-    filter: drop-shadow(0 0 6px var(--glow-strong));
-    transform: scale(1.08);
-}
-
-#welcomeSection .grid > div svg { transition: all 0.3s ease; }
-
-/* ─── Spinner ─── */
-@keyframes spin { to { transform: rotate(360deg); } }
-.animate-spin { animation: spin 0.8s linear infinite; }
-
-/* ─── Toasts ─── */
-.toast {
-    position: fixed;
-    top: 1.5rem;
-    right: 1.5rem;
-    z-index: 9999;
-    padding: 0.75rem 1.25rem;
-    border-radius: 0.625rem;
-    font-size: 0.8rem;
-    font-weight: 600;
-    backdrop-filter: blur(16px);
-    animation: toastIn 0.4s cubic-bezier(0.16, 1, 0.3, 1), toastOut 0.3s ease-in 2.5s forwards;
-    pointer-events: none;
-}
-
-.toast-success {
-    background: rgba(34, 197, 94, 0.1);
-    border: 1px solid rgba(34, 197, 94, 0.25);
-    color: #4ade80;
-}
-
-.toast-error {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.25);
-    color: #f87171;
-}
-
-@keyframes toastIn {
-    from { transform: translateX(120%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes toastOut {
-    from { opacity: 1; }
-    to { opacity: 0; transform: translateY(-6px); }
-}
-
-/* ─── Modals ─── */
-#editCustomerModal.active,
-#deleteCustomerModal.active { display: flex !important; }
-
-/* ─── Call UI ─── */
-.call-notification {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-    animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes slideIn {
-    from { transform: translateX(120%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-.call-active {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
-    z-index: 999;
-}
-
-.audio-level {
-    height: 3px;
-    background: var(--purple-500);
-    border-radius: 99px;
-    transition: width 0.1s;
-    box-shadow: 0 0 8px var(--glow);
-}
-
-.video-container {
-    position: relative;
-    width: 100%;
-    height: 400px;
-    background: var(--black);
-    border-radius: 0.875rem;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid var(--border);
-}
-
-.local-video {
-    position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-    width: 120px;
-    height: 90px;
-    background: var(--black-raised);
-    border-radius: 0.5rem;
-    border: 2px solid var(--purple-500);
-    z-index: 10;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.5), 0 0 16px var(--glow);
-}
-
-.remote-video { width: 100%; height: 100%; object-fit: cover; }
-
-.video-controls {
-    position: absolute;
-    bottom: 1.25rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 0.625rem;
-    z-index: 20;
-    padding: 0.5rem 0.875rem;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(16px);
-    border-radius: 0.875rem;
-    border: 1px solid var(--border);
-}
-
-.video-controls button {
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--black-raised);
-    border: 1px solid var(--border);
-    color: var(--white-soft);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.video-controls button:hover {
-    background: var(--purple-600);
-    border-color: var(--purple-500);
-    color: var(--white);
-    box-shadow: 0 0 16px var(--glow-strong);
-}
-
-/* ─── Tailwind Color Overrides ─── */
-.text-purple-200 { color: var(--white-muted) !important; }
-.text-purple-300 { color: var(--white-muted) !important; }
-.text-purple-400 { color: var(--white-dim) !important; }
-.text-purple-600 { color: var(--purple-500) !important; }
-.text-purple-700 { color: var(--purple-700) !important; }
-.text-green-400 { color: #4ade80 !important; }
-.text-red-500 { color: #f87171 !important; }
-.text-white { color: var(--white) !important; }
-
-.border-purple-600 { border-color: var(--purple-500) !important; }
-.border-purple-700 { border-color: rgba(126, 34, 206, 0.3) !important; }
-
-.bg-purple-600 { background: var(--purple-600) !important; }
-.bg-purple-700 { background: var(--purple-700) !important; }
-.bg-gray-700 { background: var(--black-raised) !important; }
-.bg-gray-800 { background: var(--black-input) !important; }
-.bg-green-600 { background: #22c55e !important; }
-.bg-red-600 { background: #ef4444 !important; }
-
-.hover\:bg-purple-600:hover { background: var(--purple-600) !important; }
-.hover\:bg-purple-700:hover { background: var(--purple-700) !important; }
-.hover\:bg-purple-800:hover { background: var(--purple-800) !important; }
-.hover\:bg-gray-700:hover { background: var(--black-raised) !important; }
-.hover\:bg-green-700:hover { background: #16a34a !important; }
-.hover\:bg-red-600:hover { background: #ef4444 !important; }
-.hover\:bg-red-700:hover { background: #b91c1c !important; }
-.hover\:text-purple-200:hover { color: var(--white-soft) !important; }
-.hover\:text-purple-300:hover { color: var(--white-muted) !important; }
-.hover\:text-white:hover { color: var(--white) !important; }
-.hover\:text-green-300:hover { color: #4ade80 !important; }
-
-.focus\:ring-purple-600:focus { --tw-ring-color: var(--purple-500) !important; }
-
-/* ─── Responsive ─── */
-@media (max-width: 768px) {
-    .sidebar { transform: translateX(-100%); }
-    .sidebar.open { transform: translateX(0); }
-    .main-content { margin-left: 0; padding: 1.25rem 1rem 3rem; }
-    header h1 { font-size: 1.25rem; }
-}
+        :root {
+            --bg-deep: #06060e;
+            --bg-surface: #0c0b16;
+            --bg-elevated: #12111e;
+            --bg-hover: #1a1829;
+            --border-dim: rgba(139, 92, 246, 0.06);
+            --border-default: rgba(139, 92, 246, 0.1);
+            --border-hover: rgba(139, 92, 246, 0.3);
+            --border-active: rgba(139, 92, 246, 0.5);
+            --purple-deep: #6d28d9;
+            --purple-mid: #8b5cf6;
+            --purple-bright: #a78bfa;
+            --purple-neon: #c4b5fd;
+            --purple-glow: rgba(139, 92, 246, 0.15);
+            --purple-glow-strong: rgba(139, 92, 246, 0.25);
+            --text-primary: #f0ecff;
+            --text-secondary: #a78bfa;
+            --text-muted: #6b5b8a;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        .bg-mesh {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background:
+                radial-gradient(ellipse 70% 50% at 20% 15%, rgba(109,40,217,0.18) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 45% at 80% 85%, rgba(139,92,246,0.1) 0%, transparent 55%),
+                radial-gradient(ellipse 40% 30% at 50% 50%, rgba(88,28,135,0.08) 0%, transparent 50%),
+                linear-gradient(160deg, #08001a 0%, #06060e 30%, #050510 60%, #0a0020 100%);
+        }
+        h1,h2,h3,h4 { font-family: 'Inter', sans-serif; }
+        h1 { font-weight: 800; letter-spacing: -0.04em; }
+        h2 { font-weight: 700; letter-spacing: -0.02em; }
+        h3 { font-weight: 600; letter-spacing: -0.01em; }
+        input, textarea, select {
+            font-family: 'Inter', sans-serif;
+            border-radius: 12px !important;
+            transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--purple-mid) !important;
+            box-shadow: 0 0 0 4px var(--purple-glow) !important;
+        }
+        button {
+            font-family: 'Inter', sans-serif;
+            border-radius: 9999px !important;
+            transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--purple-mid), var(--purple-deep));
+            color: #fff; border: none; padding: 0.65rem 1.5rem; font-weight: 600;
+            box-shadow: 0 2px 12px rgba(139,92,246,0.2), inset 0 1px 0 rgba(255,255,255,0.06);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 6px 24px rgba(139,92,246,0.3), inset 0 1px 0 rgba(255,255,255,0.08);
+            transform: translateY(-1px);
+        }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .btn-danger {
+            background: rgba(220,38,38,0.15); color: #f87171;
+            border: 1px solid rgba(220,38,38,0.2); padding: 0.45rem 1rem; font-weight: 500; font-size: 0.8rem;
+        }
+        .btn-danger:hover { background: rgba(220,38,38,0.25); border-color: rgba(220,38,38,0.4); }
+        .btn-ghost {
+            background: transparent; color: var(--text-muted);
+            border: 1px solid var(--border-default); padding: 0.45rem 1rem; font-weight: 500; font-size: 0.8rem;
+        }
+        .btn-ghost:hover { color: var(--purple-bright); border-color: var(--border-hover); background: rgba(139,92,246,0.06); }
+        .notification {
+            position: fixed; top: 24px; right: 24px;
+            padding: 14px 24px; border-radius: 9999px;
+            color: #fff; font-weight: 600; font-size: 0.88rem;
+            z-index: 10000;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            animation: notifSlide 0.5s cubic-bezier(0.22,1,0.36,1);
+            border: 1px solid transparent;
+            backdrop-filter: blur(12px);
+        }
+        .notification.success { background: linear-gradient(135deg, rgba(6,78,59,0.95), rgba(6,95,70,0.95)); border-color: rgba(52,211,153,0.2); }
+        .notification.error { background: linear-gradient(135deg, rgba(69,10,10,0.95), rgba(127,29,29,0.95)); border-color: rgba(248,113,113,0.2); }
+        @keyframes notifSlide {
+            from { transform: translateX(120%) scale(0.9); opacity: 0; }
+            to { transform: translateX(0) scale(1); opacity: 1; }
+        }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.15); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.3); }
+        ::selection { background: rgba(139,92,246,0.3); color: #fff; }
+
+        #loginOverlay {
+            position: fixed; inset: 0; z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--bg-deep);
+        }
+        #loginOverlay.hidden { display: none; }
+        .login-box {
+            width: 100%; max-width: 420px; padding: 2.5rem;
+            background: rgba(12,11,22,0.85);
+            border: 1px solid var(--border-default);
+            border-radius: 24px;
+            box-shadow: 0 24px 80px -12px rgba(139,92,246,0.15);
+            backdrop-filter: blur(20px);
+        }
+        .login-input {
+            width: 100%; padding: 0.8rem 1.1rem;
+            background: rgba(18,17,30,0.8);
+            border: 1px solid var(--border-dim);
+            border-radius: 14px; color: var(--text-primary);
+            font-size: 0.9rem; outline: none;
+            transition: all 0.35s cubic-bezier(0.22,1,0.36,1);
+        }
+        .login-input::placeholder { color: var(--text-muted); font-size: 0.82rem; }
+        .login-input:focus { border-color: var(--border-hover); box-shadow: 0 0 0 4px var(--purple-glow); background: rgba(18,17,30,1); }
+
+        #adminPanel { display: none; position: relative; z-index: 1; min-height: 100vh; }
+        #adminPanel.visible { display: flex; }
+        .admin-sidebar {
+            position: fixed; left: 0; top: 0; bottom: 0; width: 240px;
+            background: rgba(12,11,22,0.92);
+            border-right: 1px solid var(--border-dim);
+            backdrop-filter: blur(20px);
+            display: flex; flex-direction: column;
+            z-index: 100; padding: 1.5rem 0.75rem;
+        }
+        .admin-nav-item {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.7rem 1rem; border-radius: 14px;
+            color: var(--text-muted); font-size: 0.85rem; font-weight: 500;
+            cursor: pointer; border: 1px solid transparent;
+            transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
+            background: transparent; width: 100%; text-align: left;
+        }
+        .admin-nav-item:hover { color: var(--purple-bright); background: rgba(139,92,246,0.06); border-color: var(--border-dim); }
+        .admin-nav-item.active {
+            background: linear-gradient(135deg, var(--purple-mid), var(--purple-deep));
+            color: #fff; border-color: transparent;
+            box-shadow: 0 4px 20px var(--purple-glow-strong);
+        }
+        .admin-nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+        .admin-main { margin-left: 240px; flex: 1; padding: 2rem 2.5rem 3rem; min-height: 100vh; }
+        .admin-page { display: none; }
+        .admin-page.active { display: block; }
+
+        .stat-card {
+            background: rgba(12,11,22,0.6);
+            border: 1px solid var(--border-dim);
+            border-radius: 18px; padding: 1.5rem;
+            transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
+        }
+        .stat-card:hover { border-color: var(--border-hover); box-shadow: 0 12px 40px -8px rgba(139,92,246,0.1); }
+        .stat-icon { width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+        .stat-value { font-size: 2rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; }
+        .stat-label { font-size: 0.78rem; color: var(--text-muted); font-weight: 500; letter-spacing: 0.03em; }
+
+        .chart-box {
+            background: rgba(12,11,22,0.6);
+            border: 1px solid var(--border-dim);
+            border-radius: 18px; padding: 1.5rem;
+        }
+        .chart-box h3 { font-size: 0.95rem; margin-bottom: 1rem; color: var(--text-secondary); }
+
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .data-table thead th {
+            padding: 0.75rem 1rem; text-align: left;
+            font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em;
+            text-transform: uppercase; color: var(--text-muted);
+            border-bottom: 1px solid var(--border-dim);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .data-table tbody tr { transition: all 0.25s ease; }
+        .data-table tbody tr:hover { background: rgba(139,92,246,0.04); }
+        .data-table tbody td {
+            padding: 0.85rem 1rem; font-size: 0.85rem;
+            border-bottom: 1px solid var(--border-dim);
+            color: var(--text-primary);
+        }
+        .data-table tbody td.mono {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem; color: var(--text-muted);
+        }
+
+        .avatar {
+            width: 38px; height: 38px; border-radius: 12px;
+            object-fit: cover; border: 1.5px solid var(--border-default);
+            background: var(--bg-elevated);
+        }
+        .avatar-placeholder {
+            width: 38px; height: 38px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, var(--purple-mid), var(--purple-deep));
+            color: #fff; font-weight: 700; font-size: 0.85rem;
+            border: 1.5px solid var(--border-default);
+            flex-shrink: 0;
+        }
+
+        .group-card {
+            background: rgba(12,11,22,0.6);
+            border: 1px solid var(--border-dim);
+            border-radius: 18px; padding: 1.5rem;
+            transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
+            border-left: 3px solid var(--purple-deep);
+        }
+        .group-card:hover {
+            border-color: var(--border-hover); border-left-color: var(--purple-bright);
+            transform: translateY(-2px);
+            box-shadow: 0 16px 48px -12px rgba(139,92,246,0.1);
+        }
+
+        .user-card {
+            background: rgba(12,11,22,0.6);
+            border: 1px solid var(--border-dim);
+            border-radius: 18px; padding: 1.25rem;
+            transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
+            display: flex; align-items: center; gap: 1rem;
+        }
+        .user-card:hover {
+            border-color: var(--border-hover);
+            background: rgba(26,24,41,0.7);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 36px -8px rgba(139,92,246,0.1);
+        }
+
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 5000;
+            background: rgba(4,4,10,0.85);
+            backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center;
+            padding: 1rem;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: rgba(17,24,39,0.97);
+            border: 1px solid var(--border-default);
+            border-radius: 24px; padding: 2rem;
+            width: 100%; max-width: 560px; max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+        }
+        .modal-box.wide { max-width: 720px; }
+
+        .badge {
+            display: inline-flex; align-items: center; gap: 0.3rem;
+            padding: 0.2rem 0.65rem; border-radius: 9999px;
+            font-size: 0.7rem; font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .badge-purple { background: rgba(139,92,246,0.15); color: var(--purple-bright); border: 1px solid rgba(139,92,246,0.2); }
+        .badge-green { background: rgba(52,211,153,0.12); color: #6ee7b7; border: 1px solid rgba(52,211,153,0.2); }
+
+        .admin-search {
+            height: 46px; padding: 0 1.15rem;
+            background: rgba(12,11,22,0.6);
+            border: 1px solid var(--border-dim);
+            border-radius: 9999px; color: var(--text-primary);
+            font-size: 0.88rem; outline: none;
+            transition: all 0.35s cubic-bezier(0.22,1,0.36,1);
+            backdrop-filter: blur(8px);
+        }
+        .admin-search::placeholder { color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; }
+        .admin-search:focus { border-color: var(--border-hover); box-shadow: 0 0 0 4px var(--purple-glow); }
+
+        .form-label {
+            display: block; font-size: 0.75rem; font-weight: 600;
+            color: var(--text-muted); margin-bottom: 0.4rem;
+            letter-spacing: 0.04em; text-transform: uppercase;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .form-input {
+            width: 100%; padding: 0.7rem 1rem;
+            background: rgba(18,17,30,0.8);
+            border: 1px solid var(--border-dim);
+            border-radius: 12px; color: var(--text-primary);
+            font-size: 0.88rem; outline: none;
+            transition: all 0.35s cubic-bezier(0.22,1,0.36,1);
+        }
+        .form-input:focus { border-color: var(--border-hover); box-shadow: 0 0 0 4px var(--purple-glow); }
+        textarea.form-input { min-height: 80px; resize: vertical; font-family: 'Inter', sans-serif; }
+
+        .member-chip {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.35rem 0.5rem 0.35rem 0.35rem;
+            background: rgba(18,17,30,0.8);
+            border: 1px solid var(--border-dim);
+            border-radius: 9999px; font-size: 0.8rem;
+            transition: all 0.25s ease;
+        }
+        .member-chip:hover { border-color: var(--border-hover); }
+        .member-chip .remove-member {
+            width: 22px; height: 22px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(220,38,38,0.1); color: #f87171;
+            border: 1px solid rgba(220,38,38,0.15);
+            cursor: pointer; transition: all 0.2s ease;
+            font-size: 0.7rem; font-weight: 700;
+        }
+        .member-chip .remove-member:hover { background: rgba(220,38,38,0.25); }
+
+        .detail-row {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 0.6rem 0; border-bottom: 1px solid var(--border-dim);
+        }
+        .detail-row:last-child { border-bottom: none; }
+
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                width: 100%; height: auto; position: fixed; bottom: 0; top: auto;
+                flex-direction: row; justify-content: space-around; padding: 0.4rem 0.5rem;
+                border-right: none; border-top: 1px solid var(--border-dim);
+                border-radius: 20px 20px 0 0;
+            }
+            .admin-sidebar .sidebar-brand, .admin-sidebar .sidebar-footer { display: none; }
+            .admin-nav-item { flex-direction: column; gap: 0.2rem; padding: 0.5rem 0.6rem; font-size: 0.6rem; }
+            .admin-nav-item span { font-size: 0.55rem; }
+            .admin-main { margin-left: 0; padding: 1.25rem 1rem 5rem; }
+            .stat-value { font-size: 1.5rem; }
+            .data-table thead th, .data-table tbody td { padding: 0.6rem 0.5rem; font-size: 0.78rem; }
+            .modal-box { padding: 1.5rem; max-height: 90vh; }
+            .user-card { flex-direction: column; text-align: center; }
+        }
+        @media (max-width: 640px) {
+            .charts-grid-2 { grid-template-columns: 1fr !important; }
+        }
     </style>
+</head>
+<body>
     <div class="bg-mesh"></div>
 
-    <!-- Menu Toggle Button -->
-    <button id="menuToggle" class="menu-toggle">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="menu" aria-hidden="true" class="lucide lucide-menu w-6 h-6 text-white"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
-    </button>
-
-    <!-- Sidebar Overlay -->
-    <div id="sidebarOverlay" class="sidebar-overlay"></div>
-
-    <!-- Sidebar Navigation -->
-    <aside id="sidebar" class="sidebar">
-        <div class="p-6">
-            <div class="flex items-center justify-between mb-8">
-                <h2 class="text-2xl font-bold">EPSILON<span class="text-purple-600"> ADMIN</span></h2>
-                <button id="closeSidebar" class="md:hidden">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="x" aria-hidden="true" class="lucide lucide-x w-6 h-6"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
-                </button>
+    <div id="loginOverlay">
+        <div class="login-box">
+            <div style="text-align:center; margin-bottom:2rem;">
+                <div style="font-size:0.7rem; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:var(--purple-mid); margin-bottom:0.5rem; font-family:'JetBrains Mono',monospace;">admin portal</div>
+                <h1 style="font-size:1.8rem; color:var(--text-primary); margin-bottom:0.3rem;">Epsilon</h1>
+                <p style="font-size:0.82rem; color:var(--text-muted);">Sign in to access the control panel</p>
             </div>
-            
-            <nav class="space-y-2">
-                <button class="nav-btn w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-600 transition text-left bg-purple-600" data-page="chat">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="message-circle" aria-hidden="true" class="lucide lucide-message-circle w-5 h-5"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"></path></svg>
-                    <span>Admin Chat</span>
+            <div style="display:flex; flex-direction:column; gap:1rem;">
+                <div>
+                    <label class="form-label">Email</label>
+                    <input id="loginEmail" type="email" class="login-input" placeholder="you@example.com" autocomplete="email">
+                </div>
+                <div>
+                    <label class="form-label">Password</label>
+                    <input id="loginPassword" type="password" class="login-input" placeholder="Enter your password" autocomplete="current-password">
+                </div>
+                <div>
+                    <label class="form-label">Security Code</label>
+                    <input id="loginCode" type="password" class="login-input" placeholder="#15452575-epsilonW" style="font-family:'JetBrains Mono',monospace; font-size:0.82rem; letter-spacing:0.04em;">
+                </div>
+                <div id="loginError" style="display:none; padding:0.6rem 1rem; border-radius:12px; background:rgba(220,38,38,0.1); border:1px solid rgba(220,38,38,0.15); color:#fca5a5; font-size:0.82rem;"></div>
+                <button id="loginBtn" class="btn-primary" style="width:100%; margin-top:0.5rem; padding:0.8rem; font-size:0.92rem;">Sign In</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminPanel">
+        <aside class="admin-sidebar">
+            <div class="sidebar-brand" style="padding:0 0.75rem 1.5rem; border-bottom:1px solid var(--border-dim); margin-bottom:1rem;">
+                <div style="font-size:0.6rem; font-weight:600; letter-spacing:0.15em; text-transform:uppercase; color:var(--purple-mid); font-family:'JetBrains Mono',monospace;">admin</div>
+                <div style="font-size:1.15rem; font-weight:800; letter-spacing:-0.03em; color:var(--text-primary);">Epsilon</div>
+            </div>
+            <nav style="display:flex; flex-direction:column; gap:0.25rem; flex:1;">
+                <button class="admin-nav-item active" data-page="dashboard">
+                    <i data-lucide="layout-dashboard"></i><span>Dashboard</span>
                 </button>
-                <button class="nav-btn w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-600 transition text-left" data-page="projects">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="folder" aria-hidden="true" class="lucide lucide-folder w-5 h-5"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg>
-                    <span>Projects</span>
+                <button class="admin-nav-item" data-page="customers">
+                    <i data-lucide="briefcase"></i><span>Customers</span>
                 </button>
-                <button class="nav-btn w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-600 transition text-left" data-page="users">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="users" aria-hidden="true" class="lucide lucide-users w-5 h-5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><path d="M16 3.128a4 4 0 0 1 0 7.744"></path><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><circle cx="9" cy="7" r="4"></circle></svg>
-                    <span>Manage Users</span>
+                <button class="admin-nav-item" data-page="users">
+                    <i data-lucide="users"></i><span>Users</span>
                 </button>
-                <button class="nav-btn w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-600 transition text-left" data-page="customers">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" x2="19" y1="8" y2="14"></line><line x1="22" x2="16" y1="11" y2="11"></line></svg>
-    <span>Customers</span>
-</button>
-                <button class="nav-btn w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-600 transition text-left" data-page="analytics">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="bar-chart" aria-hidden="true" class="lucide lucide-bar-chart w-5 h-5"><path d="M5 21v-6"></path><path d="M12 21V9"></path><path d="M19 21V3"></path></svg>
-                    <span>Analytics</span>
-                </button>
-                <button class="nav-btn w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-600 transition text-left" data-page="charts">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="pie-chart" aria-hidden="true" class="lucide lucide-pie-chart w-5 h-5"><path d="M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z"></path><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path></svg>
-                    <span>Charts</span>
-                </button>
-                <button class="nav-btn w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-600 transition text-left" data-page="servers">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="shield-off" aria-hidden="true" class="lucide lucide-shield-off w-5 h-5"><path d="m2 2 20 20"></path><path d="M5 5a1 1 0 0 0-1 1v7c0 5 3.5 7.5 7.67 8.94a1 1 0 0 0 .67.01c2.35-.82 4.48-1.97 5.9-3.71"></path><path d="M9.309 3.652A12.252 12.252 0 0 0 11.24 2.28a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1v7a9.784 9.784 0 0 1-.08 1.264"></path></svg>
-                    <span>Block Servers</span>
-                </button>
-                <button class="nav-btn w-full flex items-center gap-3 p-3 rounded-lg hover:bg-purple-600 transition text-left" data-page="calls">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="phone" aria-hidden="true" class="lucide lucide-phone w-5 h-5"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"></path></svg>
-                    <span>Admin Calls</span>
+                <button class="admin-nav-item" data-page="groups">
+                    <i data-lucide="layers"></i><span>Groups</span>
                 </button>
             </nav>
-
-            <div class="mt-8 pt-8 border-t border-purple-700">
-                <button id="logoutBtn" class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-red-600 transition text-left">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="log-out" aria-hidden="true" class="lucide lucide-log-out w-5 h-5"><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path></svg>
-                    <span>Logout</span>
+            <div class="sidebar-footer" style="border-top:1px solid var(--border-dim); padding-top:1rem; margin-top:0.5rem;">
+                <button id="signOutBtn" class="admin-nav-item" style="color:#f87171;">
+                    <i data-lucide="log-out"></i><span>Sign Out</span>
                 </button>
             </div>
-        </div>
-    </aside>
+        </aside>
 
-    <!-- Login Page -->
-    <div id="loginPage" class="page px-6">
-        <div class="max-w-md w-full">
-            <div class="glass p-8 rounded-3xl">
-                <h1 class="text-3xl font-bold mb-6 text-center">EPSILON<span class="text-purple-600"> ADMIN</span></h1>
-                <form id="loginForm" class="space-y-4">
-                    <input id="adminEmail" type="email" placeholder="Admin Email" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required="">
-                    <input id="adminPassword" type="password" placeholder="Password" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required="">
-                    <button type="submit" class="w-full bg-purple-700 hover:bg-purple-800 text-white py-3 rounded-lg font-bold">Login</button>
-                    <p id="loginError" class="text-red-500 text-sm hidden"></p>
-                </form>
+        <main class="admin-main">
+            <section id="dashboardPage" class="admin-page active">
+                <div style="margin-bottom:2rem;">
+                    <h1 style="font-size:1.8rem; margin-bottom:0.3rem;">Dashboard</h1>
+                    <p style="color:var(--text-muted); font-size:0.88rem;">Overview of your Epsilon platform</p>
+                </div>
+                <div id="statsGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin-bottom:2rem;">
+                    <div class="stat-card">
+                        <div style="margin-bottom:1rem;"><div class="stat-icon" style="background:rgba(139,92,246,0.12);"><i data-lucide="users" style="width:20px;height:20px;color:var(--purple-bright);"></i></div></div>
+                        <div class="stat-value" id="statUsers">--</div>
+                        <div class="stat-label" style="margin-top:0.3rem;">Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <div style="margin-bottom:1rem;"><div class="stat-icon" style="background:rgba(52,211,153,0.1);"><i data-lucide="briefcase" style="width:20px;height:20px;color:#6ee7b7;"></i></div></div>
+                        <div class="stat-value" id="statCustomers">--</div>
+                        <div class="stat-label" style="margin-top:0.3rem;">Customers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div style="margin-bottom:1rem;"><div class="stat-icon" style="background:rgba(245,158,11,0.1);"><i data-lucide="layers" style="width:20px;height:20px;color:#fcd34d;"></i></div></div>
+                        <div class="stat-value" id="statGroups">--</div>
+                        <div class="stat-label" style="margin-top:0.3rem;">Groups</div>
+                    </div>
+                    <div class="stat-card">
+                        <div style="margin-bottom:1rem;"><div class="stat-icon" style="background:rgba(99,102,241,0.1);"><i data-lucide="user-check" style="width:20px;height:20px;color:#a5b4fc;"></i></div></div>
+                        <div class="stat-value" id="statMembers">--</div>
+                        <div class="stat-label" style="margin-top:0.3rem;">Group Memberships</div>
+                    </div>
+                </div>
+                <div class="charts-grid-2" style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1.5rem;">
+                    <div class="chart-box">
+                        <h3>Members per Group</h3>
+                        <div style="position:relative; height:280px;"><canvas id="membersPerGroupChart"></canvas></div>
+                    </div>
+                    <div class="chart-box">
+                        <h3>Group Size Distribution</h3>
+                        <div style="position:relative; height:280px;"><canvas id="groupSizeChart"></canvas></div>
+                    </div>
+                </div>
+                <div class="chart-box">
+                    <h3>User Registrations Over Time</h3>
+                    <div style="position:relative; height:260px;"><canvas id="registrationsChart"></canvas></div>
+                </div>
+            </section>
+
+            <section id="customersPage" class="admin-page">
+                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+                    <div>
+                        <h1 style="font-size:1.8rem; margin-bottom:0.3rem;">Customers</h1>
+                        <p style="color:var(--text-muted); font-size:0.88rem;">Business contacts from the customers table</p>
+                    </div>
+                    <span id="customersCount" class="badge badge-green">0 customers</span>
+                </div>
+                <div style="margin-bottom:1.25rem;">
+                    <input id="customerSearch" class="admin-search" style="width:100%; max-width:400px;" placeholder="search by name, company, email...">
+                </div>
+                <div style="background:rgba(12,11,22,0.6); border:1px solid var(--border-dim); border-radius:18px; overflow:hidden;">
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Company</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Notes</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customersTableBody">
+                                <tr><td colspan="7" style="text-align:center; padding:3rem; color:var(--text-muted);">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="usersPage" class="admin-page">
+                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+                    <div>
+                        <h1 style="font-size:1.8rem; margin-bottom:0.3rem;">Users</h1>
+                        <p style="color:var(--text-muted); font-size:0.88rem;">All registered platform profiles</p>
+                    </div>
+                    <span id="usersCount" class="badge badge-purple">0 users</span>
+                </div>
+                <div style="margin-bottom:1.25rem;">
+                    <input id="usersSearch" class="admin-search" style="width:100%; max-width:400px;" placeholder="search by username, email, display name...">
+                </div>
+                <div id="usersGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(360px, 1fr)); gap:1rem;">
+                    <div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">Loading users...</div>
+                </div>
+            </section>
+
+            <section id="groupsPage" class="admin-page">
+                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+                    <div>
+                        <h1 style="font-size:1.8rem; margin-bottom:0.3rem;">Groups</h1>
+                        <p style="color:var(--text-muted); font-size:0.88rem;">Manage groups and their members</p>
+                    </div>
+                    <button id="createGroupBtn" class="btn-primary" style="display:flex; align-items:center; gap:0.5rem;">
+                        <i data-lucide="plus" style="width:16px; height:16px;"></i> Create Group
+                    </button>
+                </div>
+                <div id="groupsGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:1.25rem;">
+                    <div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">Loading groups...</div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="createGroupModal" class="modal-overlay">
+        <div class="modal-box">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem;">
+                <h2 style="font-size:1.3rem;">Create New Group</h2>
+                <button onclick="closeModal('createGroupModal')" class="btn-ghost" style="padding:0.4rem 0.6rem;"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:1rem;">
+                <div>
+                    <label class="form-label">Group Name</label>
+                    <input id="newGroupName" class="form-input" placeholder="e.g. Design Team">
+                </div>
+                <div>
+                    <label class="form-label">Description</label>
+                    <textarea id="newGroupDesc" class="form-input" placeholder="What is this group about?"></textarea>
+                </div>
+                <div>
+                    <label class="form-label">Favourite Site</label>
+                    <input id="newGroupSite" class="form-input" placeholder="e.g. epsilon">
+                </div>
+                <div id="createGroupError" style="display:none; padding:0.6rem 1rem; border-radius:12px; background:rgba(220,38,38,0.1); border:1px solid rgba(220,38,38,0.15); color:#fca5a5; font-size:0.82rem;"></div>
+                <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:0.5rem;">
+                    <button onclick="closeModal('createGroupModal')" class="btn-ghost">Cancel</button>
+                    <button id="submitGroupBtn" class="btn-primary">Create Group</button>
+                </div>
             </div>
         </div>
     </div>
-    
 
-    <!-- Dashboard Page -->
-    <div id="dashboardPage" class="page active">
-        <div id="mainContent" class="main-content">
-            <header class="flex justify-between items-center mb-8">
-                <h1 class="text-4xl font-bold">Admin Dashboard</h1>
-            </header>
-
-            <!-- Welcome Section -->
-            <div id="welcomeSection" class="section hidden">
-                <div class="glass p-8 rounded-3xl text-center">
-                    <h2 class="text-3xl font-bold mb-4">Welcome to Epsilon Admin Panel</h2>
-                    <p class="text-purple-300 mb-6">Select a section from the sidebar to get started</p>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-                        <div class="glass p-4 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="users" aria-hidden="true" class="lucide lucide-users w-8 h-8 mx-auto mb-2 text-purple-400"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><path d="M16 3.128a4 4 0 0 1 0 7.744"></path><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><circle cx="9" cy="7" r="4"></circle></svg>
-                            <p class="text-sm">Manage Users</p>
-                        </div>
-                        <div class="glass p-4 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="message-circle" aria-hidden="true" class="lucide lucide-message-circle w-8 h-8 mx-auto mb-2 text-purple-400"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"></path></svg>
-                            <p class="text-sm">Admin Chat</p>
-                        </div>
-                        <div class="glass p-4 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="bar-chart" aria-hidden="true" class="lucide lucide-bar-chart w-8 h-8 mx-auto mb-2 text-purple-400"><path d="M5 21v-6"></path><path d="M12 21V9"></path><path d="M19 21V3"></path></svg>
-                            <p class="text-sm">Analytics</p>
-                        </div>
-                        <div class="glass p-4 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="phone" aria-hidden="true" class="lucide lucide-phone w-8 h-8 mx-auto mb-2 text-purple-400"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"></path></svg>
-                            <p class="text-sm">Admin Calls</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        <!-- Chat Section -->
-        <div id="chatSection" class="section">
-            <div class="glass p-6 rounded-3xl">
-                <h2 class="text-2xl font-bold mb-4">Admin Chat Room</h2>
-                <div id="chatMessages" class="h-96 overflow-y-auto mb-4 space-y-3"><div class="flex items-start gap-3 glass p-3 rounded-lg">
-                    <img src="https://epsilonneon-sketch.github.io/epsilon-site-v1/epsilon%20logo.png" class="w-10 h-10 rounded-full">
-                    <div class="flex-1">
-                        <p class="font-bold text-sm">warrenseye</p>
-                        <p class="text-purple-200">hello jason</p>
-                        <p class="text-xs text-purple-400">12:01:04 PM</p>
-                    </div>
-                </div><div class="flex items-start gap-3 glass p-3 rounded-lg">
-                    <img src="https://picsum.photos/seed/038965c7-8e70-4ccb-9e93-f84f3e1fb3b9/200/200.jpg" class="w-10 h-10 rounded-full">
-                    <div class="flex-1">
-                        <p class="font-bold text-sm">eclipseeye</p>
-                        <p class="text-purple-200">hello warren</p>
-                        <p class="text-xs text-purple-400">12:05:01 PM</p>
-                    </div>
-                </div><div class="flex items-start gap-3 glass p-3 rounded-lg">
-                    <img src="https://picsum.photos/seed/038965c7-8e70-4ccb-9e93-f84f3e1fb3b9/200/200.jpg" class="w-10 h-10 rounded-full">
-                    <div class="flex-1">
-                        <p class="font-bold text-sm">eclipseeye</p>
-                        <p class="text-purple-200">warren</p>
-                        <p class="text-xs text-purple-400">12:06:06 PM</p>
-                    </div>
-                </div><div class="flex items-start gap-3 glass p-3 rounded-lg">
-                    <img src="https://picsum.photos/seed/038965c7-8e70-4ccb-9e93-f84f3e1fb3b9/200/200.jpg" class="w-10 h-10 rounded-full">
-                    <div class="flex-1">
-                        <p class="font-bold text-sm">eclipseeye</p>
-                        <p class="text-purple-200">are you there</p>
-                        <p class="text-xs text-purple-400">12:06:18 PM</p>
-                    </div>
-                </div><div class="flex items-start gap-3 glass p-3 rounded-lg">
-                    <img src="https://epsilonneon-sketch.github.io/epsilon-site-v1/epsilon%20logo.png" class="w-10 h-10 rounded-full">
-                    <div class="flex-1">
-                        <p class="font-bold text-sm">warrenseye</p>
-                        <p class="text-purple-200">yes</p>
-                        <p class="text-xs text-purple-400">12:07:55 PM</p>
-                    </div>
-                </div><div class="flex items-start gap-3 glass p-3 rounded-lg">
-                    <img src="https://picsum.photos/200" class="w-10 h-10 rounded-full">
-                    <div class="flex-1">
-                        <p class="font-bold text-sm">Eye</p>
-                        <p class="text-purple-200">hello warren</p>
-                        <p class="text-xs text-purple-400">12:16:15 PM</p>
-                    </div>
-                </div><div class="flex items-start gap-3 glass p-3 rounded-lg">
-                    <img src="https://picsum.photos/200" class="w-10 h-10 rounded-full">
-                    <div class="flex-1">
-                        <p class="font-bold text-sm">Eye</p>
-                        <p class="text-purple-200">this is my new account that you created for me</p>
-                        <p class="text-xs text-purple-400">12:16:36 PM</p>
-                    </div>
-                </div></div>
-                <form id="chatForm" class="flex gap-2">
-                    <input id="chatInput" type="text" placeholder="Type a message..." class="flex-1 rounded-lg px-4 py-3 bg-gray-800 border border-purple-700" required="">
-                    <button type="submit" class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-3 rounded-lg">Send</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Projects Section -->
-        <div id="projectsSection" class="section hidden">
-            <div class="glass p-6 rounded-3xl mb-6">
-                <h2 class="text-2xl font-bold mb-4">Create Project</h2>
-                <form id="projectForm" class="space-y-4">
-                    <input id="projectName" type="text" placeholder="Project Name" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700" required="">
-                    <textarea id="projectDesc" placeholder="Description" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700" rows="3" required=""></textarea>
-                    <select id="projectStatus" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700">
-                        <option value="planning">Planning</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="completed">Completed</option>
-                    </select>
-                    <button type="submit" class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-3 rounded-lg">Create
-                        Project</button>
-                </form>
-            </div>
-            <div id="projectsList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-        </div>
-
-        <!-- Users Section -->
-        <div id="usersSection" class="section hidden">
-            <div class="glass p-6 rounded-3xl">
-                <h2 class="text-2xl font-bold mb-4">User Management</h2>
-                <div id="usersList" class="space-y-3"><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/200" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">see</p>
-                            <p class="text-xs text-purple-400">@user_fd1f7156</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">6/28/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/200" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">Eye</p>
-                            <p class="text-xs text-purple-400">@Eye</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">6/21/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/seed/5fedcf44-99fc-4174-be40-611f5f954b9a/200/200.jpg" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">Stew_Art</p>
-                            <p class="text-xs text-purple-400">@Stew_Art</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">3/30/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/seed/038965c7-8e70-4ccb-9e93-f84f3e1fb3b9/200/200.jpg" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">eclipseeye</p>
-                            <p class="text-xs text-purple-400">@eclipseeye</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">3/7/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/seed/a8a71032-695b-4c4f-bef3-ee3d231cb437/200/200.jpg" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">Myra</p>
-                            <p class="text-xs text-purple-400">@myra k</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">2/28/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/seed/3ee9c472-d35e-4cab-b247-8deebedc8fcb/200/200.jpg" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">Debbienjr </p>
-                            <p class="text-xs text-purple-400">@Debbienjr </p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">2/15/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/seed/149793b0-a331-4aff-86a5-7cfd2a3d00da/200/200.jpg" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">ιѕяαєℓ</p>
-                            <p class="text-xs text-purple-400">@Ashley </p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">2/14/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/seed/11a6921c-0c75-4081-a742-87134a763bd2/200/200.jpg" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">Tess</p>
-                            <p class="text-xs text-purple-400">@Tess67676767</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">2/14/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/seed/d93fec7a-a258-4baa-8ab2-b91b8ed23936/200/200.jpg" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">Mary</p>
-                            <p class="text-xs text-purple-400">@Mary Margaret </p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">2/14/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/seed/3421d7e5-c08d-441f-9074-b9fba967ec6d/200/200.jpg" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">Glion200 ☑</p>
-                            <p class="text-xs text-purple-400">@GLION200</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">2/14/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/seed/ba5eabc8-fea9-4f1d-88e4-5a19e7496c4f/200/200.jpg" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">dy1an rg ☑</p>
-                            <p class="text-xs text-purple-400">@xmas+</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">2/14/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/seed/25c2f62b-1a72-4e5d-bc65-b7cd9e2b5e20/200/200.jpg" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">Kokii</p>
-                            <p class="text-xs text-purple-400">@Regy_zerah.corp</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">2/14/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/seed/e2beb36a-bebe-4624-b06b-48cb65bd96c8/200/200.jpg" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">P.k</p>
-                            <p class="text-xs text-purple-400">@P.k_epsilon</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">2/13/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/seed/62f70682-cff2-41d0-91d1-f5e8777ede5d/200/200.jpg" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">richard njoroge ☑</p>
-                            <p class="text-xs text-purple-400">@rich_epsilon</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">2/13/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/seed/bdd419d3-a997-423d-8d19-446f4aabc79c/200/200.jpg" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">Rayy fvv</p>
-                            <p class="text-xs text-purple-400">@Rxyiisheyasss say</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">2/13/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/seed/758db3e2-d12d-4aee-92a1-03caf22a4a3d/200/200.jpg" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">Jay_linx</p>
-                            <p class="text-xs text-purple-400">@Jay_linx</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">2/13/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/seed/6d9ca272-9647-4e43-9c2f-502aba602cad/200/200.jpg" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">ℓєє</p>
-                            <p class="text-xs text-purple-400">@ѕнєяℓєтє ιѕяαєℓ</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">2/12/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/seed/f547b66e-ce90-4430-bde0-5c905710f40f/200/200.jpg" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">jabalim</p>
-                            <p class="text-xs text-purple-400">@jabali_epil</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">2/12/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/seed/85d5d3a1-2ef1-4b6f-aa3b-f4d94c85f541/200/200.jpg" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">Nyx RyZe</p>
-                            <p class="text-xs text-purple-400">@Falcon_RyZe</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">2/12/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/seed/c1522d4c-28a7-404f-bfe3-559ce8ab9962/200/200.jpg" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">Kushmann ☑</p>
-                            <p class="text-xs text-purple-400">@Jaydon</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">2/12/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://epsilonneon-sketch.github.io/epsilon-site-v1/epsilon%20logo.png" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">Ethan (ADMIN) ☑</p>
-                            <p class="text-xs text-purple-400">@Ethan</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">2/11/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/seed/95eb713a-2467-4121-8a77-d5188221f7dd/200/200.jpg" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">Phillip ☑</p>
-                            <p class="text-xs text-purple-400">@El-rosco</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">2/7/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://picsum.photos/seed/2d2d6fa1-9ed0-4ffd-bd7c-a79c9e8edb36/200/200.jpg" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">epsilon</p>
-                            <p class="text-xs text-purple-400">@epsilon</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">2/7/2026</span>
-                </div><div class="flex items-center justify-between glass p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <img src="https://epsilonneon-sketch.github.io/epsilon-site-v1/epsilon%20logo.png" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">warren ☑</p>
-                            <p class="text-xs text-purple-400">@warrenseye</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">2/7/2026</span>
-                </div></div>
-            </div>
-        </div>
-
-        <!-- Analytics Section -->
-        <div id="analyticsSection" class="section hidden">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="glass p-6 rounded-3xl">
-                    <h3 class="text-lg font-bold mb-2">Total Users</h3>
-                    <p id="totalUsers" class="text-4xl font-bold text-purple-400">24</p>
-                </div>
-                <div class="glass p-6 rounded-3xl">
-                    <h3 class="text-lg font-bold mb-2">Total Posts</h3>
-                    <p id="totalPosts" class="text-4xl font-bold text-purple-400">2</p>
-                </div>
-                <div class="glass p-6 rounded-3xl">
-                    <h3 class="text-lg font-bold mb-2">Active Projects</h3>
-                    <p id="activeProjects" class="text-4xl font-bold text-purple-400">0</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Server Blocking Section -->
-        <div id="serversSection" class="section hidden">
-            <div class="glass p-6 rounded-3xl mb-6">
-                <h2 class="text-2xl font-bold mb-4">Block Epsilon Sites</h2>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-
-                    <button onclick="toggleSiteBlock('epsilon')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition col-span-2" data-site="epsilon">
-                        <p class="font-bold text-lg">🚨 Epsilon Main Site</p>
-                        <p class="text-xs text-purple-400 mt-1" id="status-epsilon">Active</p>
-                    </button>
-                    <button onclick="blockAllSites()" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition">
-                        <p class="font-bold">Toggle All</p>
-                    </button>
-                    <button onclick="toggleSiteBlock('aproxi')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="aproxi">
-                        <p class="font-bold">Aproxi</p>
-                        <p class="text-xs text-purple-400 mt-1" id="status-aproxi">Active</p>
-                    </button>
-                    <button onclick="toggleSiteBlock('neote')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="neote">
-                        <p class="font-bold">Neote</p>
-                        <p class="text-xs text-purple-400 mt-1" id="status-neote">Active</p>
-                    </button>
-                    <button onclick="toggleSiteBlock('edits')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="edits">
-                        <p class="font-bold">Edits</p>
-                        <p class="text-xs text-purple-400 mt-1" id="status-edits">Active</p>
-                    </button>
-                    <button onclick="toggleSiteBlock('academics')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="academics">
-                        <p class="font-bold">Academics</p>
-                        <p class="text-xs text-purple-400 mt-1" id="status-academics">Active</p>
-                    </button>
-                    <button onclick="toggleSiteBlock('sports')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="sports">
-                        <p class="font-bold">Sports</p>
-                        <p class="text-xs text-purple-400 mt-1" id="status-sports">Active</p>
-                    </button>
-                    <button onclick="toggleSiteBlock('earth')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="earth">
-                        <p class="font-bold">Earth</p>
-                        <p class="text-xs text-purple-400 mt-1" id="status-earth">Active</p>
-                    </button>
-                    <button onclick="toggleSiteBlock('heckle')" class="site-block-btn glass p-4 rounded-lg hover:bg-red-600 transition" data-site="heckle">
-                        <p class="font-bold">Heckle</p>
-                        <p class="text-xs text-purple-400 mt-1" id="status-heckle">Active</p>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-<!-- Customers Section -->
-<div id="customersSection" class="section hidden">
-    <!-- Add Customer Form -->
-    <div class="glass p-6 rounded-3xl mb-6">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-2xl font-bold">Add Customer</h2>
-            <button id="toggleCustomerFormBtn" class="text-purple-400 hover:text-purple-300 transition text-sm flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"></path></svg>
-                Collapse
-            </button>
-        </div>
-        <form id="customerForm" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div id="manageMembersModal" class="modal-overlay">
+        <div class="modal-box wide">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem;">
                 <div>
-                    <label class="block text-sm text-purple-300 mb-1">Full Name *</label>
-                    <input id="custName" type="text" placeholder="John Doe" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required="">
+                    <h2 id="manageMembersTitle" style="font-size:1.3rem;">Manage Members</h2>
+                    <p id="manageMembersSub" style="font-size:0.82rem; color:var(--text-muted); margin-top:0.2rem;"></p>
                 </div>
-                <div>
-                    <label class="block text-sm text-purple-300 mb-1">Company</label>
-                    <input id="custCompany" type="text" placeholder="Acme Inc." class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600">
-                </div>
-                <div>
-                    <label class="block text-sm text-purple-300 mb-1">Phone Number *</label>
-                    <input id="custPhone" type="tel" placeholder="+1 555 123 4567" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required="">
-                </div>
-                <div>
-                    <label class="block text-sm text-purple-300 mb-1">Email</label>
-                    <input id="custEmail" type="email" placeholder="john@acme.com" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600">
+                <button onclick="closeModal('manageMembersModal')" class="btn-ghost" style="padding:0.4rem 0.6rem;"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
+            </div>
+            <div style="margin-bottom:1.5rem;">
+                <div style="font-size:0.7rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.75rem; font-family:'JetBrains Mono',monospace;">Current Members</div>
+                <div id="currentMembersList" style="display:flex; flex-wrap:wrap; gap:0.5rem; min-height:40px;">
+                    <span style="color:var(--text-muted); font-size:0.85rem;">Loading...</span>
                 </div>
             </div>
+            <div style="height:1px; background:var(--border-dim); margin-bottom:1.5rem;"></div>
             <div>
-                <label class="block text-sm text-purple-300 mb-1">Notes</label>
-                <textarea id="custNotes" placeholder="Optional notes about this customer..." class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" rows="2"></textarea>
-            </div>
-            <div class="flex gap-3">
-                <button type="submit" class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-3 rounded-lg font-bold transition">
-                    Add Customer
-                </button>
-                <button type="reset" class="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-bold transition border border-purple-700">
-                    Clear
-                </button>
-            </div>
-        </form>
-    </div>
-
-    <!-- Search & Filter Bar -->
-    <div class="glass p-4 rounded-3xl mb-6">
-        <div class="flex flex-col md:flex-row gap-3 items-center justify-between">
-            <div class="relative flex-1 w-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 text-purple-400"><circle cx="11" cy="11" r="8"></circle><line x1="21" x2="16.65" y1="21" y2="16.65"></line></svg>
-                <input id="customerSearch" type="text" placeholder="Search by name, company, or phone..." class="w-full rounded-lg pl-10 pr-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600">
-            </div>
-            <div class="flex items-center gap-2">
-                <span id="customerCount" class="text-sm text-purple-300">4 customers</span>
+                <div style="font-size:0.7rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.75rem; font-family:'JetBrains Mono',monospace;">Add Member</div>
+                <div style="display:flex; gap:0.75rem; margin-bottom:1rem;">
+                    <input id="addMemberSearch" class="form-input" style="flex:1;" placeholder="Search users by name or username...">
+                </div>
+                <div id="addMemberResults" style="max-height:240px; overflow-y:auto; display:flex; flex-direction:column; gap:0.4rem;">
+                    <span style="color:var(--text-muted); font-size:0.82rem;">Type to search for users</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Customers Table -->
-    <div class="glass rounded-3xl overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left">
-                <thead>
-                    <tr class="border-b border-purple-700">
-                        <th class="px-6 py-4 text-sm font-bold text-purple-300 uppercase tracking-wider">Name</th>
-                        <th class="px-6 py-4 text-sm font-bold text-purple-300 uppercase tracking-wider">Company</th>
-                        <th class="px-6 py-4 text-sm font-bold text-purple-300 uppercase tracking-wider">Phone</th>
-                        <th class="px-6 py-4 text-sm font-bold text-purple-300 uppercase tracking-wider hidden md:table-cell">Email</th>
-                        <th class="px-6 py-4 text-sm font-bold text-purple-300 uppercase tracking-wider hidden lg:table-cell">Added</th>
-                        <th class="px-6 py-4 text-sm font-bold text-purple-300 uppercase tracking-wider text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="customersTableBody"><tr>
-            <td class="px-6 py-4">
-                <span class="font-semibold text-white">gogroup</span>
-            </td>
-            <td class="px-6 py-4">
-                <span class="text-purple-300">gogroup</span>
-            </td>
-            <td class="px-6 py-4">
-                <a href="tel:+92 309 9154938" class="text-green-400 hover:text-green-300 transition">+92 309 9154938</a>
-            </td>
-            <td class="px-6 py-4 hidden md:table-cell">
-                <span class="text-purple-300"><a href="mailto:gogroupofcompany@gmail.com" class="hover:text-purple-200 transition">gogroupofcompany@gmail.com</a></span>
-            </td>
-            <td class="px-6 py-4 hidden lg:table-cell">
-                <span class="text-purple-400 text-sm">Jun 29, 2026</span>
-            </td>
-            <td class="px-6 py-4 text-right">
-                <div class="flex items-center justify-end gap-2">
-                    <button onclick="openEditModal('3d0fa8a6-6486-452c-9967-9030f1c9c482')" class="p-2 rounded-lg hover:bg-purple-700 transition" title="Edit">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path><path d="m15 5 4 4"></path></svg>
-                    </button>
-                    <button onclick="openDeleteModal('3d0fa8a6-6486-452c-9967-9030f1c9c482', 'gogroup')" class="p-2 rounded-lg hover:bg-red-600 transition" title="Delete">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
-                    </button>
-                </div>
-            </td>
-        </tr><tr>
-            <td class="px-6 py-4">
-                <span class="font-semibold text-white">client3</span>
-            </td>
-            <td class="px-6 py-4">
-                <span class="text-purple-300">Gombe farm</span>
-            </td>
-            <td class="px-6 py-4">
-                <a href="tel:0704974897" class="text-green-400 hover:text-green-300 transition">0704974897</a>
-            </td>
-            <td class="px-6 py-4 hidden md:table-cell">
-                <span class="text-purple-300"><a href="mailto:ogombefarm@gmail.com" class="hover:text-purple-200 transition">ogombefarm@gmail.com</a></span>
-            </td>
-            <td class="px-6 py-4 hidden lg:table-cell">
-                <span class="text-purple-400 text-sm">Jun 29, 2026</span>
-            </td>
-            <td class="px-6 py-4 text-right">
-                <div class="flex items-center justify-end gap-2">
-                    <button onclick="openEditModal('82d4b173-11d4-4c85-b51c-ae4086a058f1')" class="p-2 rounded-lg hover:bg-purple-700 transition" title="Edit">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path><path d="m15 5 4 4"></path></svg>
-                    </button>
-                    <button onclick="openDeleteModal('82d4b173-11d4-4c85-b51c-ae4086a058f1', 'client3')" class="p-2 rounded-lg hover:bg-red-600 transition" title="Delete">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
-                    </button>
-                </div>
-            </td>
-        </tr><tr>
-            <td class="px-6 py-4">
-                <span class="font-semibold text-white">client2</span>
-            </td>
-            <td class="px-6 py-4">
-                <span class="text-purple-300">KSR</span>
-            </td>
-            <td class="px-6 py-4">
-                <a href="tel:+91 7036373186" class="text-green-400 hover:text-green-300 transition">+91 7036373186</a>
-            </td>
-            <td class="px-6 py-4 hidden md:table-cell">
-                <span class="text-purple-300"><a href="mailto:empty@gmail.com" class="hover:text-purple-200 transition">empty@gmail.com</a></span>
-            </td>
-            <td class="px-6 py-4 hidden lg:table-cell">
-                <span class="text-purple-400 text-sm">Jun 29, 2026</span>
-            </td>
-            <td class="px-6 py-4 text-right">
-                <div class="flex items-center justify-end gap-2">
-                    <button onclick="openEditModal('c893d4fa-2a87-44de-94b4-ecdd0ece3ce8')" class="p-2 rounded-lg hover:bg-purple-700 transition" title="Edit">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path><path d="m15 5 4 4"></path></svg>
-                    </button>
-                    <button onclick="openDeleteModal('c893d4fa-2a87-44de-94b4-ecdd0ece3ce8', 'client2')" class="p-2 rounded-lg hover:bg-red-600 transition" title="Delete">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
-                    </button>
-                </div>
-            </td>
-        </tr><tr>
-            <td class="px-6 py-4">
-                <span class="font-semibold text-white">client1</span>
-            </td>
-            <td class="px-6 py-4">
-                <span class="text-purple-300">Kashmir</span>
-            </td>
-            <td class="px-6 py-4">
-                <a href="tel:+91 98765 43210" class="text-green-400 hover:text-green-300 transition">+91 98765 43210</a>
-            </td>
-            <td class="px-6 py-4 hidden md:table-cell">
-                <span class="text-purple-300"><a href="mailto:empty@gmail.com" class="hover:text-purple-200 transition">empty@gmail.com</a></span>
-            </td>
-            <td class="px-6 py-4 hidden lg:table-cell">
-                <span class="text-purple-400 text-sm">Jun 29, 2026</span>
-            </td>
-            <td class="px-6 py-4 text-right">
-                <div class="flex items-center justify-end gap-2">
-                    <button onclick="openEditModal('ffbed34e-47b9-43d9-a873-1bc157d43b03')" class="p-2 rounded-lg hover:bg-purple-700 transition" title="Edit">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path><path d="m15 5 4 4"></path></svg>
-                    </button>
-                    <button onclick="openDeleteModal('ffbed34e-47b9-43d9-a873-1bc157d43b03', 'client1')" class="p-2 rounded-lg hover:bg-red-600 transition" title="Delete">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
-                    </button>
-                </div>
-            </td>
-        </tr></tbody>
-            </table>
-        </div>
-        <!-- Empty State -->
-        <div id="customersEmpty" class="hidden p-12 text-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4 text-purple-700"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" x2="19" y1="8" y2="14"></line><line x1="22" x2="16" y1="11" y2="11"></line></svg>
-            <p class="text-purple-400 text-lg font-bold mb-1">No customers yet</p>
-            <p class="text-purple-300 text-sm">Add your first customer using the form above.</p>
-        </div>
-        <!-- Loading State -->
-        <div id="customersLoading" class="p-12 text-center hidden">
-            <div class="inline-block w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin mb-3"></div>
-            <p class="text-purple-300 text-sm">Loading customers...</p>
+    <div id="userDetailModal" class="modal-overlay">
+        <div class="modal-box">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem;">
+                <h2 style="font-size:1.3rem;">User Details</h2>
+                <button onclick="closeModal('userDetailModal')" class="btn-ghost" style="padding:0.4rem 0.6rem;"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
+            </div>
+            <div id="userDetailContent"></div>
         </div>
     </div>
 
-    <!-- Edit Customer Modal -->
-    <div id="editCustomerModal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(4px);">
-        <div class="glass p-6 rounded-3xl w-full max-w-lg">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xl font-bold">Edit Customer</h3>
-                <button id="closeEditModal" class="text-purple-400 hover:text-white transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
-                </button>
+    <div id="customerDetailModal" class="modal-overlay">
+        <div class="modal-box">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem;">
+                <h2 style="font-size:1.3rem;">Customer Details</h2>
+                <button onclick="closeModal('customerDetailModal')" class="btn-ghost" style="padding:0.4rem 0.6rem;"><i data-lucide="x" style="width:18px;height:18px;"></i></button>
             </div>
-            <form id="editCustomerForm" class="space-y-4">
-                <input type="hidden" id="editCustId">
-                <div>
-                    <label class="block text-sm text-purple-300 mb-1">Full Name *</label>
-                    <input id="editCustName" type="text" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required="">
-                </div>
-                <div>
-                    <label class="block text-sm text-purple-300 mb-1">Company</label>
-                    <input id="editCustCompany" type="text" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600">
-                </div>
-                <div>
-                    <label class="block text-sm text-purple-300 mb-1">Phone Number *</label>
-                    <input id="editCustPhone" type="tel" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" required="">
-                </div>
-                <div>
-                    <label class="block text-sm text-purple-300 mb-1">Email</label>
-                    <input id="editCustEmail" type="email" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600">
-                </div>
-                <div>
-                    <label class="block text-sm text-purple-300 mb-1">Notes</label>
-                    <textarea id="editCustNotes" class="w-full rounded-lg px-4 py-3 bg-gray-800 border border-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600" rows="2"></textarea>
-                </div>
-                <div class="flex gap-3 pt-2">
-                    <button type="submit" class="bg-purple-700 hover:bg-purple-800 text-white px-6 py-3 rounded-lg font-bold transition flex-1">
-                        Save Changes
-                    </button>
-                    <button type="button" id="cancelEditBtn" class="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-bold transition border border-purple-700">
-                        Cancel
-                    </button>
-                </div>
-            </form>
+            <div id="customerDetailContent"></div>
         </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteCustomerModal" class="fixed inset-0 z-[500] hidden items-center justify-center p-4" style="background:rgba(0,0,0,0.7); backdrop-filter:blur(4px);">
-        <div class="glass p-6 rounded-3xl w-full max-w-sm text-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4 text-red-500"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
-            <h3 class="text-xl font-bold mb-2">Delete Customer?</h3>
-            <p id="deleteCustName" class="text-purple-300 text-sm mb-6">This action cannot be undone.</p>
-            <input type="hidden" id="deleteCustId">
-            <div class="flex gap-3">
-                <button id="confirmDeleteBtn" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold transition flex-1">
-                    Delete
-                </button>
-                <button id="cancelDeleteBtn" class="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-bold transition border border-purple-700 flex-1">
-                    Cancel
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-        <!-- Charts Section -->
-        <div id="chartsSection" class="section hidden">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass p-6 rounded-3xl">
-                    <h3 class="text-lg font-bold mb-4">User Growth (Last 7 Days)</h3>
-                    <canvas id="userGrowthChart" width="441" height="220" style="display: block; box-sizing: border-box; height: 220.8px; width: 441.5px;"></canvas>
-                </div>
-                <div class="glass p-6 rounded-3xl">
-                    <h3 class="text-lg font-bold mb-4">Project Status Distribution</h3>
-                    <canvas id="projectStatusChart" width="441" height="441" style="display: block; box-sizing: border-box; height: 441.5px; width: 441.5px;"></canvas>
-                </div>
-                <div class="glass p-6 rounded-3xl">
-                    <h3 class="text-lg font-bold mb-4">Posts Activity (Last 7 Days)</h3>
-                    <canvas id="postsActivityChart" width="441" height="220" style="display: block; box-sizing: border-box; height: 220.8px; width: 441.5px;"></canvas>
-                </div>
-                <div class="glass p-6 rounded-3xl">
-                    <h3 class="text-lg font-bold mb-4">Admin Messages Volume</h3>
-                    <canvas id="messagesChart" width="441" height="220" style="display: block; box-sizing: border-box; height: 220.8px; width: 441.5px;"></canvas>
-                </div>
-                <div class="glass p-6 rounded-3xl md:col-span-2">
-                    <h3 class="text-lg font-bold mb-4">User Engagement Overview</h3>
-                    <canvas id="engagementChart" width="957" height="478" style="display: block; box-sizing: border-box; height: 478.5px; width: 957px;"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Audio Calls Section -->
-        <div id="callsSection" class="section hidden">
-            <div class="glass p-6 rounded-3xl mb-6">
-                <h2 class="text-2xl font-bold mb-4">Admin Audio Calls</h2>
-                <div class="mb-6 flex gap-2">
-                    <button id="callAllBtn" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-bold">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="phone" aria-hidden="true" class="lucide lucide-phone inline w-5 h-5 mr-2"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"></path></svg>
-                        Call All (Audio)
-                    </button>
-                    <button id="videoCallAllBtn" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-bold">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="video" aria-hidden="true" class="lucide lucide-video inline w-5 h-5 mr-2"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path><rect x="2" y="6" width="14" height="12" rx="2"></rect></svg>
-                        Call All (Video)
-                    </button>
-                </div>
-                <div id="onlineAdmins" class="grid grid-cols-1 md:grid-cols-2 gap-4"><p class="text-purple-300">No other admins are currently online.</p></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Call Notification (initially hidden) -->
-    <div id="callNotification" class="call-notification glass p-4 rounded-lg hidden">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="phone" aria-hidden="true" class="lucide lucide-phone w-8 h-8 text-green-400 animate-pulse"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"></path></svg>
-                <div>
-                    <p class="font-bold">Incoming Call</p>
-                    <p id="callerName" class="text-sm text-purple-300">Admin is calling you</p>
-                </div>
-            </div>
-            <div class="flex gap-2">
-                <button id="acceptCallBtn" class="bg-green-600 hover:bg-green-700 text-white p-2 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="phone" aria-hidden="true" class="lucide lucide-phone w-5 h-5"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"></path></svg>
-                </button>
-                <button id="declineCallBtn" class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="phone-off" aria-hidden="true" class="lucide lucide-phone-off w-5 h-5"><path d="M10.1 13.9a14 14 0 0 0 3.732 2.668 1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2 18 18 0 0 1-12.728-5.272"></path><path d="M22 2 2 22"></path><path d="M4.76 13.582A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 .244.473"></path></svg>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Active Call UI (initially hidden) -->
-    <div id="activeCallUI" class="call-active glass p-4 rounded-lg hidden">
-        <div id="videoSection" class="hidden mb-4">
-            <div class="video-container">
-                <video id="remoteVideo" class="remote-video" autoplay="" playsinline=""></video>
-                <video id="localVideo" class="local-video" autoplay="" muted="" playsinline=""></video>
-                <div class="video-controls">
-                    <button id="toggleMicBtn" class="bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-full">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="mic" aria-hidden="true" class="lucide lucide-mic w-6 h-6"><path d="M12 19v3"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><rect x="9" y="2" width="6" height="13" rx="3"></rect></svg>
-                    </button>
-                    <button id="toggleVideoBtn" class="bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-full">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="video" aria-hidden="true" class="lucide lucide-video w-6 h-6"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path><rect x="2" y="6" width="14" height="12" rx="2"></rect></svg>
-                    </button>
-                    <button id="shareScreenBtn" class="bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-full">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="monitor" aria-hidden="true" class="lucide lucide-monitor w-6 h-6"><rect width="20" height="14" x="2" y="3" rx="2"></rect><line x1="8" x2="16" y1="21" y2="21"></line><line x1="12" x2="12" y1="17" y2="21"></line></svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div id="audioOnlyUI" class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="phone" aria-hidden="true" class="lucide lucide-phone w-8 h-8 text-green-400 animate-pulse"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"></path></svg>
-                <div>
-                    <p class="font-bold">Active Call</p>
-                    <p id="callDuration" class="text-sm text-purple-300">00:00</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="mic" aria-hidden="true" class="lucide lucide-mic w-5 h-5"><path d="M12 19v3"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><rect x="9" y="2" width="6" height="13" rx="3"></rect></svg>
-                    <div class="w-24 bg-gray-700 rounded-full h-2">
-                        <div id="audioLevel" class="audio-level rounded-full" style="width: 0%"></div>
-                    </div>
-                </div>
-                <button id="endCallBtn" class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="phone-off" aria-hidden="true" class="lucide lucide-phone-off w-5 h-5"><path d="M10.1 13.9a14 14 0 0 0 3.732 2.668 1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2 18 18 0 0 1-12.728-5.272"></path><path d="M22 2 2 22"></path><path d="M4.76 13.582A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 .244.473"></path></svg>
-                </button>
-            </div>
-        </div>
-        <audio id="remoteAudio" autoplay=""></audio>
     </div>
 
     <script>
@@ -1479,894 +594,602 @@ button[type="submit"]:active { transform: translateY(0); }
         });
         lucide.createIcons();
 
-        // Sidebar toggle functionality
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-        const menuToggle = document.getElementById('menuToggle');
-        const closeSidebar = document.getElementById('closeSidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const SECURITY_CODE = '#15452575-epsilonW';
+        const VERIFIED_KEY = 'epsilon-admin-verified';
+        let allProfiles = [];
+        let allCustomers = [];
+        let allGroups = [];
+        let allMembers = [];
+        let chartInstances = {};
+        let currentManageGroupId = null;
+        let pageLoadState = { customers: false, users: false, groups: false };
 
-        function toggleSidebar() {
-            sidebar.classList.toggle('closed');
-            sidebar.classList.toggle('open');
-            mainContent.classList.toggle('expanded');
-            sidebarOverlay.classList.toggle('active');
+        function notify(message, type) {
+            type = type || 'success';
+            var el = document.createElement('div');
+            el.className = 'notification ' + type;
+            el.textContent = message;
+            document.body.appendChild(el);
+            setTimeout(function() { el.style.opacity = '0'; el.style.transform = 'translateX(120%)'; el.style.transition = 'all 0.4s ease'; }, 2800);
+            setTimeout(function() { el.remove(); }, 3300);
         }
 
-        menuToggle.addEventListener('click', toggleSidebar);
-        closeSidebar.addEventListener('click', toggleSidebar);
-        sidebarOverlay.addEventListener('click', toggleSidebar);
+        function openModal(id) { document.getElementById(id).classList.add('open'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-        let currentAdmin = null;
-        let chatSubscription = null;
+        function formatDate(d) {
+            if (!d) return '—';
+            return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
 
-        // PeerJS variables
-        let peer = null;
-        let currentCall = null;
-        let callStartTime = null;
-        let callDurationInterval = null;
-        let incomingCall = null;
-        let peerIdSubscription = null;
+        function getInitials(name) {
+            if (!name) return '?';
+            return name.split(' ').map(function(w) { return w[0]; }).join('').toUpperCase().slice(0, 2);
+        }
 
-        // Check for existing session on load
-        async function checkSession() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', session.user.id).single();
-                currentAdmin = { ...session.user, ...profile };
-                document.getElementById('loginPage').classList.remove('active');
-                document.getElementById('dashboardPage').classList.add('active');
-                menuToggle.classList.remove('hidden');
-                sidebar.classList.remove('closed');
-                mainContent.classList.remove('expanded');
-                loadAnalytics();
-                initializePeerJS();
+        function trunc(str, len) {
+            if (!str) return '—';
+            return str.length > len ? str.slice(0, len) + '...' : str;
+        }
+
+        function escAttr(s) {
+            return (s || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
+        function avatarHtml(picUrl, initials, size) {
+            var sz = size || 38;
+            var rad = sz <= 30 ? 10 : sz <= 48 ? 12 : 16;
+            var fontSize = sz <= 30 ? '0.55rem' : sz <= 48 ? '0.85rem' : '1.3rem';
+            if (picUrl) {
+                return '<img src="' + picUrl + '" style="width:' + sz + 'px;height:' + sz + 'px;border-radius:' + rad + 'px;object-fit:cover;border:1.5px solid var(--border-default);flex-shrink:0;background:var(--bg-elevated);" onerror="this.outerHTML=\'<div style=width:' + sz + 'px;height:' + sz + 'px;border-radius:' + rad + 'px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--purple-mid),var(--purple-deep));color:#fff;font-weight:700;font-size:' + fontSize + ';flex-shrink:0;border:1.5px solid var(--border-default);>' + initials + '</div>\'">';
+            }
+            return '<div style="width:' + sz + 'px;height:' + sz + 'px;border-radius:' + rad + 'px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--purple-mid),var(--purple-deep));color:#fff;font-weight:700;font-size:' + fontSize + ';flex-shrink:0;border:1.5px solid var(--border-default);">' + initials + '</div>';
+        }
+
+        /* ── AUTH ── */
+        var loginOverlay = document.getElementById('loginOverlay');
+        var adminPanel = document.getElementById('adminPanel');
+        var loginBtn = document.getElementById('loginBtn');
+        var loginError = document.getElementById('loginError');
+
+        function showLoginError(msg) {
+            loginError.textContent = msg;
+            loginError.style.display = 'block';
+        }
+
+        function resetLoginBtn() {
+            loginBtn.disabled = false;
+            loginBtn.textContent = 'Sign In';
+        }
+
+        async function initAuth() {
+            var result = await supabaseClient.auth.getSession();
+            var session = result.data.session;
+            if (session && localStorage.getItem(VERIFIED_KEY) === 'true') {
+                enterAdmin();
             }
         }
-        checkSession();
 
-        // Initialize PeerJS
-        function initializePeerJS() {
-            if (!currentAdmin) return;
+        loginBtn.addEventListener('click', async function() {
+            loginError.style.display = 'none';
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Signing in...';
 
-            // Generate a unique peer ID based on user ID and timestamp
-            const peerId = `epsilon-admin-${currentAdmin.id}-${Date.now()}`;
+            var email = document.getElementById('loginEmail').value.trim();
+            var password = document.getElementById('loginPassword').value;
+            var code = document.getElementById('loginCode').value.trim();
 
-            // Create peer connection
-            peer = new Peer(peerId, {
-                debug: 2,
-                config: {
-                    'iceServers': [
-                        { url: 'stun:stun.l.google.com:19302' },
-                        { url: 'stun:stun1.l.google.com:19302' }
-                    ]
-                }
-            });
-
-            peer.on('open', async (id) => {
-                console.log('My peer ID is: ' + id);
-
-                // Store peer ID in database
-                await supabaseClient.from('admin_peer_ids').upsert({
-                    user_id: currentAdmin.id,
-                    peer_id: id,
-                    last_seen: new Date().toISOString()
-                });
-
-                // Set up heartbeat to keep the peer ID active
-                setInterval(async () => {
-                    await supabaseClient.from('admin_peer_ids').upsert({
-                        user_id: currentAdmin.id,
-                        peer_id: id,
-                        last_seen: new Date().toISOString()
-                    });
-                }, 30000); // Update every 30 seconds
-            });
-
-            // Handle incoming calls
-            peer.on('call', (call) => {
-                incomingCall = call;
-                const isVideo = call.metadata?.video || false;
-
-                // Get caller info
-                supabaseClient.from('admin_peer_ids')
-                    .select('*, profiles:user_id(username, display_name)')
-                    .eq('peer_id', call.peer)
-                    .single()
-                    .then(({ data }) => {
-                        const callerName = data?.profiles?.display_name || data?.profiles?.username || 'Admin';
-                        document.getElementById('callerName').textContent = `${callerName} is calling you (${isVideo ? 'Video' : 'Audio'})`;
-                    });
-
-                // Show call notification
-                document.getElementById('callNotification').classList.remove('hidden');
-            });
-
-            peer.on('error', (err) => {
-                console.error('PeerJS error:', err);
-            });
-        }
-
-        // Login
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('adminEmail').value;
-            const password = document.getElementById('adminPassword').value;
-
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            if (error) {
-                document.getElementById('loginError').textContent = error.message;
-                document.getElementById('loginError').classList.remove('hidden');
+            if (!email || !password || !code) {
+                showLoginError('All fields are required.');
+                resetLoginBtn();
+                return;
+            }
+            if (code !== SECURITY_CODE) {
+                showLoginError('Invalid security code. Access denied.');
+                resetLoginBtn();
                 return;
             }
 
-            const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', data.user.id).single();
-            currentAdmin = { ...data.user, ...profile };
-
-            document.getElementById('loginPage').classList.remove('active');
-            document.getElementById('dashboardPage').classList.add('active');
-            menuToggle.classList.remove('hidden');
-            sidebar.classList.remove('closed');
-            mainContent.classList.remove('expanded');
-            loadAnalytics();
-            initializePeerJS();
-        });
-
-        // Logout
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            // Clean up peer connection
-            if (peer) {
-                peer.destroy();
-                peer = null;
+            var result = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
+            if (result.error) {
+                showLoginError(result.error.message);
+                resetLoginBtn();
+                return;
             }
 
-            // Remove peer ID from database
-            if (currentAdmin) {
-                await supabaseClient.from('admin_peer_ids').delete().eq('user_id', currentAdmin.id);
-            }
-
-            await supabaseClient.auth.signOut();
-            currentAdmin = null;
-            document.getElementById('dashboardPage').classList.remove('active');
-            document.getElementById('loginPage').classList.add('active');
-            menuToggle.classList.add('hidden');
-            sidebar.classList.add('closed');
-            mainContent.classList.add('expanded');
+            localStorage.setItem(VERIFIED_KEY, 'true');
+            enterAdmin();
         });
 
-        // Navigation
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const page = btn.dataset.page;
-                document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
-                document.getElementById(`${page}Section`).classList.remove('hidden');
-                
-                // Close sidebar on mobile after selection
-                if (window.innerWidth < 768) {
-                    toggleSidebar();
-                }
-                
-                // Update active state
-                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('bg-purple-600'));
-                btn.classList.add('bg-purple-600');
-                
-                // Re-initialize lucide icons
-                lucide.createIcons();
-
-                if (page === 'chat') loadChat();
-                if (page === 'projects') loadProjects();
-                if (page === 'users') loadUsers();
-                if (page === 'analytics') loadAnalytics();
-                if (page === 'charts') loadCharts();
-                if (page === 'servers') loadBlockedSites();
-                if (page === 'calls') loadOnlineAdmins();
-            });
+        document.querySelectorAll('#loginOverlay input').forEach(function(inp) {
+            inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') loginBtn.click(); });
         });
 
-        // Chat
-        async function loadChat() {
-            const { data: messages } = await supabaseClient.from('admin_messages').select('*, profiles:sender_id(username, profile_pic)').order('created_at', { ascending: true });
-            const container = document.getElementById('chatMessages');
-            container.innerHTML = '';
-
-            messages?.forEach(msg => {
-                const div = document.createElement('div');
-                div.className = 'flex items-start gap-3 glass p-3 rounded-lg';
-                div.innerHTML = `
-                    <img src="${msg.profiles.profile_pic || 'https://picsum.photos/200'}" class="w-10 h-10 rounded-full">
-                    <div class="flex-1">
-                        <p class="font-bold text-sm">${msg.profiles.username}</p>
-                        <p class="text-purple-200">${msg.content}</p>
-                        <p class="text-xs text-purple-400">${new Date(msg.created_at).toLocaleTimeString()}</p>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-            container.scrollTop = container.scrollHeight;
-            subscribeToChat();
-        }
-
-        function subscribeToChat() {
-            if (chatSubscription) chatSubscription.unsubscribe();
-            chatSubscription = supabaseClient.channel('admin_messages').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'admin_messages' }, () => loadChat()).subscribe();
-        }
-
-        document.getElementById('chatForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const content = document.getElementById('chatInput').value.trim();
-            if (!content) return;
-
-            await supabaseClient.from('admin_messages').insert([{ sender_id: currentAdmin.id, content }]);
-            document.getElementById('chatInput').value = '';
-        });
-
-        // Projects
-        document.getElementById('projectForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await supabaseClient.from('admin_projects').insert([{
-                name: document.getElementById('projectName').value,
-                description: document.getElementById('projectDesc').value,
-                status: document.getElementById('projectStatus').value,
-                created_by: currentAdmin.id
-            }]);
-            e.target.reset();
-            loadProjects();
-        });
-
-        async function loadProjects() {
-            const { data: projects } = await supabaseClient.from('admin_projects').select('*, profiles:created_by(username)').order('created_at', { ascending: false });
-            const container = document.getElementById('projectsList');
-            container.innerHTML = '';
-
-            projects?.forEach(project => {
-                const div = document.createElement('div');
-                div.className = 'glass p-6 rounded-3xl';
-                div.innerHTML = `
-                    <h3 class="text-xl font-bold mb-2">${project.name}</h3>
-                    <p class="text-purple-200 mb-3">${project.description}</p>
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs px-3 py-1 bg-purple-900 rounded-full">${project.status}</span>
-                        <span class="text-xs text-purple-400">by @${project.profiles.username}</span>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        // Users
-        async function loadUsers() {
-            const { data: users } = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
-            const container = document.getElementById('usersList');
-            container.innerHTML = '';
-
-            users?.forEach(user => {
-                const div = document.createElement('div');
-                div.className = 'flex items-center justify-between glass p-4 rounded-lg';
-                div.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <img src="${user.profile_pic || 'https://picsum.photos/200'}" class="w-12 h-12 rounded-full">
-                        <div>
-                            <p class="font-bold">${user.display_name || user.username}</p>
-                            <p class="text-xs text-purple-400">@${user.username}</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-purple-400">${new Date(user.created_at).toLocaleDateString()}</span>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        // Analytics
-        async function loadAnalytics() {
-            const { count: usersCount } = await supabaseClient.from('profiles').select('*', { count: 'exact', head: true });
-            const { count: postsCount } = await supabaseClient.from('posts').select('*', { count: 'exact', head: true });
-            const { count: projectsCount } = await supabaseClient.from('admin_projects').select('*', { count: 'exact', head: true }).eq('status', 'in-progress');
-
-            document.getElementById('totalUsers').textContent = usersCount || 0;
-            document.getElementById('totalPosts').textContent = postsCount || 0;
-            document.getElementById('activeProjects').textContent = projectsCount || 0;
-        }
-
-        // Charts
-        let charts = {};
-        async function loadCharts() {
-            Object.values(charts).forEach(chart => chart.destroy());
-            charts = {};
-
-            const chartConfig = { responsive: true, maintainAspectRatio: true, plugins: { legend: { labels: { color: '#f3e8ff' } } }, scales: { y: { ticks: { color: '#f3e8ff' }, grid: { color: 'rgba(168, 85, 247, 0.1)' } }, x: { ticks: { color: '#f3e8ff' }, grid: { color: 'rgba(168, 85, 247, 0.1)' } } } };
-
-            // User Growth Chart
-            const { data: users } = await supabaseClient.from('profiles').select('created_at').order('created_at', { ascending: true });
-            const last7Days = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() - 6 + i); return d.toISOString().split('T')[0]; });
-            const userCounts = last7Days.map(date => users?.filter(u => u.created_at.startsWith(date)).length || 0);
-            charts.userGrowth = new Chart(document.getElementById('userGrowthChart'), {
-                type: 'line',
-                data: { labels: last7Days.map(d => new Date(d).toLocaleDateString('en', { month: 'short', day: 'numeric' })), datasets: [{ label: 'New Users', data: userCounts, borderColor: '#a855f7', backgroundColor: 'rgba(168, 85, 247, 0.1)', tension: 0.4 }] },
-                options: chartConfig
-            });
-
-            // Project Status Chart
-            const { data: projects } = await supabaseClient.from('admin_projects').select('status');
-            const statusCounts = { planning: 0, 'in-progress': 0, completed: 0 };
-            projects?.forEach(p => statusCounts[p.status]++);
-            charts.projectStatus = new Chart(document.getElementById('projectStatusChart'), {
-                type: 'doughnut',
-                data: { labels: ['Planning', 'In Progress', 'Completed'], datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#8b5cf6', '#a855f7', '#c084fc'] }] },
-                options: { responsive: true, plugins: { legend: { labels: { color: '#f3e8ff' } } } }
-            });
-
-            // Posts Activity Chart
-            const { data: posts } = await supabaseClient.from('posts').select('created_at');
-            const postCounts = last7Days.map(date => posts?.filter(p => p.created_at.startsWith(date)).length || 0);
-            charts.postsActivity = new Chart(document.getElementById('postsActivityChart'), {
-                type: 'bar',
-                data: { labels: last7Days.map(d => new Date(d).toLocaleDateString('en', { month: 'short', day: 'numeric' })), datasets: [{ label: 'Posts', data: postCounts, backgroundColor: '#a855f7' }] },
-                options: chartConfig
-            });
-
-            // Messages Chart
-            const { data: messages } = await supabaseClient.from('admin_messages').select('created_at');
-            const msgCounts = last7Days.map(date => messages?.filter(m => m.created_at.startsWith(date)).length || 0);
-            charts.messages = new Chart(document.getElementById('messagesChart'), {
-                type: 'line',
-                data: { labels: last7Days.map(d => new Date(d).toLocaleDateString('en', { month: 'short', day: 'numeric' })), datasets: [{ label: 'Messages', data: msgCounts, borderColor: '#c084fc', backgroundColor: 'rgba(192, 132, 252, 0.1)', fill: true }] },
-                options: chartConfig
-            });
-
-            // Engagement Chart
-            const { count: likesCount } = await supabaseClient.from('likes').select('*', { count: 'exact', head: true });
-            const { count: commentsCount } = await supabaseClient.from('comments').select('*', { count: 'exact', head: true });
-            charts.engagement = new Chart(document.getElementById('engagementChart'), {
-                type: 'bar',
-                data: { labels: ['Users', 'Posts', 'Likes', 'Comments', 'Projects'], datasets: [{ label: 'Total Count', data: [users?.length || 0, posts?.length || 0, likesCount || 0, commentsCount || 0, projects?.length || 0], backgroundColor: ['#8b5cf6', '#a855f7', '#c084fc', '#d8b4fe', '#e9d5ff'] }] },
-                options: { ...chartConfig, indexAxis: 'y' }
-            });
-        }
-
-        // Server Blocking
-        async function loadBlockedSites() {
-            const { data: blocked } = await supabaseClient.from('blocked_sites').select('site_name');
-            const blockedNames = blocked?.map(b => b.site_name) || [];
-
-            ['epsilon', 'aproxi', 'neote', 'edits', 'academics', 'sports', 'earth', 'heckle'].forEach(site => {
-                const btn = document.querySelector(`[data-site="${site}"]`);
-                const status = document.getElementById(`status-${site}`);
-                if (blockedNames.includes(site)) {
-                    btn.classList.add('bg-red-600');
-                    status.textContent = 'BLOCKED';
-                    status.classList.add('text-red-400');
-                } else {
-                    btn.classList.remove('bg-red-600');
-                    status.textContent = 'Active';
-                    status.classList.remove('text-red-400');
-                }
-            });
-        }
-
-        async function toggleSiteBlock(siteName) {
-            const { data: existing } = await supabaseClient.from('blocked_sites').select('*').eq('site_name', siteName).single();
-
-            if (existing) {
-                await supabaseClient.from('blocked_sites').delete().eq('site_name', siteName);
-            } else {
-                await supabaseClient.from('blocked_sites').insert([{ site_name: siteName, blocked_by: currentAdmin.id }]);
-            }
-
-            loadBlockedSites();
-        }
-        function blockAllSites() {
-            ['aproxi', 'neote', 'edits', 'academics', 'sports', 'earth', 'heckle'].forEach(site => toggleSiteBlock(site));
-        }
-
-        // Audio Calls Functions
-        async function loadOnlineAdmins() {
-            // Get all online admins (active in the last 2 minutes)
-            const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
-            const { data: onlineAdmins } = await supabaseClient
-                .from('admin_peer_ids')
-                .select('*, profiles:user_id(username, display_name, profile_pic)')
-                .gte('last_seen', twoMinutesAgo)
-                .neq('user_id', currentAdmin.id); // Exclude current admin
-
-            const container = document.getElementById('onlineAdmins');
-            container.innerHTML = '';
-
-            if (onlineAdmins && onlineAdmins.length > 0) {
-                onlineAdmins.forEach(admin => {
-                    const div = document.createElement('div');
-                    div.className = 'glass p-4 rounded-lg flex items-center justify-between';
-                    div.innerHTML = `
-                        <div class="flex items-center gap-3">
-                            <div class="relative">
-                                <img src="${admin.profiles.profile_pic || 'https://picsum.photos/200'}" class="w-12 h-12 rounded-full">
-                                <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900"></div>
-                            </div>
-                            <div>
-                                <p class="font-bold">${admin.profiles.display_name || admin.profiles.username}</p>
-                                <p class="text-xs text-purple-400">Online</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="callAdmin('${admin.peer_id}', false)" class="bg-green-600 hover:bg-green-700 text-white p-2 rounded-full" title="Audio Call">
-                                <i data-lucide="phone" class="w-5 h-5"></i>
-                            </button>
-                            <button onclick="callAdmin('${admin.peer_id}', true)" class="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full" title="Video Call">
-                                <i data-lucide="video" class="w-5 h-5"></i>
-                            </button>
-                        </div>
-                    `;
-                    container.appendChild(div);
-                });
-            } else {
-                container.innerHTML = '<p class="text-purple-300">No other admins are currently online.</p>';
-            }
-
-            // Re-initialize lucide icons
+        function enterAdmin() {
+            loginOverlay.classList.add('hidden');
+            adminPanel.classList.add('visible');
+            loadDashboard();
             lucide.createIcons();
         }
 
-        // Call a specific admin
-        function callAdmin(peerId, video = false) {
-            if (!peer || !peerId) return;
+        document.getElementById('signOutBtn').addEventListener('click', async function() {
+            localStorage.removeItem(VERIFIED_KEY);
+            await supabaseClient.auth.signOut();
+            adminPanel.classList.remove('visible');
+            loginOverlay.classList.remove('hidden');
+            resetLoginBtn();
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginCode').value = '';
+            loginError.style.display = 'none';
+            Object.values(chartInstances).forEach(function(c) { c.destroy(); });
+            chartInstances = {};
+            pageLoadState = { customers: false, users: false, groups: false };
+        });
 
-            // Get user media
-            navigator.mediaDevices.getUserMedia({ audio: true, video: video })
-                .then(stream => {
-                    // Create the call
-                    const call = peer.call(peerId, stream, { metadata: { video: video } });
+        /* ── NAVIGATION ── */
+        document.querySelectorAll('.admin-nav-item[data-page]').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.admin-nav-item[data-page]').forEach(function(b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                document.querySelectorAll('.admin-page').forEach(function(p) { p.classList.remove('active'); });
+                document.getElementById(btn.dataset.page + 'Page').classList.add('active');
+                var page = btn.dataset.page;
+                if (page === 'customers' && !pageLoadState.customers) loadCustomers();
+                if (page === 'users' && !pageLoadState.users) loadUsers();
+                if (page === 'groups' && !pageLoadState.groups) loadGroups();
+                if (page === 'dashboard') loadDashboard();
+            });
+        });
 
-                    // Set up the call
-                    setupCall(call, stream, video);
+        /* ── DASHBOARD ── */
+        async function loadDashboard() {
+            try {
+                var results = await Promise.all([
+                    supabaseClient.from('profiles').select('*'),
+                    supabaseClient.from('customers').select('*'),
+                    supabaseClient.from('groups').select('*'),
+                    supabaseClient.from('group_members').select('*')
+                ]);
+                allProfiles = results[0].data || [];
+                allCustomers = results[1].data || [];
+                allGroups = results[2].data || [];
+                allMembers = results[3].data || [];
 
-                    // Show active call UI
-                    showActiveCallUI(video);
-                })
-                .catch(err => {
-                    console.error('Failed to get local stream', err);
-                    alert(`Could not access your ${video ? 'camera/microphone' : 'microphone'}. Please check your permissions.`);
-                });
+                document.getElementById('statUsers').textContent = allProfiles.length;
+                document.getElementById('statCustomers').textContent = allCustomers.length;
+                document.getElementById('statGroups').textContent = allGroups.length;
+                document.getElementById('statMembers').textContent = allMembers.length;
+                renderCharts();
+            } catch (err) {
+                console.error('Dashboard error:', err);
+                notify('Failed to load dashboard', 'error');
+            }
         }
 
-        // Call all admins (Audio)
-        document.getElementById('callAllBtn').addEventListener('click', () => callAllAdmins(false));
-        
-        // Call all admins (Video)
-        document.getElementById('videoCallAllBtn').addEventListener('click', () => callAllAdmins(true));
+        function renderCharts() {
+            var gridColor = 'rgba(139, 92, 246, 0.06)';
+            var tickColor = '#6b5b8a';
+            Chart.defaults.font = { family: "'Inter', sans-serif" };
+            Chart.defaults.color = tickColor;
+            var barPalette = ['#8b5cf6', '#6d28d9', '#a78bfa', '#7c3aed', '#5b21b6', '#c4b5fd', '#6d28d9', '#8b5cf6'];
+            var tooltipStyle = { backgroundColor: 'rgba(12,11,22,0.95)', borderColor: 'rgba(139,92,246,0.2)', borderWidth: 1, titleColor: '#f0ecff', bodyColor: '#a78bfa', cornerRadius: 12, padding: 12 };
 
-        async function callAllAdmins(video = false) {
-            if (!peer) {
-                alert('Peer connection not established. Please refresh the page.');
-                return;
-            }
+            if (chartInstances.mpg) chartInstances.mpg.destroy();
+            var gLabels = allGroups.map(function(g) { return trunc(g.name, 18); });
+            var mCounts = allGroups.map(function(g) { return allMembers.filter(function(m) { return m.group_id === g.id; }).length; });
+            chartInstances.mpg = new Chart(document.getElementById('membersPerGroupChart'), {
+                type: 'bar',
+                data: {
+                    labels: gLabels.length ? gLabels : ['No groups'],
+                    datasets: [{ label: 'Members', data: mCounts.length ? mCounts : [0], backgroundColor: mCounts.map(function(_, i) { return barPalette[i % barPalette.length] + '99'; }), borderColor: mCounts.map(function(_, i) { return barPalette[i % barPalette.length]; }), borderWidth: 1, borderRadius: 8, borderSkipped: false, maxBarThickness: 48 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: tooltipStyle }, scales: { x: { grid: { color: gridColor } }, y: { beginAtZero: true, grid: { color: gridColor }, ticks: { stepSize: 1 } } } }
+            });
 
-            // Get all online admins
-            const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
-            const { data: onlineAdmins } = await supabaseClient
-                .from('admin_peer_ids')
-                .select('peer_id')
-                .gte('last_seen', twoMinutesAgo)
-                .neq('user_id', currentAdmin.id); // Exclude current admin
+            if (chartInstances.gsd) chartInstances.gsd.destroy();
+            var buckets = { '0 members': 0, '1-3 members': 0, '4-7 members': 0, '8+ members': 0 };
+            allGroups.forEach(function(g) { var c = allMembers.filter(function(m) { return m.group_id === g.id; }).length; if (c === 0) buckets['0 members']++; else if (c <= 3) buckets['1-3 members']++; else if (c <= 7) buckets['4-7 members']++; else buckets['8+ members']++; });
+            chartInstances.gsd = new Chart(document.getElementById('groupSizeChart'), {
+                type: 'doughnut',
+                data: { labels: Object.keys(buckets), datasets: [{ data: Object.values(buckets), backgroundColor: ['#6b5b8a', '#8b5cf6', '#a78bfa', '#c4b5fd'], borderColor: 'rgba(6,6,14,0.8)', borderWidth: 3, hoverOffset: 8 }] },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true, pointStyleWidth: 10, font: { size: 11 } } }, tooltip: tooltipStyle } }
+            });
 
-            if (!onlineAdmins || onlineAdmins.length === 0) {
-                alert('No other admins are currently online.');
-                return;
-            }
-
-            // Get user media
-            navigator.mediaDevices.getUserMedia({ audio: true, video: video })
-                .then(stream => {
-                    // Call each admin
-                    onlineAdmins.forEach(admin => {
-                        const call = peer.call(admin.peer_id, stream, { metadata: { video: video } });
-
-                        // Set up the call
-                        setupCall(call, stream, video);
-                    });
-
-                    // Show active call UI
-                    showActiveCallUI(video);
-                })
-                .catch(err => {
-                    console.error('Failed to get local stream', err);
-                    alert(`Could not access your ${video ? 'camera/microphone' : 'microphone'}. Please check your permissions.`);
+            if (chartInstances.reg) chartInstances.reg.destroy();
+            var hasDates = allProfiles.length > 0 && allProfiles[0].created_at;
+            if (hasDates) {
+                var mm = {};
+                allProfiles.forEach(function(p) { var d = new Date(p.created_at); var k = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); mm[k] = (mm[k] || 0) + 1; });
+                var sk = Object.keys(mm).sort();
+                var cum = []; var r = 0; sk.forEach(function(k) { r += mm[k]; cum.push(r); });
+                var sl = sk.map(function(k) { var parts = k.split('-'); return new Date(parts[0], parts[1] - 1).toLocaleDateString('en-US', { month: 'short', year: '2-digit' }); });
+                chartInstances.reg = new Chart(document.getElementById('registrationsChart'), {
+                    type: 'line',
+                    data: { labels: sl, datasets: [{ label: 'Total Users', data: cum, borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,0.08)', fill: true, tension: 0.4, pointBackgroundColor: '#8b5cf6', pointBorderColor: '#0c0b16', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 7 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: tooltipStyle }, scales: { x: { grid: { color: gridColor } }, y: { beginAtZero: true, grid: { color: gridColor } } } }
                 });
+            } else {
+                chartInstances.reg = new Chart(document.getElementById('registrationsChart'), {
+                    type: 'line',
+                    data: { labels: ['No date data'], datasets: [{ label: 'Users', data: [0], borderColor: '#6b5b8a', backgroundColor: 'transparent' }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: gridColor } }, y: { display: false } } }
+                });
+            }
         }
 
-        // Setup call event handlers
-        function setupCall(call, localStream, isVideo = false) {
-            currentCall = call;
+        /* ── CUSTOMERS ── */
+        async function loadCustomers() {
+            var tbody = document.getElementById('customersTableBody');
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:3rem; color:var(--text-muted);">Loading customers...</td></tr>';
+            try {
+                var result = await supabaseClient.from('customers').select('*').order('created_at', { ascending: false });
+                if (result.error) throw result.error;
+                allCustomers = result.data || [];
+                pageLoadState.customers = true;
+                renderCustomers(allCustomers);
+            } catch (err) {
+                console.error('Customers error:', err);
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:3rem; color:#f87171;">Failed: ' + err.message + '</td></tr>';
+            }
+        }
 
-            // When the remote stream is added
-            call.on('stream', remoteStream => {
-                // If it's a video call, set up video streams
-                if (isVideo || remoteStream.getVideoTracks().length > 0) {
-                    const remoteVideo = document.getElementById('remoteVideo');
-                    const localVideo = document.getElementById('localVideo');
-                    
-                    remoteVideo.srcObject = remoteStream;
-                    localVideo.srcObject = localStream;
-                    
-                    document.getElementById('videoSection').classList.remove('hidden');
-                    document.getElementById('audioOnlyUI').classList.add('hidden');
+        function renderCustomers(list) {
+            var tbody = document.getElementById('customersTableBody');
+            document.getElementById('customersCount').textContent = list.length + ' customer' + (list.length !== 1 ? 's' : '');
+            if (!list.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:3rem; color:var(--text-muted);">No customers found</td></tr>'; return; }
+            tbody.innerHTML = list.map(function(c) {
+                return '<tr>' +
+                    '<td style="font-weight:600;">' + (c.name || '—') + '</td>' +
+                    '<td style="color:var(--purple-bright);">' + trunc(c.company, 24) + '</td>' +
+                    '<td class="mono">' + trunc(c.email, 28) + '</td>' +
+                    '<td class="mono" style="white-space:nowrap;">' + trunc(c.phone, 16) + '</td>' +
+                    '<td style="color:var(--text-muted); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + trunc(c.notes, 30) + '</td>' +
+                    '<td style="color:var(--text-muted); font-size:0.82rem; white-space:nowrap;">' + formatDate(c.created_at) + '</td>' +
+                    '<td><button class="btn-ghost" style="padding:0.35rem 0.7rem; font-size:0.75rem;" onclick="viewCustomerDetail(\'' + c.id + '\')">View</button></td>' +
+                '</tr>';
+            }).join('');
+        }
+
+        document.getElementById('customerSearch').addEventListener('input', function() {
+            var q = this.value.toLowerCase().trim();
+            if (!q) { renderCustomers(allCustomers); return; }
+            renderCustomers(allCustomers.filter(function(c) {
+                return (c.name || '').toLowerCase().includes(q) ||
+                    (c.company || '').toLowerCase().includes(q) ||
+                    (c.email || '').toLowerCase().includes(q) ||
+                    (c.phone || '').toLowerCase().includes(q) ||
+                    (c.notes || '').toLowerCase().includes(q);
+            }));
+        });
+
+        function viewCustomerDetail(id) {
+            var c = allCustomers.find(function(x) { return x.id === id; });
+            if (!c) return;
+            var ini = getInitials(c.name);
+            var fields = [
+                ['Name', c.name], ['Company', c.company], ['Email', c.email],
+                ['Phone', c.phone], ['Notes', c.notes], ['Created', formatDate(c.created_at)],
+                ['Created By', c.created_by ? c.created_by.slice(0, 12) + '...' : '—']
+            ];
+            document.getElementById('customerDetailContent').innerHTML =
+                '<div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">' +
+                    avatarHtml(null, ini, 64) +
+                    '<div>' +
+                        '<div style="font-size:1.2rem; font-weight:700;">' + (c.name || '—') + '</div>' +
+                        '<div style="font-size:0.85rem; color:var(--text-muted);">' + (c.company || 'No company') + '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div style="background:rgba(12,11,22,0.6); border:1px solid var(--border-dim); border-radius:14px; padding:1rem;">' +
+                    fields.map(function(f) {
+                        return '<div class="detail-row">' +
+                            '<span style="font-size:0.72rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; font-family:\'JetBrains Mono\',monospace;">' + f[0] + '</span>' +
+                            '<span style="font-size:0.85rem; color:var(--text-primary); text-align:right; max-width:60%; word-break:break-word;">' + (f[1] || '—') + '</span>' +
+                        '</div>';
+                    }).join('') +
+                '</div>';
+            openModal('customerDetailModal');
+        }
+
+        /* ── USERS ── */
+        async function loadUsers() {
+            var grid = document.getElementById('usersGrid');
+            grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">Loading users...</div>';
+            try {
+                var result = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
+                if (result.error) throw result.error;
+                allProfiles = result.data || [];
+                pageLoadState.users = true;
+                renderUsers(allProfiles);
+            } catch (err) {
+                console.error('Users error:', err);
+                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:#f87171;">Failed: ' + err.message + '</div>';
+            }
+        }
+
+        function renderUsers(list) {
+            var grid = document.getElementById('usersGrid');
+            document.getElementById('usersCount').textContent = list.length + ' user' + (list.length !== 1 ? 's' : '');
+            if (!list.length) {
+                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">No users found</div>';
+                return;
+            }
+            grid.innerHTML = list.map(function(p) {
+                var name = p.display_name || p.username || 'Unknown';
+                var ini = getInitials(name);
+                var groupCount = allMembers.filter(function(m) { return m.account_id === p.id; }).length;
+                return '<div class="user-card">' +
+                    avatarHtml(p.profile_pic, ini, 48) +
+                    '<div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:0.15rem;">' +
+                        '<div style="font-weight:700; font-size:0.95rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + name + '</div>' +
+                        '<div style="font-size:0.8rem; color:var(--purple-bright); font-family:\'JetBrains Mono\',monospace;">@' + (p.username || '—') + '</div>' +
+                        '<div style="font-size:0.8rem; color:var(--text-muted); display:flex; align-items:center; gap:0.4rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' +
+                            '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>' +
+                            (p.email || 'No email') +
+                        '</div>' +
+                    '</div>' +
+                    '<div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.5rem; flex-shrink:0;">' +
+                        '<span class="badge badge-purple">' + groupCount + ' group' + (groupCount !== 1 ? 's' : '') + '</span>' +
+                        '<button class="btn-ghost" style="padding:0.3rem 0.65rem; font-size:0.72rem;" onclick="viewUserDetail(\'' + p.id + '\')">View</button>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+        }
+
+        document.getElementById('usersSearch').addEventListener('input', function() {
+            var q = this.value.toLowerCase().trim();
+            if (!q) { renderUsers(allProfiles); return; }
+            renderUsers(allProfiles.filter(function(p) {
+                return (p.username || '').toLowerCase().includes(q) ||
+                    (p.display_name || '').toLowerCase().includes(q) ||
+                    (p.email || '').toLowerCase().includes(q) ||
+                    (p.bio || '').toLowerCase().includes(q);
+            }));
+        });
+
+        function viewUserDetail(userId) {
+            var p = allProfiles.find(function(u) { return u.id === userId; });
+            if (!p) return;
+            var name = p.display_name || p.username || 'Unknown';
+            var ini = getInitials(name);
+            var userGroups = allGroups.filter(function(g) { return allMembers.some(function(m) { return m.group_id === g.id && m.account_id === p.id; }); });
+
+            var skipKeys = { id: true, profile_pic: true, followers: true, following: true, garage_cars: true, db: true };
+            var fieldsHtml = '';
+            Object.keys(p).forEach(function(key) {
+                if (skipKeys[key]) return;
+                var val = p[key];
+                if (val === null || val === undefined || val === '') return;
+                if (Array.isArray(val) && val.length === 0) return;
+                if (typeof val === 'object' && val !== null && Object.keys(val).length === 0) return;
+                var label = key.replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+                var displayVal = val;
+                if (key === 'created_at' || key === 'updated_at') displayVal = formatDate(val);
+                if (Array.isArray(val)) displayVal = val.length + ' items';
+                if (typeof val === 'object' && val !== null && !Array.isArray(val)) displayVal = JSON.stringify(val).slice(0, 60) + '...';
+                fieldsHtml += '<div class="detail-row">' +
+                    '<span style="font-size:0.72rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; font-family:\'JetBrains Mono\',monospace;">' + label + '</span>' +
+                    '<span style="font-size:0.85rem; color:var(--text-primary); text-align:right; max-width:60%; word-break:break-word;">' + displayVal + '</span>' +
+                '</div>';
+            });
+
+            var groupsHtml = '';
+            if (userGroups.length) {
+                groupsHtml = '<div style="margin-top:1rem;">' +
+                    '<div style="font-size:0.72rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; font-family:\'JetBrains Mono\',monospace; margin-bottom:0.5rem;">Groups</div>' +
+                    '<div style="display:flex; flex-wrap:wrap; gap:0.4rem;">' +
+                        userGroups.map(function(g) { return '<span class="badge badge-purple">' + g.name + '</span>'; }).join('') +
+                    '</div>' +
+                '</div>';
+            }
+
+            document.getElementById('userDetailContent').innerHTML =
+                '<div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">' +
+                    avatarHtml(p.profile_pic, ini, 64) +
+                    '<div>' +
+                        '<div style="font-size:1.2rem; font-weight:700;">' + name + '</div>' +
+                        '<div style="font-size:0.8rem; color:var(--purple-bright); font-family:\'JetBrains Mono\',monospace;">@' + (p.username || '—') + '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div style="background:rgba(12,11,22,0.6); border:1px solid var(--border-dim); border-radius:14px; padding:1rem;">' +
+                    (fieldsHtml || '<div style="color:var(--text-muted); font-size:0.85rem; text-align:center; padding:1rem;">No additional data</div>') +
+                '</div>' +
+                groupsHtml;
+            openModal('userDetailModal');
+        }
+
+        /* ── GROUPS ── */
+        async function loadGroups() {
+            var grid = document.getElementById('groupsGrid');
+            grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">Loading groups...</div>';
+            try {
+                var results = await Promise.all([
+                    supabaseClient.from('groups').select('*').order('created_at', { ascending: false }),
+                    supabaseClient.from('group_members').select('*')
+                ]);
+                if (results[0].error) throw results[0].error;
+                allGroups = results[0].data || [];
+                allMembers = results[1].data || [];
+                pageLoadState.groups = true;
+                renderGroups();
+            } catch (err) {
+                console.error('Groups error:', err);
+                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:#f87171;">Failed: ' + err.message + '</div>';
+            }
+        }
+
+        function renderGroups() {
+            var grid = document.getElementById('groupsGrid');
+            if (!allGroups.length) {
+                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">No groups yet. Create one to get started.</div>';
+                return;
+            }
+            grid.innerHTML = allGroups.map(function(g) {
+                var members = allMembers.filter(function(m) { return m.group_id === g.id; });
+                var mProfiles = members.map(function(m) { return allProfiles.find(function(p) { return p.id === m.account_id; }); }).filter(Boolean);
+                var avatarsHtml = '';
+                if (mProfiles.length) {
+                    avatarsHtml = '<div style="display:flex; flex-wrap:wrap; gap:0.35rem; margin-bottom:1rem;">' +
+                        mProfiles.slice(0, 5).map(function(p) { return avatarHtml(p.profile_pic, getInitials(p.display_name || p.username || '?'), 28); }).join('') +
+                        (mProfiles.length > 5 ? '<div style="width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--bg-hover);color:var(--text-muted);font-size:0.65rem;font-weight:600;">+' + (mProfiles.length - 5) + '</div>' : '') +
+                    '</div>';
                 } else {
-                    // Play the remote audio
-                    const remoteAudio = document.getElementById('remoteAudio');
-                    remoteAudio.srcObject = remoteStream;
-                    
-                    document.getElementById('videoSection').classList.add('hidden');
-                    document.getElementById('audioOnlyUI').classList.remove('hidden');
+                    avatarsHtml = '<div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;">No members yet</div>';
                 }
-
-                // Set up audio level monitoring
-                monitorAudioLevel(localStream);
-            });
-
-            // When the call is closed
-            call.on('close', () => {
-                endCall();
-            });
-
-            // Handle errors
-            call.on('error', err => {
-                console.error('Call error:', err);
-                endCall();
-            });
+                return '<div class="group-card">' +
+                    '<div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:1rem;">' +
+                        '<div style="flex:1; min-width:0;">' +
+                            '<h3 style="font-size:1.1rem; margin-bottom:0.25rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + g.name + '</h3>' +
+                            (g.description ? '<p style="font-size:0.82rem; color:var(--text-muted); line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">' + g.description + '</p>' : '') +
+                        '</div>' +
+                        '<span class="badge badge-purple" style="flex-shrink:0; margin-left:0.75rem;">' + members.length + '</span>' +
+                    '</div>' +
+                    (g.favourite_site ? '<div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.75rem; font-family:\'JetBrains Mono\',monospace;">site: ' + g.favourite_site + '</div>' : '') +
+                    avatarsHtml +
+                    '<div style="display:flex; align-items:center; justify-content:space-between;">' +
+                        '<span style="font-size:0.72rem; color:var(--text-muted); font-family:\'JetBrains Mono\',monospace;">' + formatDate(g.created_at) + '</span>' +
+                        '<div style="display:flex; gap:0.5rem;">' +
+                            '<button class="btn-ghost" style="padding:0.35rem 0.7rem; font-size:0.75rem;" onclick="openManageMembers(\'' + g.id + '\', \'' + escAttr(g.name) + '\')">Members</button>' +
+                            '<button class="btn-danger" style="padding:0.35rem 0.7rem; font-size:0.75rem;" onclick="deleteGroup(\'' + g.id + '\', \'' + escAttr(g.name) + '\')">Delete</button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+            lucide.createIcons();
         }
 
-        // Accept incoming call
-        document.getElementById('acceptCallBtn').addEventListener('click', () => {
-            if (!incomingCall) return;
-            const isVideo = incomingCall.metadata?.video || false;
-
-            // Get user media
-            navigator.mediaDevices.getUserMedia({ audio: true, video: isVideo })
-                .then(stream => {
-                    // Answer the call with our stream
-                    incomingCall.answer(stream);
-
-                    // Set up the call
-                    setupCall(incomingCall, stream, isVideo);
-
-                    // Hide notification and show active call UI
-                    document.getElementById('callNotification').classList.add('hidden');
-                    showActiveCallUI(isVideo);
-                })
-                .catch(err => {
-                    console.error('Failed to get local stream', err);
-                    alert(`Could not access your ${isVideo ? 'camera/microphone' : 'microphone'}. Please check your permissions.`);
-                });
+        document.getElementById('createGroupBtn').addEventListener('click', function() {
+            document.getElementById('newGroupName').value = '';
+            document.getElementById('newGroupDesc').value = '';
+            document.getElementById('newGroupSite').value = '';
+            document.getElementById('createGroupError').style.display = 'none';
+            openModal('createGroupModal');
         });
 
-        // Decline incoming call
-        document.getElementById('declineCallBtn').addEventListener('click', () => {
-            if (incomingCall) {
-                incomingCall.close();
-                incomingCall = null;
-            }
-
-            // Hide notification
-            document.getElementById('callNotification').classList.add('hidden');
+        document.getElementById('submitGroupBtn').addEventListener('click', async function() {
+            var name = document.getElementById('newGroupName').value.trim();
+            var desc = document.getElementById('newGroupDesc').value.trim();
+            var site = document.getElementById('newGroupSite').value.trim();
+            var errEl = document.getElementById('createGroupError');
+            if (!name) { errEl.textContent = 'Group name is required.'; errEl.style.display = 'block'; return; }
+            var btn = document.getElementById('submitGroupBtn');
+            btn.disabled = true; btn.textContent = 'Creating...';
+            try {
+                var result = await supabaseClient.from('groups').insert({ name: name, description: desc || null, favourite_site: site || null }).select().single();
+                if (result.error) throw result.error;
+                allGroups.unshift(result.data);
+                renderGroups();
+                closeModal('createGroupModal');
+                notify('Group "' + name + '" created');
+            } catch (err) { errEl.textContent = err.message; errEl.style.display = 'block'; }
+            finally { btn.disabled = false; btn.textContent = 'Create Group'; }
         });
 
-        // End active call
-        document.getElementById('endCallBtn').addEventListener('click', () => {
-            endCall();
+        async function deleteGroup(id, name) {
+            if (!confirm('Delete group "' + name + '"? This removes all member associations too.')) return;
+            try {
+                var result = await supabaseClient.from('groups').delete().eq('id', id);
+                if (result.error) throw result.error;
+                allGroups = allGroups.filter(function(g) { return g.id !== id; });
+                allMembers = allMembers.filter(function(m) { return m.group_id !== id; });
+                renderGroups();
+                notify('Group "' + name + '" deleted');
+            } catch (err) { notify('Delete failed: ' + err.message, 'error'); }
+        }
+
+        async function openManageMembers(groupId, groupName) {
+            currentManageGroupId = groupId;
+            document.getElementById('manageMembersTitle').textContent = groupName;
+            document.getElementById('manageMembersSub').textContent = 'Add or remove members';
+            document.getElementById('addMemberSearch').value = '';
+            document.getElementById('addMemberResults').innerHTML = '<span style="color:var(--text-muted); font-size:0.82rem;">Type to search for users</span>';
+            if (!allProfiles.length) { var r = await supabaseClient.from('profiles').select('*'); allProfiles = r.data || []; }
+            if (!allMembers.length) { var r2 = await supabaseClient.from('group_members').select('*'); allMembers = r2.data || []; }
+            renderCurrentMembers(groupId);
+            openModal('manageMembersModal');
+        }
+
+        function renderCurrentMembers(groupId) {
+            var members = allMembers.filter(function(m) { return m.group_id === groupId; });
+            var list = document.getElementById('currentMembersList');
+            if (!members.length) { list.innerHTML = '<span style="color:var(--text-muted); font-size:0.85rem;">No members in this group</span>'; return; }
+            list.innerHTML = members.map(function(m) {
+                var p = allProfiles.find(function(u) { return u.id === m.account_id; });
+                var name = p ? (p.display_name || p.username || 'Unknown') : 'Unknown User';
+                var ini = getInitials(name);
+                return '<div class="member-chip">' +
+                    avatarHtml(p ? p.profile_pic : null, ini, 24) +
+                    '<span style="font-size:0.8rem;">' + name + '</span>' +
+                    '<div class="remove-member" onclick="removeMember(\'' + groupId + '\', \'' + m.account_id + '\')" title="Remove">&times;</div>' +
+                '</div>';
+            }).join('');
+        }
+
+        async function removeMember(groupId, accountId) {
+            try {
+                var result = await supabaseClient.from('group_members').delete().eq('group_id', groupId).eq('account_id', accountId);
+                if (result.error) throw result.error;
+                allMembers = allMembers.filter(function(m) { return !(m.group_id === groupId && m.account_id === accountId); });
+                renderCurrentMembers(groupId);
+                renderGroups();
+                notify('Member removed');
+            } catch (err) { notify('Remove failed: ' + err.message, 'error'); }
+        }
+
+        var searchTimeout;
+        document.getElementById('addMemberSearch').addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            var q = this.value.toLowerCase().trim();
+            var el = document.getElementById('addMemberResults');
+            if (!q) { el.innerHTML = '<span style="color:var(--text-muted); font-size:0.82rem;">Type to search for users</span>'; return; }
+            searchTimeout = setTimeout(function() {
+                var currentIds = {};
+                allMembers.forEach(function(m) { if (m.group_id === currentManageGroupId) currentIds[m.account_id] = true; });
+                var filtered = allProfiles.filter(function(p) {
+                    if (currentIds[p.id]) return false;
+                    return (p.username || '').toLowerCase().includes(q) ||
+                        (p.display_name || '').toLowerCase().includes(q) ||
+                        (p.email || '').toLowerCase().includes(q);
+                }).slice(0, 10);
+                if (!filtered.length) { el.innerHTML = '<span style="color:var(--text-muted); font-size:0.82rem;">No users found</span>'; return; }
+                el.innerHTML = filtered.map(function(p) {
+                    var name = p.display_name || p.username || 'Unknown';
+                    var ini = getInitials(name);
+                    return '<div style="display:flex; align-items:center; gap:0.75rem; padding:0.6rem 0.75rem; background:rgba(18,17,30,0.6); border:1px solid var(--border-dim); border-radius:12px; transition:all 0.2s ease;" onmouseover="this.style.borderColor=\'var(--border-hover)\'" onmouseout="this.style.borderColor=\'var(--border-dim)\'">' +
+                        avatarHtml(p.profile_pic, ini, 30) +
+                        '<div style="flex:1; min-width:0;">' +
+                            '<div style="font-size:0.85rem; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + name + '</div>' +
+                            '<div style="font-size:0.72rem; color:var(--purple-bright); font-family:\'JetBrains Mono\',monospace;">@' + (p.username || '—') + (p.email ? ' · ' + trunc(p.email, 22) : '') + '</div>' +
+                        '</div>' +
+                        '<button class="btn-primary" style="padding:0.35rem 0.85rem; font-size:0.75rem;" onclick="addMember(\'' + currentManageGroupId + '\', \'' + p.id + '\', \'' + escAttr(name) + '\')">Add</button>' +
+                    '</div>';
+                }).join('');
+            }, 200);
         });
 
-        // End call function
-        function endCall() {
-            if (currentCall) {
-                currentCall.close();
-                currentCall = null;
+        async function addMember(groupId, accountId, name) {
+            try {
+                var result = await supabaseClient.from('group_members').insert({ group_id: groupId, account_id: accountId });
+                if (result.error) throw result.error;
+                allMembers.push({ group_id: groupId, account_id: accountId, added_at: new Date().toISOString() });
+                renderCurrentMembers(groupId);
+                renderGroups();
+                document.getElementById('addMemberSearch').value = '';
+                document.getElementById('addMemberResults').innerHTML = '<span style="color:var(--text-muted); font-size:0.82rem;">Type to search for users</span>';
+                notify(name + ' added to group');
+            } catch (err) {
+                if (err.code === '23505') notify('User is already in this group', 'error');
+                else notify('Failed: ' + err.message, 'error');
             }
-
-            // Stop local stream
-            if (currentLocalStream) {
-                currentLocalStream.getTracks().forEach(track => track.stop());
-                currentLocalStream = null;
-            }
-
-            // Clear call duration interval
-            if (callDurationInterval) {
-                clearInterval(callDurationInterval);
-                callDurationInterval = null;
-            }
-
-            // Hide active call UI
-            document.getElementById('activeCallUI').classList.add('hidden');
         }
 
-        // Show active call UI
-        function showActiveCallUI() {
-            document.getElementById('activeCallUI').classList.remove('hidden');
-
-            // Start call duration timer
-            callStartTime = Date.now();
-            callDurationInterval = setInterval(updateCallDuration, 1000);
-        }
-
-        // Update call duration
-        function updateCallDuration() {
-            if (!callStartTime) return;
-
-            const elapsed = Math.floor((Date.now() - callStartTime) / 1000);
-            const minutes = Math.floor(elapsed / 60);
-            const seconds = elapsed % 60;
-
-            document.getElementById('callDuration').textContent =
-                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-
-        // Monitor audio level
-        let currentLocalStream = null;
-        function monitorAudioLevel(stream) {
-            if (!stream) return;
-
-            currentLocalStream = stream;
-            const audioContext = new AudioContext();
-            const analyser = audioContext.createAnalyser();
-            const microphone = audioContext.createMediaStreamSource(stream);
-            const javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
-
-            analyser.smoothingTimeConstant = 0.8;
-            analyser.fftSize = 1024;
-
-            microphone.connect(analyser);
-            analyser.connect(javascriptNode);
-            javascriptNode.connect(audioContext.destination);
-
-            javascriptNode.onaudioprocess = function () {
-                const array = new Uint8Array(analyser.frequencyBinCount);
-                analyser.getByteFrequencyData(array);
-                let values = 0;
-
-                const length = array.length;
-                for (let i = 0; i < length; i++) {
-                    values += array[i];
-                }
-
-                const average = values / length;
-                const percentage = Math.min(100, Math.round(average * 2));
-
-                document.getElementById('audioLevel').style.width = `${percentage}%`;
-            };
-        }
-        // ==========================================
-// CUSTOMERS MODULE
-// ==========================================
-
-let allCustomers = [];
-
-// Toast helper
-function showToast(message, type = 'success') {
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-}
-
-// Load all customers from Supabase
-async function loadCustomers() {
-    const tbody = document.getElementById('customersTableBody');
-    const emptyState = document.getElementById('customersEmpty');
-    const loadingState = document.getElementById('customersLoading');
-
-    tbody.innerHTML = '';
-    emptyState.classList.add('hidden');
-    loadingState.classList.remove('hidden');
-
-    const { data, error } = await supabaseClient
-        .from('customers')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-    loadingState.classList.add('hidden');
-
-    if (error) {
-        showToast('Failed to load customers', 'error');
-        console.error(error);
-        return;
-    }
-
-    allCustomers = data || [];
-    renderCustomers(allCustomers);
-}
-
-// Render customers into the table
-function renderCustomers(customers) {
-    const tbody = document.getElementById('customersTableBody');
-    const emptyState = document.getElementById('customersEmpty');
-    const countEl = document.getElementById('customerCount');
-
-    tbody.innerHTML = '';
-    countEl.textContent = `${customers.length} customer${customers.length !== 1 ? 's' : ''}`;
-
-    if (customers.length === 0) {
-        emptyState.classList.remove('hidden');
-        return;
-    }
-
-    emptyState.classList.add('hidden');
-
-    customers.forEach(c => {
-        const tr = document.createElement('tr');
-        const date = new Date(c.created_at).toLocaleDateString('en-US', {
-            month: 'short', day: 'numeric', year: 'numeric'
+        /* ── MODAL BACKDROP CLOSE ── */
+        document.querySelectorAll('.modal-overlay').forEach(function(ov) {
+            ov.addEventListener('click', function(e) { if (e.target === ov) ov.classList.remove('open'); });
         });
 
-        tr.innerHTML = `
-            <td class="px-6 py-4">
-                <span class="font-semibold text-white">${escapeHtml(c.name)}</span>
-            </td>
-            <td class="px-6 py-4">
-                <span class="text-purple-300">${escapeHtml(c.company || '—')}</span>
-            </td>
-            <td class="px-6 py-4">
-                <a href="tel:${escapeHtml(c.phone)}" class="text-green-400 hover:text-green-300 transition">${escapeHtml(c.phone)}</a>
-            </td>
-            <td class="px-6 py-4 hidden md:table-cell">
-                <span class="text-purple-300">${c.email ? `<a href="mailto:${escapeHtml(c.email)}" class="hover:text-purple-200 transition">${escapeHtml(c.email)}</a>` : '—'}</span>
-            </td>
-            <td class="px-6 py-4 hidden lg:table-cell">
-                <span class="text-purple-400 text-sm">${date}</span>
-            </td>
-            <td class="px-6 py-4 text-right">
-                <div class="flex items-center justify-end gap-2">
-                    <button onclick="openEditModal('${c.id}')" class="p-2 rounded-lg hover:bg-purple-700 transition" title="Edit">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-                    </button>
-                    <button onclick="openDeleteModal('${c.id}', '${escapeHtml(c.name)}')" class="p-2 rounded-lg hover:bg-red-600 transition" title="Delete">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                    </button>
-                </div>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-// HTML escape helper
-function escapeHtml(str) {
-    if (!str) return '';
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
-}
-
-// Add customer
-document.getElementById('customerForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const customer = {
-        name: document.getElementById('custName').value.trim(),
-        company: document.getElementById('custCompany').value.trim() || null,
-        phone: document.getElementById('custPhone').value.trim(),
-        email: document.getElementById('custEmail').value.trim() || null,
-        notes: document.getElementById('custNotes').value.trim() || null,
-        created_by: currentAdmin?.id || null
-    };
-
-    const { data, error } = await supabaseClient.from('customers').insert([customer]).select();
-
-    if (error) {
-        showToast('Failed to add customer: ' + error.message, 'error');
-        return;
-    }
-
-    showToast('Customer added successfully');
-    document.getElementById('customerForm').reset();
-    loadCustomers();
-});
-
-// Search / filter
-document.getElementById('customerSearch').addEventListener('input', (e) => {
-    const query = e.target.value.toLowerCase().trim();
-    if (!query) {
-        renderCustomers(allCustomers);
-        return;
-    }
-    const filtered = allCustomers.filter(c =>
-        (c.name && c.name.toLowerCase().includes(query)) ||
-        (c.company && c.company.toLowerCase().includes(query)) ||
-        (c.phone && c.phone.toLowerCase().includes(query)) ||
-        (c.email && c.email.toLowerCase().includes(query))
-    );
-    renderCustomers(filtered);
-});
-
-// Toggle form collapse
-document.getElementById('toggleCustomerFormBtn').addEventListener('click', () => {
-    const form = document.getElementById('customerForm');
-    const btn = document.getElementById('toggleCustomerFormBtn');
-    if (form.style.display === 'none') {
-        form.style.display = '';
-        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg> Collapse`;
-    } else {
-        form.style.display = 'none';
-        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg> Expand`;
-    }
-});
-
-// ---- Edit Modal ----
-function openEditModal(id) {
-    const c = allCustomers.find(x => x.id === id);
-    if (!c) return;
-
-    document.getElementById('editCustId').value = c.id;
-    document.getElementById('editCustName').value = c.name || '';
-    document.getElementById('editCustCompany').value = c.company || '';
-    document.getElementById('editCustPhone').value = c.phone || '';
-    document.getElementById('editCustEmail').value = c.email || '';
-    document.getElementById('editCustNotes').value = c.notes || '';
-    document.getElementById('editCustomerModal').classList.add('active');
-}
-
-function closeEditModal() {
-    document.getElementById('editCustomerModal').classList.remove('active');
-}
-
-document.getElementById('closeEditModal').addEventListener('click', closeEditModal);
-document.getElementById('cancelEditBtn').addEventListener('click', closeEditModal);
-
-document.getElementById('editCustomerForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const id = document.getElementById('editCustId').value;
-
-    const updates = {
-        name: document.getElementById('editCustName').value.trim(),
-        company: document.getElementById('editCustCompany').value.trim() || null,
-        phone: document.getElementById('editCustPhone').value.trim(),
-        email: document.getElementById('editCustEmail').value.trim() || null,
-        notes: document.getElementById('editCustNotes').value.trim() || null
-    };
-
-    const { error } = await supabaseClient.from('customers').update(updates).eq('id', id);
-
-    if (error) {
-        showToast('Failed to update customer: ' + error.message, 'error');
-        return;
-    }
-
-    showToast('Customer updated successfully');
-    closeEditModal();
-    loadCustomers();
-});
-
-// ---- Delete Modal ----
-function openDeleteModal(id, name) {
-    document.getElementById('deleteCustId').value = id;
-    document.getElementById('deleteCustName').textContent = `Are you sure you want to delete "${name}"? This cannot be undone.`;
-    document.getElementById('deleteCustomerModal').classList.add('active');
-}
-
-function closeDeleteModal() {
-    document.getElementById('deleteCustomerModal').classList.remove('active');
-}
-
-document.getElementById('cancelDeleteBtn').addEventListener('click', closeDeleteModal);
-
-document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
-    const id = document.getElementById('deleteCustId').value;
-    const { error } = await supabaseClient.from('customers').delete().eq('id', id);
-
-    if (error) {
-        showToast('Failed to delete customer: ' + error.message, 'error');
-        return;
-    }
-
-    showToast('Customer deleted');
-    closeDeleteModal();
-    loadCustomers();
-});
-
-// Close modals on backdrop click
-document.getElementById('editCustomerModal').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) closeEditModal();
-});
-document.getElementById('deleteCustomerModal').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) closeDeleteModal();
-});
+        /* ── INIT ── */
+        initAuth();
     </script>
-</div>
-</body></html>
+</body>
+</html>
