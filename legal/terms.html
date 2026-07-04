@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service — Epsilon</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="./epsilon logo.png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+        :root {
+            --bg-deep: #06060e;
+            --bg-surface: #0c0b16;
+            --bg-elevated: #12111e;
+            --bg-hover: #1a1829;
+            --border-dim: rgba(139, 92, 246, 0.06);
+            --border-default: rgba(139, 92, 246, 0.1);
+            --border-hover: rgba(139, 92, 246, 0.3);
+            --border-active: rgba(139, 92, 246, 0.5);
+            --purple-deep: #6d28d9;
+            --purple-mid: #8b5cf6;
+            --purple-bright: #a78bfa;
+            --purple-neon: #c4b5fd;
+            --purple-glow: rgba(139, 92, 246, 0.15);
+            --purple-glow-strong: rgba(139, 92, 246, 0.25);
+            --text-primary: #f0ecff;
+            --text-secondary: #a78bfa;
+            --text-muted: #6b5b8a;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            width: 100%;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .bg-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background:
+                radial-gradient(ellipse 70% 50% at 20% 15%, rgba(109, 40, 217, 0.18) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 45% at 80% 85%, rgba(139, 92, 246, 0.1) 0%, transparent 55%),
+                radial-gradient(ellipse 40% 30% at 50% 50%, rgba(88, 28, 135, 0.08) 0%, transparent 50%),
+                linear-gradient(160deg, #08001a 0%, #06060e 30%, #050510 60%, #0a0020 100%);
+        }
+
+        .glass {
+            background: rgba(12, 11, 22, 0.8);
+            border: 1px solid var(--border-default);
+            border-radius: 20px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(139, 92, 246, 0.04);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        h1 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+        }
+
+        h2 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        h3 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .legal-content h2 {
+            font-size: 1.35rem;
+            color: var(--purple-bright);
+            margin-top: 2.5rem;
+            margin-bottom: 0.85rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-dim);
+        }
+
+        .legal-content h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .legal-content p {
+            color: var(--text-primary);
+            font-size: 0.92rem;
+            line-height: 1.75;
+            margin-bottom: 0.85rem;
+            font-weight: 400;
+        }
+
+        .legal-content ul {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 1rem;
+        }
+
+        .legal-content ul li {
+            position: relative;
+            padding-left: 1.35rem;
+            margin-bottom: 0.55rem;
+            color: var(--text-primary);
+            font-size: 0.92rem;
+            line-height: 1.7;
+        }
+
+        .legal-content ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.6em;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--purple-mid);
+            box-shadow: 0 0 8px var(--purple-glow-strong);
+        }
+
+        .legal-content a {
+            color: var(--purple-bright);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .legal-content a:hover {
+            border-bottom-color: var(--purple-mid);
+        }
+
+        .legal-content strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .legal-content em {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.5rem 1.15rem;
+            border: 1px solid var(--border-dim);
+            border-radius: 9999px;
+            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            margin-bottom: 2rem;
+        }
+
+        .back-link:hover {
+            color: var(--purple-bright);
+            border-color: var(--border-hover);
+            background: rgba(139, 92, 246, 0.06);
+            transform: translateX(-2px);
+        }
+
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .back-link:hover svg {
+            transform: translateX(-3px);
+        }
+
+        .last-updated {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .last-updated::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--purple-mid);
+            box-shadow: 0 0 8px var(--purple-glow-strong);
+        }
+
+        .section-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--purple-mid);
+            margin-bottom: 0.35rem;
+            display: block;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(139, 92, 246, 0.15);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(139, 92, 246, 0.3);
+        }
+
+        ::selection {
+            background: rgba(139, 92, 246, 0.3);
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            .legal-content h2 {
+                font-size: 1.15rem;
+                margin-top: 2rem;
+            }
+            .legal-content p,
+            .legal-content ul li {
+                font-size: 0.87rem;
+                line-height: 1.65;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .legal-content p,
+            .legal-content ul li {
+                font-size: 0.84rem;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-12 px-4 md:px-6">
+    <div class="bg-mesh"></div>
+
+    <div class="w-full max-w-3xl mx-auto">
+        <a href="index.html" class="back-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+            Back to Epsilon
+        </a>
+
+        <div class="glass p-6 md:p-10">
+            <h1 class="text-3xl md:text-4xl mb-3" style="color: var(--text-primary);">Terms of Service</h1>
+            <p class="text-sm mb-1" style="color: var(--text-secondary); font-weight: 400;">Epsilon Hub — User Agreement</p>
+            <div class="last-updated">Last updated: July 2025</div>
+
+            <div class="legal-content">
+
+                <h2><span class="section-number">01</span>Acceptance of Terms</h2>
+                <p>By accessing or using Epsilon ("the Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to all of these Terms, do not use the Service. These Terms apply to all visitors, users, and others who access or use the Service.</p>
+                <p>We may update these Terms from time to time. We will notify you of any material changes by posting the updated Terms on this page with a revised "Last updated" date. Your continued use of the Service after any such changes constitutes your acceptance of the new Terms.</p>
+
+                <h2><span class="section-number">02</span>Description of Service</h2>
+                <p>Epsilon is a community platform that allows users to create profiles, share stories and posts, interact with other members, use AI-assisted features, and communicate through built-in audio calling. The Service is provided "as is" and "as available" without warranties of any kind, either express or implied.</p>
+                <p>We reserve the right to modify, suspend, or discontinue any part of the Service at any time, with or without notice, and without liability to you.</p>
+
+                <h2><span class="section-number">03</span>User Accounts</h2>
+                <p>To use certain features of the Service, you may be required to create an account. When you create an account, you agree to:</p>
+                <ul>
+                    <li>Provide accurate, current, and complete information during registration</li>
+                    <li>Maintain and promptly update your account information to keep it accurate and complete</li>
+                    <li>Maintain the security and confidentiality of your login credentials</li>
+                    <li>Accept all responsibility for activities that occur under your account</li>
+                    <li>Immediately notify us if you discover any unauthorized use of your account</li>
+                </ul>
+                <p>You must be at least <strong>13 years of age</strong> to create an account and use the Service. If you are under 18, you represent that your parent or legal guardian has reviewed and agreed to these Terms on your behalf.</p>
+
+                <h2><span class="section-number">04</span>User Content</h2>
+                <p>You retain ownership of any content you submit, post, or display on or through the Service ("User Content"). By submitting User Content, you grant us a worldwide, non-exclusive, royalty-free, license to use, reproduce, modify, and display your content solely for the purpose of providing and improving the Service.</p>
+                <p>You are solely responsible for your User Content and agree not to post, upload, or transmit any content that:</p>
+                <ul>
+                    <li>Is unlawful, harmful, threatening, abusive, harassing, defamatory, or otherwise objectionable</li>
+                    <li>Infringes on any patent, trademark, trade secret, copyright, or other intellectual property right</li>
+                    <li>Contains software viruses, worms, or any other malicious code</li>
+                    <li>Impersonates any person or entity, or falsely states or misrepresents your affiliation</li>
+                    <li>Contains personal or sensitive information of others without their consent</li>
+                    <li>Promotes illegal activities or violates any applicable local, state, national, or international law</li>
+                    <li>Is spam, junk mail, or unsolicited mass messaging</li>
+                </ul>
+                <p>We reserve the right to remove any User Content at any time, for any reason, without notice.</p>
+
+                <h2><span class="section-number">05</span>Acceptable Use</h2>
+                <p>You agree not to:</p>
+                <ul>
+                    <li>Use the Service for any illegal purpose or in violation of any applicable laws</li>
+                    <li>Attempt to gain unauthorized access to any part of the Service, other accounts, or computer systems</li>
+                    <li>Interfere with or disrupt the Service, servers, or networks connected to the Service</li>
+                    <li>Use automated means (bots, scrapers, etc.) to access the Service or collect data</li>
+                    <li>Reverse engineer, decompile, or disassemble any aspect of the Service</li>
+                    <li>Harass, intimidate, or bully other users</li>
+                    <li>Create multiple accounts for the purpose of abusing the Service</li>
+                    <li>Share your account credentials with any third party</li>
+                </ul>
+
+                <h2><span class="section-number">06</span>AI Features</h2>
+                <p>The Service includes AI-assisted features ("AI Features"). You understand and agree that:</p>
+                <ul>
+                    <li>AI-generated responses may not always be accurate, complete, or up-to-date</li>
+                    <li>AI Features are provided as supplementary tools and should not be relied upon as professional advice of any kind</li>
+                    <li>You should independently verify any important information provided by AI Features</li>
+                    <li>We do not guarantee the reliability, correctness, or suitability of AI-generated content</li>
+                </ul>
+                <p>You are responsible for reviewing and editing any AI-generated content before sharing it with others on the platform.</p>
+
+                <h2><span class="section-number">07</span>Audio Calling</h2>
+                <p>Epsilon provides peer-to-peer audio calling functionality. By using this feature, you agree to:</p>
+                <ul>
+                    <li>Use audio calling only for lawful purposes and in compliance with these Terms</li>
+                    <li>Not record calls without the explicit consent of all participants</li>
+                    <li>Not use audio calling to harass, threaten, or abuse other users</li>
+                    <li>Understand that call quality may vary based on network conditions</li>
+                </ul>
+                <p>Audio calls are transmitted directly between users where possible. We do not store or monitor call content, but we may collect metadata such as call duration and timestamps for service improvement purposes.</p>
+
+                <h2><span class="section-number">08</span>Administrative Actions</h2>
+                <p>We reserve the right to take any action we deem appropriate regarding your account and content, including but not limited to:</p>
+                <ul>
+                    <li>Issuing warnings for Terms violations</li>
+                    <li>Removing or editing your content</li>
+                    <li>Temporarily suspending your account</li>
+                    <li>Permanently terminating your account</li>
+                    <li>Blocking access to the Service from specific devices or IP addresses</li>
+                </ul>
+                <p>Decisions regarding administrative actions are at our sole discretion and are not subject to appeal. We are not obligated to provide a reason for any administrative action.</p>
+
+                <h2><span class="section-number">09</span>Termination</h2>
+                <p>You may stop using the Service at any time. You may request account deletion by contacting us or using the account settings within the Service. Upon deletion, your public content may be removed, but some data may be retained as required by law or for legitimate operational purposes.</p>
+                <p>We reserve the right to terminate or suspend your account immediately, without prior notice, for any reason, including without limitation a breach of these Terms.</p>
+
+                <h2><span class="section-number">10</span>Disclaimers</h2>
+                <p>The Service is provided on an <em>"as is"</em> and <em>"as available"</em> basis. To the fullest extent permitted by law, we disclaim all warranties, express or implied, including but not limited to implied warranties of merchantability, fitness for a particular purpose, and non-infringement.</p>
+                <p>We make no warranty that the Service will be uninterrupted, timely, secure, or error-free. We do not guarantee the accuracy, reliability, or completeness of any content obtained through the Service.</p>
+
+                <h2><span class="section-number">11</span>Limitation of Liability</h2>
+                <p>To the maximum extent permitted by law, in no event shall Epsilon, its operators, developers, or affiliates be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of data, profits, or goodwill, arising out of or in connection with your use of or inability to use the Service.</p>
+
+                <h2><span class="section-number">12</span>Governing Law</h2>
+                <p>These Terms shall be governed by and construed in accordance with applicable laws, without regard to conflict of law principles. Any disputes arising from these Terms or the Service shall be resolved through good-faith negotiation, and if unresolved, through binding arbitration.</p>
+
+                <h2><span class="section-number">13</span>Changes to Terms</h2>
+                <p>We reserve the right to modify or replace these Terms at any time. Material changes will be indicated by updating the "Last updated" date at the top of this page. Your continued use of the Service after any changes to these Terms constitutes acceptance of those changes.</p>
+
+                <h2><span class="section-number">14</span>Contact</h2>
+                <p>If you have any questions about these Terms of Service, please reach out through the Epsilon platform or contact us directly. We will make reasonable efforts to respond to your inquiries in a timely manner.</p>
+
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem; padding-bottom: 2rem;">
+            <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted);">© 2025 Epsilon — All rights reserved</p>
+        </div>
+    </div>
+</body>
+</html>
