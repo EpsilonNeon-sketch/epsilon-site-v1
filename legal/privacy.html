@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy — Epsilon</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="./epsilon logo.png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+        :root {
+            --bg-deep: #06060e;
+            --bg-surface: #0c0b16;
+            --bg-elevated: #12111e;
+            --bg-hover: #1a1829;
+            --border-dim: rgba(139, 92, 246, 0.06);
+            --border-default: rgba(139, 92, 246, 0.1);
+            --border-hover: rgba(139, 92, 246, 0.3);
+            --border-active: rgba(139, 92, 246, 0.5);
+            --purple-deep: #6d28d9;
+            --purple-mid: #8b5cf6;
+            --purple-bright: #a78bfa;
+            --purple-neon: #c4b5fd;
+            --purple-glow: rgba(139, 92, 246, 0.15);
+            --purple-glow-strong: rgba(139, 92, 246, 0.25);
+            --text-primary: #f0ecff;
+            --text-secondary: #a78bfa;
+            --text-muted: #6b5b8a;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            width: 100%;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .bg-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background:
+                radial-gradient(ellipse 70% 50% at 20% 15%, rgba(109, 40, 217, 0.18) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 45% at 80% 85%, rgba(139, 92, 246, 0.1) 0%, transparent 55%),
+                radial-gradient(ellipse 40% 30% at 50% 50%, rgba(88, 28, 135, 0.08) 0%, transparent 50%),
+                linear-gradient(160deg, #08001a 0%, #06060e 30%, #050510 60%, #0a0020 100%);
+        }
+
+        .glass {
+            background: rgba(12, 11, 22, 0.8);
+            border: 1px solid var(--border-default);
+            border-radius: 20px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(139, 92, 246, 0.04);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        h1 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+        }
+
+        h2 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        h3 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .legal-content h2 {
+            font-size: 1.35rem;
+            color: var(--purple-bright);
+            margin-top: 2.5rem;
+            margin-bottom: 0.85rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-dim);
+        }
+
+        .legal-content h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .legal-content p {
+            color: var(--text-primary);
+            font-size: 0.92rem;
+            line-height: 1.75;
+            margin-bottom: 0.85rem;
+            font-weight: 400;
+        }
+
+        .legal-content ul {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 1rem;
+        }
+
+        .legal-content ul li {
+            position: relative;
+            padding-left: 1.35rem;
+            margin-bottom: 0.55rem;
+            color: var(--text-primary);
+            font-size: 0.92rem;
+            line-height: 1.7;
+        }
+
+        .legal-content ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.6em;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--purple-mid);
+            box-shadow: 0 0 8px var(--purple-glow-strong);
+        }
+
+        .legal-content a {
+            color: var(--purple-bright);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .legal-content a:hover {
+            border-bottom-color: var(--purple-mid);
+        }
+
+        .legal-content strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .legal-content em {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.5rem 1.15rem;
+            border: 1px solid var(--border-dim);
+            border-radius: 9999px;
+            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            margin-bottom: 2rem;
+        }
+
+        .back-link:hover {
+            color: var(--purple-bright);
+            border-color: var(--border-hover);
+            background: rgba(139, 92, 246, 0.06);
+            transform: translateX(-2px);
+        }
+
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .back-link:hover svg {
+            transform: translateX(-3px);
+        }
+
+        .last-updated {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .last-updated::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--purple-mid);
+            box-shadow: 0 0 8px var(--purple-glow-strong);
+        }
+
+        .section-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--purple-mid);
+            margin-bottom: 0.35rem;
+            display: block;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            font-size: 0.88rem;
+        }
+
+        .data-table th {
+            text-align: left;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--purple-bright);
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-hover);
+            background: rgba(139, 92, 246, 0.04);
+        }
+
+        .data-table th:first-child {
+            border-radius: 10px 0 0 0;
+        }
+
+        .data-table th:last-child {
+            border-radius: 0 10px 0 0;
+        }
+
+        .data-table td {
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid var(--border-dim);
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover td {
+            background: rgba(139, 92, 246, 0.03);
+        }
+
+        .data-table .category {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--purple-bright);
+            white-space: nowrap;
+        }
+
+        .highlight-box {
+            background: rgba(139, 92, 246, 0.06);
+            border: 1px solid var(--border-default);
+            border-left: 3px solid var(--purple-mid);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .highlight-box p {
+            margin-bottom: 0 !important;
+            font-size: 0.88rem !important;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(139, 92, 246, 0.15);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(139, 92, 246, 0.3);
+        }
+
+        ::selection {
+            background: rgba(139, 92, 246, 0.3);
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            .legal-content h2 {
+                font-size: 1.15rem;
+                margin-top: 2rem;
+            }
+            .legal-content p,
+            .legal-content ul li {
+                font-size: 0.87rem;
+                line-height: 1.65;
+            }
+            .data-table {
+                font-size: 0.8rem;
+            }
+            .data-table th,
+            .data-table td {
+                padding: 0.6rem 0.7rem;
+            }
+            .data-table .category {
+                font-size: 0.65rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .legal-content p,
+            .legal-content ul li {
+                font-size: 0.84rem;
+            }
+            .data-table {
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-12 px-4 md:px-6">
+    <div class="bg-mesh"></div>
+
+    <div class="w-full max-w-3xl mx-auto">
+        <a href="index.html" class="back-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+            Back to Epsilon
+        </a>
+
+        <div class="glass p-6 md:p-10">
+            <h1 class="text-3xl md:text-4xl mb-3" style="color: var(--text-primary);">Privacy Policy</h1>
+            <p class="text-sm mb-1" style="color: var(--text-secondary); font-weight: 400;">How Epsilon handles your data</p>
+            <div class="last-updated">Last updated: July 2025</div>
+
+            <div class="legal-content">
+
+                <div class="highlight-box">
+                    <p>Your privacy matters to us. This policy explains what data we collect, why we collect it, how we use it, and what controls you have. We aim to collect only what is necessary and to be transparent about our practices.</p>
+                </div>
+
+                <h2><span class="section-number">01</span>Information We Collect</h2>
+                <p>We collect several categories of information to provide and improve the Service:</p>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Examples</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="category">Account Data</td>
+                            <td>Username, display name, email, profile picture, bio</td>
+                            <td>Identity, profile display, account recovery</td>
+                        </tr>
+                        <tr>
+                            <td class="category">Content Data</td>
+                            <td>Stories, posts, comments, likes</td>
+                            <td>Providing the core social features</td>
+                        </tr>
+                        <tr>
+                            <td class="category">Usage Data</td>
+                            <td>Pages visited, features used, session duration</td>
+                            <td>Improving the Service experience</td>
+                        </tr>
+                        <tr>
+                            <td class="category">Device Data</td>
+                            <td>Browser type, OS, screen resolution, device type</td>
+                            <td>Compatibility and performance optimization</td>
+                        </tr>
+                        <tr>
+                            <td class="category">Call Metadata</td>
+                            <td>Call timestamp, duration, participant IDs</td>
+                            <td>Service reliability and abuse prevention</td>
+                        </tr>
+                        <tr>
+                            <td class="category">AI Interaction</td>
+                            <td>Prompts sent to AI features, responses received</td>
+                            <td>Providing AI features, quality improvement</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>We do <strong>not</strong> collect call audio content. Audio calls are peer-to-peer where technically possible and are not recorded or stored by our servers.</p>
+
+                <h2><span class="section-number">02</span>How We Use Your Information</h2>
+                <p>We use the information we collect for the following purposes:</p>
+                <ul>
+                    <li><strong>Providing the Service</strong> — Creating and maintaining your account, displaying your profile, and enabling social interactions</li>
+                    <li><strong>Improving the Service</strong> — Analyzing usage patterns to fix bugs, optimize performance, and develop new features</li>
+                    <li><strong>AI Features</strong> — Processing your inputs to generate AI responses within the platform</li>
+                    <li><strong>Communication</strong> — Sending service-related notifications, such as account verification and security alerts</li>
+                    <li><strong>Safety and Security</strong> — Detecting and preventing abuse, fraud, and violations of our Terms of Service</li>
+                    <li><strong>Legal Compliance</strong> — Complying with applicable laws, regulations, and legal processes</li>
+                </ul>
+
+                <h2><span class="section-number">03</span>Data Storage and Security</h2>
+                <p>Your data is stored on secure, industry-standard infrastructure. We implement reasonable technical and organizational measures to protect your personal information, including:</p>
+                <ul>
+                    <li>Encryption of data in transit using TLS/SSL</li>
+                    <li>Access controls limiting data access to authorized personnel only</li>
+                    <li>Regular security reviews and updates</li>
+                </ul>
+                <p>While we strive to protect your data, no method of transmission over the internet or electronic storage is completely secure. We cannot guarantee absolute security.</p>
+
+                <h2><span class="section-number">04</span>Data Sharing</h2>
+                <p>We do <strong>not</strong> sell your personal information to third parties. We may share your data only in the following circumstances:</p>
+                <ul>
+                    <li><strong>With other users</strong> — Information you choose to make public on your profile or in your posts is visible to other users as intended</li>
+                    <li><strong>Service providers</strong> — We use third-party services (such as database hosting) that process data on our behalf under strict confidentiality agreements</li>
+                    <li><strong>Legal requirements</strong> — We may disclose data if required by law, subpoena, or other legal process</li>
+                    <li><strong>Safety</strong> — We may disclose data to prevent fraud, protect the safety of users or the public, or address security vulnerabilities</li>
+                </ul>
+
+                <h2><span class="section-number">05</span>Cookies and Local Storage</h2>
+                <p>The Service may use local storage and similar technologies to:</p>
+                <ul>
+                    <li>Keep you logged in across sessions</li>
+                    <li>Remember your preferences and settings</li>
+                    <li>Improve page load performance</li>
+                </ul>
+                <p>We do not use third-party advertising trackers. Any data stored locally on your device remains under your control and can be cleared through your browser settings.</p>
+
+                <h2><span class="section-number">06</span>AI and Your Data</h2>
+                <p>When you use AI features within Epsilon:</p>
+                <ul>
+                    <li>Your prompts are sent to our AI processing system to generate responses</li>
+                    <li>AI interactions may be temporarily stored to provide conversation continuity within a session</li>
+                    <li>We may use anonymized and aggregated AI interaction data to improve response quality</li>
+                    <li>We do not use your AI prompts to train external third-party AI models</li>
+                </ul>
+                <div class="highlight-box">
+                    <p><strong>Important:</strong> Do not share sensitive personal information (such as passwords, financial details, or health information) with AI features. AI responses are generated algorithmically and should not be treated as confidential or professional advice.</p>
+                </div>
+
+                <h2><span class="section-number">07</span>Your Rights and Controls</h2>
+                <p>You have the following rights regarding your personal data:</p>
+                <ul>
+                    <li><strong>Access</strong> — You can view most of your data through your profile and account settings</li>
+                    <li><strong>Correction</strong> — You can update your profile information at any time through account settings</li>
+                    <li><strong>Deletion</strong> — You can request account deletion, which will remove your profile and personal data. Some data may be retained as required by law or for legitimate operational purposes</li>
+                    <li><strong>Content management</strong> — You can edit or delete your own posts and stories at any time</li>
+                </ul>
+                <p>To exercise any of these rights, use the in-app settings or contact us directly. We will respond to legitimate requests within a reasonable timeframe.</p>
+
+                <h2><span class="section-number">08</span>Data Retention</h2>
+                <p>We retain your personal data for as long as your account is active or as needed to provide the Service. If you delete your account:</p>
+                <ul>
+                    <li>Your profile information will be removed</li>
+                    <li>Your posts and stories will be removed</li>
+                    <li>Anonymized usage data may be retained for analytical purposes</li>
+                    <li>Data may be retained if required by applicable law</li>
+                </ul>
+
+                <h2><span class="section-number">09</span>Children's Privacy</h2>
+                <p>The Service is not directed at children under 13 years of age. We do not knowingly collect personal information from children under 13. If we become aware that we have collected data from a child under 13, we will take steps to delete that information promptly. If you believe a child under 13 has provided us with personal data, please contact us.</p>
+
+                <h2><span class="section-number">10</span>Third-Party Links</h2>
+                <p>The Service may contain links to third-party websites or services. We are not responsible for the privacy practices of these third parties. We encourage you to review the privacy policies of any external sites you visit through links on the platform.</p>
+
+                <h2><span class="section-number">11</span>International Data Transfers</h2>
+                <p>Your data may be transferred to and processed in countries other than your country of residence. These countries may have different data protection laws. By using the Service, you consent to such transfers. We take appropriate safeguards to ensure your data is protected in accordance with this policy.</p>
+
+                <h2><span class="section-number">12</span>Changes to This Policy</h2>
+                <p>We may update this Privacy Policy from time to time. Material changes will be reflected by updating the "Last updated" date at the top of this page. We encourage you to review this policy periodically to stay informed about how we protect your data.</p>
+
+                <h2><span class="section-number">13</span>Contact</h2>
+                <p>If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please reach out through the Epsilon platform or contact us directly. We are committed to addressing your privacy concerns promptly and transparently.</p>
+
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem; padding-bottom: 2rem;">
+            <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted);">© 2025 Epsilon — All rights reserved</p>
+        </div>
+    </div>
+</body>
+</html>
