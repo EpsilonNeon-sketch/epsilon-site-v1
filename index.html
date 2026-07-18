@@ -24,7 +24,7 @@ body{font-family:'Inter',sans-serif;background:#09090b;color:#e4e4e7;overflow-x:
 .input-field::placeholder{color:#52525b}
 select.input-field{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b5cf6' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center}
 select.input-field option{background:#18182a;color:#e4e4e7}
-textarea.input-field{resize:vertical;min-height:100px}
+textarea.input-field{resize:vertical;min-height:80px}
 .btn-primary{padding:.7rem 1.4rem;border-radius:.65rem;background:linear-gradient(135deg,#7c3aed,#8b5cf6,#a78bfa);color:#fff;font-size:.86rem;font-weight:600;border:none;cursor:pointer;transition:all .25s;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:.4rem}
 .btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(139,92,246,.35)}
 .btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
@@ -85,6 +85,8 @@ textarea.input-field{resize:vertical;min-height:100px}
 .follow-btn{padding:.4rem 1rem;border-radius:9999px;font-size:.78rem;font-weight:600;border:1.5px solid rgba(139,92,246,.3);background:transparent;color:#a78bfa;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
 .follow-btn:hover{border-color:#8b5cf6;background:rgba(139,92,246,.1)}
 .follow-btn.following{background:rgba(139,92,246,.15);border-color:#8b5cf6;color:#c4b5fd}
+.auth-card{background:rgba(20,20,30,.95);border:1px solid rgba(139,92,246,.15);border-radius:1.15rem;box-shadow:0 24px 80px rgba(139,92,246,.1);max-width:460px;width:100%;backdrop-filter:blur(24px);overflow:hidden}
+.field-hint{font-size:.68rem;color:#3f3f46;margin-top:.2rem}
 @media(max-width:768px){
 .sidebar{transform:translateX(-100%)}
 .sidebar.open{transform:translateX(0)}
@@ -92,6 +94,7 @@ textarea.input-field{resize:vertical;min-height:100px}
 .main-wrap.expanded{margin-left:0}
 .page{padding:1.25rem;padding-top:4rem}
 .menu-toggle{display:flex!important}
+.auth-card{margin:.5rem}
 }
 </style>
 </head>
@@ -101,34 +104,70 @@ textarea.input-field{resize:vertical;min-height:100px}
 <div class="toast-container" id="toastContainer"></div>
 
 <!-- AUTH PAGE -->
-<div id="authPage" style="position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:#09090b;overflow-y:auto;padding:2rem 1rem">
-<div style="max-width:440px;width:100%">
-<div style="text-align:center;margin-bottom:2rem">
+<div id="authPage" style="position:fixed;inset:0;z-index:200;display:none;align-items:flex-start;justify-content:center;background:#09090b;overflow-y:auto;padding:2rem 1rem">
+<div class="auth-card">
+<div style="padding:2rem 1.75rem 0;text-align:center">
 <div style="width:60px;height:60px;border-radius:1rem;background:linear-gradient(135deg,#7c3aed,#8b5cf6);margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:900;color:#fff">ε</div>
 <h1 style="font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,#a78bfa,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Epsilon Hub</h1>
 <p style="font-size:.84rem;color:#52525b;margin-top:.3rem">Connect. Create. Call.</p>
 </div>
-<div class="glass" style="border-radius:1.15rem;overflow:hidden">
-<div style="display:flex;border-bottom:1px solid rgba(139,92,246,.1)">
-<div class="auth-tab active" onclick="switchAuth('in')" id="tabIn" style="flex:1;padding:.9rem;text-align:center;font-weight:600;font-size:.88rem;cursor:pointer;color:#52525b;border-bottom:2px solid transparent;transition:all .25s">Sign In</div>
-<div class="auth-tab" onclick="switchAuth('up')" id="tabUp" style="flex:1;padding:.9rem;text-align:center;font-weight:600;font-size:.88rem;cursor:pointer;color:#52525b;border-bottom:2px solid transparent;transition:all .25s">Sign Up</div>
+<div style="display:flex;border-bottom:1px solid rgba(139,92,246,.1);margin-top:1.25rem">
+<div id="tabIn" onclick="switchAuth('in')" style="flex:1;padding:.9rem;text-align:center;font-weight:600;font-size:.88rem;cursor:pointer;color:#a78bfa;border-bottom:2px solid #8b5cf6;transition:all .25s">Sign In</div>
+<div id="tabUp" onclick="switchAuth('up')" style="flex:1;padding:.9rem;text-align:center;font-weight:600;font-size:.88rem;cursor:pointer;color:#52525b;border-bottom:2px solid transparent;transition:all .25s">Sign Up</div>
 </div>
+
+<!-- SIGN IN FORM -->
 <form id="formIn" onsubmit="signIn(event)" style="padding:1.75rem;display:flex;flex-direction:column;gap:.8rem">
-<div><label style="font-size:.73rem;font-weight:600;color:#71717a;display:block;margin-bottom:.3rem">Email</label><input type="email" class="input-field" id="siEmail" placeholder="you@example.com" required></div>
-<div><label style="font-size:.73rem;font-weight:600;color:#71717a;display:block;margin-bottom:.3rem">Password</label><input type="password" class="input-field" id="siPass" placeholder="••••••••" required></div>
+<div>
+<label style="font-size:.73rem;font-weight:600;color:#71717a;display:block;margin-bottom:.3rem">Email</label>
+<input type="email" class="input-field" id="siEmail" placeholder="you@example.com" required>
+</div>
+<div>
+<label style="font-size:.73rem;font-weight:600;color:#71717a;display:block;margin-bottom:.3rem">Password</label>
+<input type="password" class="input-field" id="siPass" placeholder="••••••••" required>
+</div>
 <button type="submit" class="btn-primary" style="width:100%;justify-content:center;margin-top:.4rem" id="siBtn">Sign In</button>
 <p id="siErr" style="color:#f87171;font-size:.8rem;text-align:center;display:none"></p>
 </form>
+
+<!-- SIGN UP FORM -->
 <form id="formUp" onsubmit="signUp(event)" style="padding:1.75rem;display:none;flex-direction:column;gap:.65rem">
-<div><label style="font-size:.73rem;font-weight:600;color:#71717a;display:block;margin-bottom:.3rem">Username</label><input type="text" class="input-field" id="suUser" placeholder="cool_username" required minlength="3" pattern="[a-zA-Z0-9_]+"></div>
-<div><label style="font-size:.73rem;font-weight:600;color:#71717a;display:block;margin-bottom:.3rem">Display Name</label><input type="text" class="input-field" id="suName" placeholder="John Doe" required></div>
-<div><label style="font-size:.73rem;font-weight:600;color:#71717a;display:block;margin-bottom:.3rem">Email</label><input type="email" class="input-field" id="suEmail" placeholder="you@example.com" required></div>
-<div><label style="font-size:.73rem;font-weight:600;color:#71717a;display:block;margin-bottom:.3rem">Password</label><input type="password" class="input-field" id="suPass" placeholder="Min 6 characters" required minlength="6"></div>
-<button type="submit" class="btn-primary" style="width:100%;justify-content:center;margin-top:.4rem" id="suBtn">Create Account</button>
+<div>
+<label style="font-size:.73rem;font-weight:600;color:#71717a;display:block;margin-bottom:.3rem">Username <span style="color:#f87171">*</span></label>
+<input type="text" class="input-field" id="suUser" placeholder="cool_username" required minlength="3" pattern="[a-zA-Z0-9_]+">
+<p class="field-hint">Letters, numbers, underscores only. 3+ characters.</p>
+</div>
+<div>
+<label style="font-size:.73rem;font-weight:600;color:#71717a;display:block;margin-bottom:.3rem">Display Name <span style="color:#f87171">*</span></label>
+<input type="text" class="input-field" id="suName" placeholder="John Doe" required>
+</div>
+<div>
+<label style="font-size:.73rem;font-weight:600;color:#71717a;display:block;margin-bottom:.3rem">Email <span style="color:#f87171">*</span></label>
+<input type="email" class="input-field" id="suEmail" placeholder="you@example.com" required>
+</div>
+<div>
+<label style="font-size:.73rem;font-weight:600;color:#71717a;display:block;margin-bottom:.3rem">Password <span style="color:#f87171">*</span></label>
+<input type="password" class="input-field" id="suPass" placeholder="Min 6 characters" required minlength="6">
+</div>
+<div>
+<label style="font-size:.73rem;font-weight:600;color:#71717a;display:block;margin-bottom:.3rem">Bio</label>
+<textarea class="input-field" id="suBio" placeholder="Tell us about yourself..." style="min-height:70px"></textarea>
+</div>
+<div>
+<label style="font-size:.73rem;font-weight:600;color:#71717a;display:block;margin-bottom:.3rem">Location</label>
+<input type="text" class="input-field" id="suLocation" placeholder="Nairobi, Kenya">
+</div>
+<div style="background:rgba(139,92,246,.04);border:1px solid rgba(139,92,246,.08);border-radius:.6rem;padding:.7rem .85rem;display:flex;align-items:flex-start;gap:.5rem;margin-top:.15rem">
+<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+<p style="font-size:.72rem;color:#52525b;line-height:1.5">A profile picture will be auto-generated and you'll be assigned a call ID automatically.</p>
+</div>
+<button type="submit" class="btn-primary" style="width:100%;justify-content:center;margin-top:.5rem" id="suBtn">Create Account</button>
 <p id="suErr" style="color:#f87171;font-size:.8rem;text-align:center;display:none"></p>
 </form>
+
+<div style="padding:0 1.75rem 1.5rem;text-align:center">
+<p style="font-size:.7rem;color:#3f3f46">By continuing, you agree to our Terms of Service</p>
 </div>
-<p style="text-align:center;font-size:.7rem;color:#3f3f46;margin-top:1.25rem">By continuing, you agree to our Terms of Service</p>
 </div>
 </div>
 
@@ -217,7 +256,7 @@ textarea.input-field{resize:vertical;min-height:100px}
 </div>
 </div>
 
-<!-- PROFILE PAGE (dynamic) -->
+<!-- PROFILE PAGE -->
 <div class="page" id="page-profile">
 <div id="profileContent"></div>
 </div>
@@ -260,7 +299,7 @@ textarea.input-field{resize:vertical;min-height:100px}
 <div id="callStatus" style="text-align:center;color:#71717a;font-size:.85rem;margin-bottom:1rem">Connecting...</div>
 <div style="display:flex;flex-direction:column;gap:.75rem">
 <video id="remoteVideo" autoplay playsinline style="display:none;width:100%;border-radius:.75rem;background:#111;max-height:300px"></video>
-<div id="localVideoWrap" style="display:none;position:relative">
+<div id="localVideoWrap" style="display:none;position:relative;height:0">
 <video id="localVideo" autoplay playsinline muted style="width:120px;height:90px;border-radius:.6rem;object-fit:cover;position:absolute;bottom:.5rem;right:.5rem;border:2px solid rgba(139,92,246,.3)"></video>
 </div>
 </div>
@@ -286,9 +325,8 @@ let peerInstance = null;
 let activeCall = null;
 let localStream = null;
 let currentCategory = 'All';
-let viewingProfileId = null;
 
-// ===================== EPSILON SITES =====================
+// ===================== DATA =====================
 const epsilonSites = [
     { name: 'Epsilon Panel', desc: 'Order websites, track progress, manage your business', url: 'https://epsilonpanel.vercel.app', img: 'https://picsum.photos/seed/epsilonpanel/600/400', tags: ['Dashboard', 'Business'] },
     { name: 'Savanna Bites', desc: 'Modern restaurant website with online ordering and menu showcase', url: 'https://savannabites.co.ke', img: 'https://picsum.photos/seed/savanna/600/400', tags: ['Restaurant', 'Food'] },
@@ -328,7 +366,7 @@ function toast(msg, type = 'info') {
     setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3500);
 }
 
-// ===================== AUTH =====================
+// ===================== AUTH UI =====================
 function switchAuth(mode) {
     document.getElementById('tabIn').style.color = mode === 'in' ? '#a78bfa' : '#52525b';
     document.getElementById('tabIn').style.borderBottomColor = mode === 'in' ? '#8b5cf6' : 'transparent';
@@ -338,16 +376,21 @@ function switchAuth(mode) {
     document.getElementById('formUp').style.display = mode === 'up' ? 'flex' : 'none';
 }
 
+// ===================== SIGN IN =====================
 async function signIn(e) {
     e.preventDefault();
     const btn = document.getElementById('siBtn');
     const err = document.getElementById('siErr');
     btn.disabled = true; btn.textContent = 'Signing in...'; err.style.display = 'none';
-    const { data, error } = await supabaseClient.auth.signInWithPassword({ email: document.getElementById('siEmail').value, password: document.getElementById('siPass').value });
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: document.getElementById('siEmail').value,
+        password: document.getElementById('siPass').value
+    });
     btn.disabled = false; btn.textContent = 'Sign In';
     if (error) { err.textContent = error.message; err.style.display = 'block'; }
 }
 
+// ===================== SIGN UP =====================
 async function signUp(e) {
     e.preventDefault();
     const btn = document.getElementById('suBtn');
@@ -356,38 +399,107 @@ async function signUp(e) {
     const displayName = document.getElementById('suName').value.trim();
     const email = document.getElementById('suEmail').value.trim();
     const password = document.getElementById('suPass').value;
-    btn.disabled = true; btn.textContent = 'Creating account...'; err.style.display = 'none';
+    const bio = document.getElementById('suBio').value.trim();
+    const location = document.getElementById('suLocation').value.trim();
 
-    // Check username uniqueness
-    const { data: existing } = await supabaseClient.from('profiles').select('id').eq('username', username).maybeSingle();
-    if (existing) { err.textContent = 'Username is already taken'; err.style.display = 'block'; btn.disabled = false; btn.textContent = 'Create Account'; return; }
+    btn.disabled = true;
+    btn.textContent = 'Creating account...';
+    err.style.display = 'none';
 
-    const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { username, display_name: displayName } } });
-    btn.disabled = false; btn.textContent = 'Create Account';
-    if (error) { err.textContent = error.message; err.style.display = 'block'; }
-    else { toast('Account created! Check your email to verify.', 'success'); }
+    // Check username uniqueness in public profiles first
+    const { data: existing } = await supabaseClient
+        .from('profiles')
+        .select('id')
+        .eq('username', username)
+        .maybeSingle();
+
+    if (existing) {
+        err.textContent = 'Username is already taken';
+        err.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+        return;
+    }
+
+    // Generate a random seed from username for a unique picsum avatar
+    const avatarSeed = username + '_avatar_' + Math.random().toString(36).substring(2, 6);
+    const profilePic = `https://picsum.photos/seed/${encodeURIComponent(avatarSeed)}/200/200`;
+
+    // Generate a peer_id upfront
+    const peerId = 'ephub_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 8);
+
+    // 1. Sign up the user in Supabase Auth
+    const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+        email,
+        password,
+        options: { data: { username, display_name: displayName } }
+    });
+
+    if (authError) {
+        err.textContent = authError.message;
+        err.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+        return;
+    }
+
+    // 2. Insert into the public.profiles table using the generated Auth ID
+    if (authData && authData.user) {
+        const { error: profileError } = await supabaseClient.from('profiles').insert({
+            id: authData.user.id,
+            username: username,
+            display_name: displayName,
+            email: email,
+            bio: bio || null,
+            location: location || null,
+            website: null,
+            profile_pic: profilePic,
+            followers: [],
+            following: [],
+            theme: 'purple',
+            peer_id: peerId,
+            garage_cars: [],
+            tokens: 1000,
+            db: { api_keys: [], collections: {} }
+        });
+
+        if (profileError) {
+            console.error("Profile Row Error:", profileError);
+            err.textContent = 'Auth succeeded, but profile creation failed: ' + profileError.message;
+            err.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = 'Create Account';
+            return;
+        }
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Create Account';
+    toast('Account created successfully!', 'success');
 }
 
+// ===================== SIGN OUT =====================
 async function signOut() {
     if (peerInstance) { peerInstance.destroy(); peerInstance = null; }
     await supabaseClient.auth.signOut();
-    currentUser = null; currentProfile = null;
+    currentUser = null;
+    currentProfile = null;
     document.getElementById('app').style.display = 'none';
     document.getElementById('authPage').style.display = 'flex';
     window.location.hash = '';
 }
 
-// ===================== PEER =====================
-function initPeer() {
+// ===================== PEER JS =====================
+function initPeer(savedPeerId) {
     if (peerInstance) return;
-    const peerId = 'ephub_' + currentUser.id.substring(0, 8) + '_' + Date.now().toString(36);
-    peerInstance = new Peer(peerId, { debug: 0 });
+    const useId = savedPeerId || ('ephub_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 8));
+    peerInstance = new Peer(useId, { debug: 0 });
 
     peerInstance.on('open', async (id) => {
         console.log('Peer connected:', id);
-        if (currentProfile) {
+        if (currentUser) {
             await supabaseClient.from('profiles').update({ peer_id: id }).eq('id', currentUser.id);
-            currentProfile.peer_id = id;
+            if (currentProfile) currentProfile.peer_id = id;
         }
     });
 
@@ -398,7 +510,8 @@ function initPeer() {
             showCallUI(call.peer, false);
             call.on('stream', (remoteStream) => {
                 const rv = document.getElementById('remoteVideo');
-                rv.srcObject = remoteStream; rv.style.display = 'block';
+                rv.srcObject = remoteStream;
+                rv.style.display = 'block';
                 document.getElementById('localVideo').srcObject = localStream;
                 document.getElementById('localVideoWrap').style.display = 'block';
                 document.getElementById('callStatus').textContent = 'Connected';
@@ -413,7 +526,10 @@ function initPeer() {
     peerInstance.on('error', (err) => {
         console.error('Peer error:', err);
         if (err.type === 'unavailable-id') {
-            initPeer(); // Retry with new ID
+            // ID collision — generate a new one and retry
+            peerInstance.destroy();
+            peerInstance = null;
+            initPeer();
         }
     });
 }
@@ -421,8 +537,7 @@ function initPeer() {
 async function ensurePeerId() {
     if (!currentProfile) return;
     if (currentProfile.peer_id) {
-        // Check if peer is still alive by trying to reconnect
-        if (!peerInstance) initPeer();
+        if (!peerInstance) initPeer(currentProfile.peer_id);
         return;
     }
     initPeer();
@@ -430,6 +545,7 @@ async function ensurePeerId() {
 
 async function callUser(peerId, displayName) {
     if (!peerId) { toast('This user is not available for calls', 'error'); return; }
+    if (!peerInstance) { toast('Your call connection is not ready yet', 'error'); return; }
     try {
         localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
         const call = peerInstance.call(peerId, localStream);
@@ -437,7 +553,8 @@ async function callUser(peerId, displayName) {
         showCallUI(displayName, true);
         call.on('stream', (remoteStream) => {
             const rv = document.getElementById('remoteVideo');
-            rv.srcObject = remoteStream; rv.style.display = 'block';
+            rv.srcObject = remoteStream;
+            rv.style.display = 'block';
             document.getElementById('localVideo').srcObject = localStream;
             document.getElementById('localVideoWrap').style.display = 'block';
             document.getElementById('callStatus').textContent = 'Connected';
@@ -479,7 +596,6 @@ function goTo(page, data) {
 function handleRoute() {
     const hash = window.location.hash.slice(1) || 'home';
 
-    // Check if it's a @username route
     if (hash.startsWith('@')) {
         const username = hash.slice(1);
         showPage('profile');
@@ -491,7 +607,7 @@ function handleRoute() {
     showPage(hash);
     updateNav(hash);
 
-    switch(hash) {
+    switch (hash) {
         case 'home': renderSites(); break;
         case 'posts': loadPosts(); renderCategoryFilters(); break;
         case 'users': loadUsers(); break;
@@ -504,7 +620,6 @@ function showPage(name) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const el = document.getElementById('page-' + name);
     if (el) el.classList.add('active');
-    // Close sidebar on mobile
     if (window.innerWidth <= 768) {
         document.getElementById('sidebar').classList.remove('open');
     }
@@ -560,13 +675,16 @@ async function loadPosts() {
 
     const { data: posts, error } = await query;
     if (error) { feed.innerHTML = '<div style="text-align:center;padding:2rem;color:#f87171">Failed to load posts</div>'; return; }
-    if (!posts || posts.length === 0) { feed.innerHTML = '<div style="text-align:center;padding:3rem;color:#52525b"><p style="font-size:1.1rem;margin-bottom:.5rem">No posts yet</p><p style="font-size:.84rem">Be the first to share something!</p></div>'; return; }
+    if (!posts || posts.length === 0) {
+        feed.innerHTML = '<div style="text-align:center;padding:3rem;color:#52525b"><p style="font-size:1.1rem;margin-bottom:.5rem">No posts yet</p><p style="font-size:.84rem">Be the first to share something!</p></div>';
+        return;
+    }
 
     feed.innerHTML = posts.map(p => {
         const author = p.profiles || {};
         const initials = (author.display_name || author.username || '?').charAt(0).toUpperCase();
         const avatarHtml = author.profile_pic
-            ? `<div class="avatar avatar-sm" style="overflow:hidden"><img src="${author.profile_pic}" onerror="this.parentElement.textContent='${initials}'"></div>`
+            ? `<div class="avatar avatar-sm" style="overflow:hidden"><img src="${author.profile_pic}" onerror="this.parentElement.textContent='${initials}'" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>`
             : `<div class="avatar avatar-sm">${initials}</div>`;
         const isLiked = currentUser && p.liked_by && p.liked_by.includes(currentUser.id);
         const timeAgo = getTimeAgo(p.created_at);
@@ -575,8 +693,8 @@ async function loadPosts() {
             <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:.85rem">
                 <div style="cursor:pointer" onclick="goTo('profile','${author.username || ''}')">${avatarHtml}</div>
                 <div style="flex:1;min-width:0">
-                    <div style="font-size:.85rem;font-weight:600;color:#e4e4e7;cursor:pointer" onclick="goTo('profile','${author.username || ''}')">${author.display_name || author.username || 'Unknown'}</div>
-                    <div style="font-size:.7rem;color:#52525b">@${author.username || 'user'} · ${timeAgo}</div>
+                    <div style="font-size:.85rem;font-weight:600;color:#e4e4e7;cursor:pointer" onclick="goTo('profile','${author.username || ''}')">${escHtml(author.display_name || author.username || 'Unknown')}</div>
+                    <div style="font-size:.7rem;color:#52525b">@${escHtml(author.username || 'user')} · ${timeAgo}</div>
                 </div>
                 <span class="tag">${p.category}</span>
             </div>
@@ -670,7 +788,7 @@ async function loadUsers(search = '') {
     grid.innerHTML = users.map(u => {
         const initials = (u.display_name || u.username || '?').charAt(0).toUpperCase();
         const avatarHtml = u.profile_pic
-            ? `<div class="avatar" style="overflow:hidden"><img src="${u.profile_pic}" onerror="this.parentElement.textContent='${initials}'"></div>`
+            ? `<div class="avatar" style="overflow:hidden"><img src="${u.profile_pic}" onerror="this.parentElement.textContent='${initials}'" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>`
             : `<div class="avatar">${initials}</div>`;
         const canCall = !!u.peer_id;
         const isSelf = currentUser && u.id === currentUser.id;
@@ -702,10 +820,11 @@ function searchUsers(val) {
 async function loadProfileByUsername(username) {
     const content = document.getElementById('profileContent');
     content.innerHTML = '<div style="text-align:center;padding:3rem;color:#52525b">Loading profile...</div>';
-
     const { data: profile, error } = await supabaseClient.from('profiles').select('*').eq('username', username).maybeSingle();
-    if (error || !profile) { content.innerHTML = '<div style="text-align:center;padding:3rem;color:#52525b"><p style="font-size:1.1rem;margin-bottom:.5rem">User not found</p><p style="font-size:.84rem">This username doesn\'t exist</p></div>'; return; }
-
+    if (error || !profile) {
+        content.innerHTML = '<div style="text-align:center;padding:3rem;color:#52525b"><p style="font-size:1.1rem;margin-bottom:.5rem">User not found</p><p style="font-size:.84rem">This username doesn\'t exist</p></div>';
+        return;
+    }
     renderProfile(profile);
 }
 
@@ -723,11 +842,10 @@ async function renderProfile(profile) {
     const isFollowing = currentUser && profile.followers && profile.followers.includes(currentUser.id);
     const initials = (profile.display_name || profile.username || '?').charAt(0).toUpperCase();
     const avatarHtml = profile.profile_pic
-        ? `<div class="avatar avatar-xl" style="overflow:hidden;border:3px solid rgba(139,92,246,.3)"><img src="${profile.profile_pic}" onerror="this.parentElement.textContent='${initials}'"></div>`
+        ? `<div class="avatar avatar-xl" style="overflow:hidden;border:3px solid rgba(139,92,246,.3)"><img src="${profile.profile_pic}" onerror="this.parentElement.textContent='${initials}'" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>`
         : `<div class="avatar avatar-xl" style="border:3px solid rgba(139,92,246,.3)">${initials}</div>`;
     const canCall = !!profile.peer_id;
 
-    // Load user's posts
     const { data: posts } = await supabaseClient.from('posts').select('*').eq('user_id', profile.id).order('created_at', { ascending: false }).limit(20);
     const postsHtml = (!posts || posts.length === 0)
         ? '<p style="color:#52525b;font-size:.84rem">No posts yet</p>'
@@ -834,7 +952,6 @@ function applyTheme(theme) {
     const t = themes.find(t => t.name === theme) || themes[0];
     const c = t.color;
     document.documentElement.style.setProperty('--accent', c);
-    // Update key gradient elements
     const s = document.createElement('style');
     s.id = 'dynamic-theme';
     const old = document.getElementById('dynamic-theme');
@@ -861,13 +978,20 @@ async function saveSettings() {
     if (!displayName) { toast('Display name is required', 'error'); return; }
     if (!username || !/^[a-zA-Z0-9_]{3,}$/.test(username)) { toast('Username must be 3+ chars (letters, numbers, underscores)', 'error'); return; }
 
-    // Check username uniqueness if changed
     if (username !== currentProfile.username) {
         const { data: existing } = await supabaseClient.from('profiles').select('id').eq('username', username).maybeSingle();
         if (existing && existing.id !== currentUser.id) { toast('Username is already taken', 'error'); return; }
     }
 
-    const updates = { display_name: displayName, username, bio, location, website, profile_pic: profilePic, updated_at: new Date().toISOString() };
+    const updates = {
+        display_name: displayName,
+        username,
+        bio: bio || null,
+        location: location || null,
+        website: website || null,
+        profile_pic: profilePic || null,
+        updated_at: new Date().toISOString()
+    };
     const { error } = await supabaseClient.from('profiles').update(updates).eq('id', currentUser.id);
     if (error) { toast('Failed to save: ' + error.message, 'error'); return; }
 
@@ -920,20 +1044,20 @@ async function initApp() {
 
     if (session) {
         currentUser = session.user;
-        // Get or create profile
         const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
         if (profile) {
             currentProfile = profile;
         } else {
-            // Create profile from user metadata
             const meta = session.user.user_metadata || {};
+            const avatarSeed = (meta.username || currentUser.id.substring(0, 8)) + '_avatar_' + Math.random().toString(36).substring(2, 6);
             const newProfile = {
                 id: currentUser.id,
                 username: meta.username || currentUser.id.substring(0, 8),
                 display_name: meta.display_name || meta.username || 'User',
                 email: currentUser.email,
+                profile_pic: `https://picsum.photos/seed/${encodeURIComponent(avatarSeed)}/200/200`,
             };
-            const { data: created } = await supabaseClient.from('profiles').insert(newProfile).select().single();
+            const { data: created } = await supabaseClient.from('profiles').upsert(newProfile).select().single();
             currentProfile = created || newProfile;
         }
 
@@ -955,20 +1079,25 @@ async function initApp() {
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session) {
         currentUser = session.user;
+        // Small delay to let the trigger or manual insert complete
+        await new Promise(r => setTimeout(r, 500));
         const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
         if (profile) {
             currentProfile = profile;
         } else {
             const meta = session.user.user_metadata || {};
+            const avatarSeed = (meta.username || currentUser.id.substring(0, 8)) + '_avatar_' + Math.random().toString(36).substring(2, 6);
             const newProfile = {
                 id: currentUser.id,
                 username: meta.username || currentUser.id.substring(0, 8),
                 display_name: meta.display_name || meta.username || 'User',
                 email: currentUser.email,
+                profile_pic: `https://picsum.photos/seed/${encodeURIComponent(avatarSeed)}/200/200`,
             };
-            const { data: created } = await supabaseClient.from('profiles').insert(newProfile).select().single();
+            const { data: created } = await supabaseClient.from('profiles').upsert(newProfile).select().single();
             currentProfile = created || newProfile;
         }
+
         document.getElementById('authPage').style.display = 'none';
         document.getElementById('app').style.display = 'block';
         updateSidebar();
@@ -976,7 +1105,8 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
         ensurePeerId();
         handleRoute();
     } else if (event === 'SIGNED_OUT') {
-        currentUser = null; currentProfile = null;
+        currentUser = null;
+        currentProfile = null;
         document.getElementById('app').style.display = 'none';
         document.getElementById('authPage').style.display = 'flex';
     }
