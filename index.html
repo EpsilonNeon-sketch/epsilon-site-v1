@@ -835,7 +835,6 @@ function handleRoute() {
         case 'posts': loadPosts(); renderCategoryFilters(); break;
         case 'users': loadUsers(); break;
         case 'settings': loadSettings(); renderThemePicker(); break;
-        case 'contributions': populateSiteDropdowns(); loadIdeas(); break;
         case 'profile': if (currentUser) loadProfileById(currentUser.id); break;
     }
 }
@@ -1345,225 +1344,59 @@ document.getElementById('callModal').addEventListener('click', (e) => { if (e.ta
 
 // Start
 initApp();
-// ===================== CONTRIBUTIONS STATE =====================
-let ideaSearchTimeout = null;
-let currentDetailIdeaId = null;
+// ===================== IDEAS / CONTRIBUTIONS =====================
+let currentIdeaDetailId = null;
+let ideaSearchDebounce = null;
 
-const ideaCategories = ['Feature Request', 'Improvement', 'Bug Fix', 'Removal', 'Redesign', 'New Idea'];
-const ideaStatuses = ['open', 'under_review', 'planned', 'implemented', 'declined'];
-
-// ===================== CONTRIBUTIONS HELPERS =====================
-function getRatingColor(r) {
-    if (r <= 3) return '#f87171';
-    if (r <= 5) return '#fb923c';
-    if (r <= 7) return '#fbbf24';
-    if (r <= 8) return '#a3e635';
-    return '#4ade80';
-}
-
-function getRatingLabel(r) {
-    if (r <= 2) return 'Low';
-    if (r <= 4) return 'Moderate';
-    if (r <= 6) return 'Good';
-    if (r <= 8) return 'High';
-    return 'Critical';
-}
-
-function getStatusClass(s) {
-    const map = { open: 'status-open', under_review: 'status-under_review', planned: 'status-planned', implemented: 'status-implemented', declined: 'status-declined' };
-    return map[s] || 'status-open';
-}
-
-function getStatusLabel(s) {
-    const map = { open: 'Open', under_review: 'Under Review', planned: 'Planned', implemented: 'Implemented', declined: 'Declined' };
-    return map[s] || s;
-}
-
-function isTrending(idea) {
-    if (!idea.created_at) return false;
-    const diff = Date.now() - new Date(idea.created_at).getTime();
-    const days = diff / (1000 * 60 * 60 * 24);
-    return days <= 7 && (idea.likes || 0) >= 5;
-}
-
-function populateSiteDropdowns() {
-    const targets = ['Overall', ...epsilonSites.map(s => s.name)];
-    ['filterSite', 'ideaSiteTarget'].forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        const current = el.value;
-        const isFilter = id === 'filterSite';
-        el.innerHTML = (isFilter ? '<option value="All">All Sites</option>' : '') +
-            targets.map(t => `<option value="${escHtml(t)}">${escHtml(t)}</option>`).join('');
-        if (current) el.value = current;
-    });
+function debounceIdeaSearch(val) {
+    clearTimeout(ideaSearchDebounce);
+    ideaSearchDebounce = setTimeout(() => loadIdeas(), 300);
 }
 
 function updateRatingPreview(val) {
-    const el = document.getElementById('ratingPreviewValue');
-    if (!el) return;
-    const c = getRatingColor(parseInt(val));
-    el.innerHTML = `${val}<span style="font-size:.7rem;font-weight:500;color:#52525b">/10</span>`;
-    el.style.color = c;
+    document.getElementById('ratingPreviewValue').innerHTML = val + '<span style="font-size:.7rem;font-weight:500;color:#52525b">/10</span>';
 }
 
-function debounceIdeaSearch(val) {
-    clearTimeout(ideaSearchTimeout);
-    ideaSearchTimeout = setTimeout(() => loadIdeas(), 300);
+// Character counters for idea modal
+document.getElementById('ideaTitle')?.addEventListener('input', function() {
+    document.getElementById('ideaTitleCount').textContent = this.value.length;
+});
+document.getElementById('ideaDescription')?.addEventListener('input', function() {
+    document.getElementById('ideaDescCount').textContent = this.value.length;
+});
+document.getElementById('ideaRemove')?.addEventListener('input', function() {
+    document.getElementById('ideaRemoveCount').textContent = this.value.length;
+});
+
+function populateSiteFilters() {
+    const filterSite = document.getElementById('filterSite');
+    const ideaSiteTarget = document.getElementById('ideaSiteTarget');
+    epsilonSites.forEach(s => {
+        const opt1 = document.createElement('option');
+        opt1.value = s.name;
+        opt1.textContent = s.name;
+        filterSite.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = s.name;
+        opt2.textContent = s.name;
+        ideaSiteTarget.appendChild(opt2);
+    });
 }
 
-// ===================== LOAD IDEAS =====================
-async function loadIdeas() {
-    const feed = document.getElementById('ideasFeed');
-    feed.innerHTML = '<div style="text-align:center;padding:2.5rem;color:#52525b;font-size:.88rem">Loading ideas...</div>';
-
-    const search = (document.getElementById('ideaSearch')?.value || '').trim();
-    const site = document.getElementById('filterSite')?.value || 'All';
-    const category = document.getElementById('filterCategory')?.value || 'All';
-    const status = document.getElementById('filterStatus')?.value || 'All';
-    const sort = document.getElementById('filterSort')?.value || 'newest';
-
-    let query = supabaseClient
-        .from('ideas')
-        .select('*, profiles(username, display_name, profile_pic)')
-        .order('created_at', { ascending: false });
-
-    if (search) query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
-    if (site !== 'All') query = query.eq('site_target', site);
-    if (category !== 'All') query = query.eq('category', category);
-    if (status !== 'All') query = query.eq('status', status);
-
-    // Client-side sort for non-default sorts (since we fetched desc already)
-    const { data: ideas, error } = await query;
-
-    if (error) {
-        feed.innerHTML = `<div style="text-align:center;padding:2.5rem;color:#f87171;font-size:.88rem">Failed to load ideas</div>`;
-        return;
-    }
-
-    let sorted = ideas || [];
-    if (sort === 'most_liked') sorted.sort((a, b) => (b.likes || 0) - (a.likes || 0));
-    else if (sort === 'most_discussed') sorted.sort((a, b) => (b.reply_count || 0) - (a.reply_count || 0));
-    else if (sort === 'highest_rated') sorted.sort((a, b) => (b.helpfulness_rating || 0) - (a.helpfulness_rating || 0));
-
-    // Load stats
-    loadIdeaStats();
-
-    if (sorted.length === 0) {
-        feed.innerHTML = `
-            <div style="text-align:center;padding:3.5rem 1rem;color:#52525b">
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#3f3f46" stroke-width="1.5" style="margin:0 auto .75rem;display:block"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                <p style="font-size:1rem;font-weight:600;margin-bottom:.35rem">No ideas found</p>
-                <p style="font-size:.82rem">Try adjusting your filters or be the first to contribute!</p>
-            </div>`;
-        return;
-    }
-
-    feed.innerHTML = sorted.map(idea => {
-        const a = idea.profiles || {};
-        const initials = (a.display_name || a.username || '?').charAt(0).toUpperCase();
-        const avatarHtml = a.profile_pic
-            ? `<div class="avatar avatar-sm" style="overflow:hidden"><img src="${a.profile_pic}" onerror="this.parentElement.textContent='${initials}'" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>`
-            : `<div class="avatar avatar-sm">${initials}</div>`;
-        const isLiked = currentUser && idea.liked_by && idea.liked_by.includes(currentUser.id);
-        const rc = getRatingColor(idea.helpfulness_rating || 5);
-        const hasRemove = idea.what_to_remove && idea.what_to_remove.trim().length > 0;
-        const trending = isTrending(idea);
-        const timeAgo = getTimeAgo(idea.created_at);
-
-        return `
-        <div class="idea-card" onclick="openIdeaDetail('${idea.id}')">
-            <!-- Top row: author + badges -->
-            <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem;flex-wrap:wrap">
-                <div style="display:flex;align-items:center;gap:.55rem;flex:1;min-width:0">
-                    <div style="cursor:pointer;flex-shrink:0" onclick="event.stopPropagation();goTo('profile','${a.username || ''}')">${avatarHtml}</div>
-                    <div style="min-width:0">
-                        <div style="font-size:.82rem;font-weight:600;color:#e4e4e7;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" onclick="event.stopPropagation();goTo('profile','${a.username || ''}')">${escHtml(a.display_name || a.username || 'Unknown')}</div>
-                        <div style="font-size:.66rem;color:#52525b">@${escHtml(a.username || 'user')} · ${timeAgo}</div>
-                    </div>
-                </div>
-                <div style="display:flex;align-items:center;gap:.35rem;flex-shrink:0;flex-wrap:wrap">
-                    ${trending ? `<span class="trending-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>Trending</span>` : ''}
-                    <span class="idea-status ${getStatusClass(idea.status)}">${getStatusLabel(idea.status)}</span>
-                </div>
-            </div>
-
-            <!-- Title -->
-            <h3 style="font-size:1.02rem;font-weight:700;color:#e4e4e7;margin-bottom:.45rem;line-height:1.4">${escHtml(idea.title)}</h3>
-
-            <!-- Description (truncated) -->
-            <p style="font-size:.82rem;color:#a1a1aa;line-height:1.6;margin-bottom:.75rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">${escHtml(idea.description)}</p>
-
-            <!-- What to remove preview -->
-            ${hasRemove ? `
-            <div class="remove-box" style="margin-bottom:.75rem" onclick="event.stopPropagation()">
-                <div style="font-size:.68rem;font-weight:700;color:#f87171;margin-bottom:.25rem;display:flex;align-items:center;gap:.3rem">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                    Requested Removal
-                </div>
-                <p style="font-size:.76rem;color:#71717a;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${escHtml(idea.what_to_remove)}</p>
-            </div>` : ''}
-
-            <!-- Meta row -->
-            <div style="display:flex;align-items:center;gap:.85rem;flex-wrap:wrap">
-                <!-- Site badge -->
-                <span class="tag">${escHtml(idea.site_target)}</span>
-                <!-- Category badge -->
-                <span style="font-size:.68rem;font-weight:600;color:#52525b">${escHtml(idea.category)}</span>
-                <!-- Rating -->
-                <div style="display:flex;align-items:center;gap:.35rem">
-                    <div class="rating-bar-track"><div class="rating-bar-fill" style="width:${(idea.helpfulness_rating || 5) * 10}%;background:${rc}"></div></div>
-                    <span style="font-size:.7rem;font-weight:700;color:${rc}">${idea.helpfulness_rating || 5}/10</span>
-                </div>
-                <!-- Spacer -->
-                <div style="flex:1"></div>
-                <!-- Actions -->
-                <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="event.stopPropagation();toggleIdeaLike('${idea.id}', this)">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="${isLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg>
-                    ${idea.likes || 0}
-                </button>
-                <span style="font-size:.72rem;color:#52525b;display:flex;align-items:center;gap:.2rem">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    ${idea.reply_count || 0}
-                </span>
-                <span style="font-size:.68rem;color:#3f3f46">${idea.views || 0} views</span>
-                ${currentUser && idea.user_id === currentUser.id ? `<button class="btn-ghost" style="font-size:.72rem;color:#71717a;padding:.25rem .5rem" onclick="event.stopPropagation();deleteIdea('${idea.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>` : ''}
-            </div>
-        </div>`;
-    }).join('');
-}
-
-// ===================== IDEA STATS =====================
-async function loadIdeaStats() {
-    const { count: total } = await supabaseClient.from('ideas').select('id', { count: 'exact', head: true });
-    const { count: implemented } = await supabaseClient.from('ideas').select('id', { count: 'exact', head: true }).eq('status', 'implemented');
-    const { data: likesData } = await supabaseClient.from('ideas').select('likes');
-    const totalLikes = (likesData || []).reduce((sum, i) => sum + (i.likes || 0), 0);
-
-    const el1 = document.getElementById('statTotal');
-    const el2 = document.getElementById('statImplemented');
-    const el3 = document.getElementById('statLikes');
-    if (el1) el1.textContent = total || 0;
-    if (el2) el2.textContent = implemented || 0;
-    if (el3) el3.textContent = totalLikes || 0;
-}
-
-// ===================== SUBMIT IDEA =====================
 function openIdeaModal() {
-    if (!currentUser) { toast('Sign in to submit ideas', 'error'); return; }
-    populateSiteDropdowns();
+    if (!currentUser) { toast('Please sign in to submit an idea', 'error'); return; }
+    document.getElementById('ideaModal').classList.add('active');
     document.getElementById('ideaTitle').value = '';
     document.getElementById('ideaDescription').value = '';
-    document.getElementById('ideaSiteTarget').value = 'Overall';
-    document.getElementById('ideaCategory').value = 'Feature Request';
-    document.getElementById('ideaRating').value = 5;
     document.getElementById('ideaRemove').value = '';
+    document.getElementById('ideaRating').value = 5;
+    document.getElementById('ideaCategory').value = 'Feature Request';
+    document.getElementById('ideaSiteTarget').value = 'Overall';
     document.getElementById('ideaTitleCount').textContent = '0';
     document.getElementById('ideaDescCount').textContent = '0';
     document.getElementById('ideaRemoveCount').textContent = '0';
     updateRatingPreview(5);
-    document.getElementById('ideaModal').classList.add('active');
-    setTimeout(() => document.getElementById('ideaTitle').focus(), 100);
 }
 
 function closeIdeaModal() {
@@ -1576,177 +1409,232 @@ async function submitIdea() {
     const siteTarget = document.getElementById('ideaSiteTarget').value;
     const category = document.getElementById('ideaCategory').value;
     const rating = parseInt(document.getElementById('ideaRating').value);
-    const whatToRemove = document.getElementById('ideaRemove').value.trim();
+    const whatToRemove = document.getElementById('ideaRemove').value.trim() || null;
 
-    if (!title || title.length < 3) { toast('Title must be at least 3 characters', 'error'); return; }
-    if (!description || description.length < 10) { toast('Description must be at least 10 characters', 'error'); return; }
+    if (title.length < 3) { toast('Title must be at least 3 characters', 'error'); return; }
+    if (description.length < 10) { toast('Description must be at least 10 characters', 'error'); return; }
 
     const btn = document.getElementById('ideaSubmitBtn');
     btn.disabled = true;
     btn.textContent = 'Submitting...';
 
-    const { error } = await supabaseClient.from('ideas').insert({
+    const { data, error } = await supabaseClient.from('ideas').insert({
         user_id: currentUser.id,
         title,
         description,
         site_target: siteTarget,
         category,
         helpfulness_rating: rating,
-        what_to_remove: whatToRemove || null,
-    });
+        what_to_remove: whatToRemove
+    }).select().single();
 
     btn.disabled = false;
     btn.textContent = 'Submit Idea';
 
     if (error) {
         toast('Failed to submit: ' + error.message, 'error');
-    } else {
-        closeIdeaModal();
-        toast('Idea submitted successfully!', 'success');
-        loadIdeas();
-    }
-}
-
-// ===================== LIKE IDEA =====================
-async function toggleIdeaLike(ideaId, btn) {
-    if (!currentUser) { toast('Sign in to like ideas', 'error'); return; }
-    const { data: idea } = await supabaseClient.from('ideas').select('likes, liked_by').eq('id', ideaId).single();
-    if (!idea) return;
-
-    const likedBy = idea.liked_by || [];
-    const isLiked = likedBy.includes(currentUser.id);
-    let newLikes = idea.likes || 0;
-    let newLikedBy = [...likedBy];
-
-    if (isLiked) {
-        newLikedBy = newLikedBy.filter(id => id !== currentUser.id);
-        newLikes = Math.max(0, newLikes - 1);
-    } else {
-        newLikedBy.push(currentUser.id);
-        newLikes += 1;
+        console.error(error);
+        return;
     }
 
-    await supabaseClient.from('ideas').update({ likes: newLikes, liked_by: newLikedBy }).eq('id', ideaId);
+    closeIdeaModal();
+    toast('Idea submitted successfully!', 'success');
     loadIdeas();
 }
 
-// ===================== DELETE IDEA =====================
-async function deleteIdea(ideaId) {
-    if (!confirm('Delete this idea? This cannot be undone.')) return;
-    const { error } = await supabaseClient.from('ideas').delete().eq('id', ideaId);
-    if (error) { toast('Failed to delete', 'error'); }
-    else {
-        toast('Idea deleted', 'success');
-        loadIdeas();
-        closeIdeaDetail();
+async function loadIdeas() {
+    const feed = document.getElementById('ideasFeed');
+    feed.innerHTML = '<div style="text-align:center;padding:3rem;color:#52525b"><div style="width:32px;height:32px;border:3px solid rgba(139,92,246,.15);border-top-color:#8b5cf6;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto .75rem"></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>Loading ideas...</div>';
+
+    let query = supabaseClient.from('ideas').select('*, profiles:user_id(id, username, display_name, profile_pic)');
+
+    // Apply filters
+    const siteFilter = document.getElementById('filterSite').value;
+    const catFilter = document.getElementById('filterCategory').value;
+    const statusFilter = document.getElementById('filterStatus').value;
+    const sortVal = document.getElementById('filterSort').value;
+    const searchVal = document.getElementById('ideaSearch').value.trim();
+
+    if (siteFilter !== 'All') query = query.eq('site_target', siteFilter);
+    if (catFilter !== 'All') query = query.eq('category', catFilter);
+    if (statusFilter !== 'All') query = query.eq('status', statusFilter);
+    if (searchVal) query = query.or(`title.ilike.%${searchVal}%,description.ilike.%${searchVal}%`);
+
+    // Sorting
+    switch (sortVal) {
+        case 'most_liked': query = query.order('likes', { ascending: false }); break;
+        case 'most_discussed': query = query.order('reply_count', { ascending: false }); break;
+        case 'highest_rated': query = query.order('helpfulness_rating', { ascending: false }); break;
+        default: query = query.order('created_at', { ascending: false });
     }
+
+    const { data: ideas, error } = await query;
+
+    if (error) {
+        feed.innerHTML = '<div style="text-align:center;padding:2rem;color:#f87171">Failed to load ideas: ' + error.message + '</div>';
+        console.error(error);
+        return;
+    }
+
+    // Update stats
+    const allIdeas = ideas || [];
+    document.getElementById('statTotal').textContent = allIdeas.length;
+    document.getElementById('statImplemented').textContent = allIdeas.filter(i => i.status === 'implemented').length;
+    document.getElementById('statLikes').textContent = allIdeas.reduce((s, i) => s + (i.likes || 0), 0);
+
+    if (!ideas || ideas.length === 0) {
+        feed.innerHTML = '<div style="text-align:center;padding:3rem;color:#52525b"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto .75rem;opacity:.4"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><p>No ideas found</p><p style="font-size:.75rem;margin-top:.3rem">Be the first to contribute!</p></div>';
+        return;
+    }
+
+    // Find max likes for trending badge
+    const maxLikes = Math.max(...ideas.map(i => i.likes || 0), 1);
+
+    feed.innerHTML = ideas.map(idea => {
+        const p = idea.profiles || {};
+        const isLiked = idea.liked_by && Array.isArray(idea.liked_by) && idea.liked_by.includes(currentUser?.id);
+        const isTrending = idea.likes >= maxLikes * 0.7 && idea.likes > 0;
+        const ratingPercent = ((idea.helpfulness_rating || 5) / 10) * 100;
+        const ratingColor = idea.helpfulness_rating >= 8 ? '#4ade80' : idea.helpfulness_rating >= 5 ? '#a78bfa' : '#fbbf24';
+        const timeAgo = getTimeAgo(idea.created_at);
+
+        return `
+        <div class="idea-card" onclick="openIdeaDetail('${idea.id}')">
+            <div style="display:flex;align-items:flex-start;gap:.85rem">
+                <div class="avatar avatar-sm" style="margin-top:2px">${p.profile_pic ? `<img src="${p.profile_pic}" onerror="this.parentElement.textContent='${(p.display_name || 'U')[0].toUpperCase()}'">` : (p.display_name || 'U')[0].toUpperCase()}</div>
+                <div style="flex:1;min-width:0">
+                    <div style="display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;margin-bottom:.35rem">
+                        <span style="font-size:.8rem;font-weight:600;color:#e4e4e7">${escHtml(p.display_name || 'Unknown')}</span>
+                        <span style="font-size:.7rem;color:#52525b">@${escHtml(p.username || 'user')}</span>
+                        <span style="font-size:.65rem;color:#3f3f46">· ${timeAgo}</span>
+                        ${isTrending ? '<span class="trending-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Trending</span>' : ''}
+                    </div>
+                    <h4 style="font-size:.95rem;font-weight:700;color:#e4e4e7;margin-bottom:.4rem;line-height:1.35">${escHtml(idea.title)}</h4>
+                    <p style="font-size:.8rem;color:#71717a;line-height:1.55;margin-bottom:.7rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${escHtml(idea.description)}</p>
+                    <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+                        <span class="idea-status status-${idea.status}">${idea.status.replace('_', ' ')}</span>
+                        <span class="tag">${escHtml(idea.category)}</span>
+                        <span class="tag" style="background:rgba(96,165,250,.08);color:#60a5fa;border-color:rgba(96,165,250,.12)">${escHtml(idea.site_target)}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:1rem;margin-top:.75rem">
+                        <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="event.stopPropagation();toggleIdeaLike('${idea.id}', ${isLiked})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="${isLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg>
+                            ${idea.likes || 0}
+                        </button>
+                        <span style="font-size:.75rem;color:#52525b;display:flex;align-items:center;gap:.25rem">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            ${idea.reply_count || 0}
+                        </span>
+                        <span style="font-size:.75rem;color:#52525b;display:flex;align-items:center;gap:.25rem">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                            ${idea.views || 0}
+                        </span>
+                        <div style="margin-left:auto;display:flex;align-items:center;gap:.35rem">
+                            <div class="rating-bar-track"><div class="rating-bar-fill" style="width:${ratingPercent}%;background:${ratingColor}"></div></div>
+                            <span style="font-size:.72rem;font-weight:700;color:${ratingColor}">${idea.helpfulness_rating}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
 }
 
-// ===================== IDEA DETAIL MODAL =====================
-async function openIdeaDetail(ideaId) {
-    currentDetailIdeaId = ideaId;
-    document.getElementById('ideaDetailModal').classList.add('active');
-    document.getElementById('ideaRepliesList').innerHTML = '<div style="text-align:center;padding:1.5rem;color:#52525b;font-size:.82rem">Loading...</div>';
-    document.getElementById('replyInput').value = '';
+async function toggleIdeaLike(ideaId, currentlyLiked) {
+    if (!currentUser) { toast('Please sign in to like ideas', 'error'); return; }
 
-    // Increment views (fire and forget)
-    supabaseClient.rpc('increment_idea_views_fn', { idea_uuid: ideaId }).catch(() => {
-        // Fallback: manual increment if RPC doesn't exist
+    if (currentlyLiked) {
+        // Unlike: remove user from array, decrement likes
+        const { data: idea } = await supabaseClient.from('ideas').select('likes, liked_by').eq('id', ideaId).single();
+        if (!idea) return;
+        const newLikedBy = (idea.liked_by || []).filter(uid => uid !== currentUser.id);
+        const { error } = await supabaseClient.from('ideas').update({
+            likes: Math.max(0, (idea.likes || 1) - 1),
+            liked_by: newLikedBy
+        }).eq('id', ideaId);
+        if (error) console.error(error);
+    } else {
+        // Like: add user to array, increment likes
+        const { data: idea } = await supabaseClient.from('ideas').select('likes, liked_by').eq('id', ideaId).single();
+        if (!idea) return;
+        const newLikedBy = [...(idea.liked_by || []), currentUser.id];
+        const { error } = await supabaseClient.from('ideas').update({
+            likes: (idea.likes || 0) + 1,
+            liked_by: newLikedBy
+        }).eq('id', ideaId);
+        if (error) console.error(error);
+    }
+    loadIdeas();
+}
+
+async function openIdeaDetail(ideaId) {
+    currentIdeaDetailId = ideaId;
+
+    // Increment views
+    await supabaseClient.rpc('increment_views', { idea_id_input: ideaId }).catch(() => {
+        // Fallback if RPC doesn't exist — do manual increment
         supabaseClient.from('ideas').select('views').eq('id', ideaId).single().then(({ data }) => {
             if (data) supabaseClient.from('ideas').update({ views: (data.views || 0) + 1 }).eq('id', ideaId);
         });
     });
 
-    // Load idea
     const { data: idea, error } = await supabaseClient
         .from('ideas')
-        .select('*, profiles(username, display_name, profile_pic)')
+        .select('*, profiles:user_id(id, username, display_name, profile_pic)')
         .eq('id', ideaId)
         .single();
 
     if (error || !idea) {
-        document.getElementById('ideaDetailContent').innerHTML = '<div style="color:#f87171;padding:1rem">Failed to load idea</div>';
+        toast('Failed to load idea details', 'error');
         return;
     }
 
-    const a = idea.profiles || {};
-    const initials = (a.display_name || a.username || '?').charAt(0).toUpperCase();
-    const avatarHtml = a.profile_pic
-        ? `<div class="avatar" style="overflow:hidden"><img src="${a.profile_pic}" onerror="this.parentElement.textContent='${initials}'" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>`
-        : `<div class="avatar">${initials}</div>`;
-    const isLiked = currentUser && idea.liked_by && idea.liked_by.includes(currentUser.id);
-    const rc = getRatingColor(idea.helpfulness_rating || 5);
-    const hasRemove = idea.what_to_remove && idea.what_to_remove.trim().length > 0;
+    const p = idea.profiles || {};
+    const isLiked = idea.liked_by && Array.isArray(idea.liked_by) && idea.liked_by.includes(currentUser?.id);
+    const ratingPercent = ((idea.helpfulness_rating || 5) / 10) * 100;
+    const ratingColor = idea.helpfulness_rating >= 8 ? '#4ade80' : idea.helpfulness_rating >= 5 ? '#a78bfa' : '#fbbf24';
 
     document.getElementById('ideaDetailContent').innerHTML = `
-        <!-- Author + Status -->
-        <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap">
-            <div style="display:flex;align-items:center;gap:.55rem;flex:1;min-width:0">
-                <div style="cursor:pointer" onclick="closeIdeaDetail();goTo('profile','${a.username || ''}')">${avatarHtml}</div>
-                <div>
-                    <div style="font-size:.85rem;font-weight:600;color:#e4e4e7;cursor:pointer" onclick="closeIdeaDetail();goTo('profile','${a.username || ''}')">${escHtml(a.display_name || a.username || 'Unknown')}</div>
-                    <div style="font-size:.68rem;color:#52525b">@${escHtml(a.username || 'user')} · ${getTimeAgo(idea.created_at)} · ${idea.views || 0} views</div>
-                </div>
-            </div>
-            <span class="idea-status ${getStatusClass(idea.status)}">${getStatusLabel(idea.status)}</span>
-        </div>
-        <!-- Title -->
-        <h2 style="font-size:1.15rem;font-weight:800;color:#e4e4e7;margin-bottom:.6rem;line-height:1.4">${escHtml(idea.title)}</h2>
-        <!-- Badges -->
-        <div style="display:flex;gap:.35rem;margin-bottom:1rem;flex-wrap:wrap">
-            <span class="tag">${escHtml(idea.site_target)}</span>
+        <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.85rem;flex-wrap:wrap">
+            <span class="idea-status status-${idea.status}">${idea.status.replace('_', ' ')}</span>
             <span class="tag">${escHtml(idea.category)}</span>
+            <span class="tag" style="background:rgba(96,165,250,.08);color:#60a5fa;border-color:rgba(96,165,250,.12)">${escHtml(idea.site_target)}</span>
         </div>
-        <!-- Rating -->
-        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;padding:.65rem .85rem;border-radius:.65rem;background:rgba(139,92,246,.04);border:1px solid rgba(139,92,246,.08)">
-            <span style="font-size:.76rem;color:#71717a;font-weight:500">Helpfulness:</span>
-            <div class="rating-bar-track" style="width:80px"><div class="rating-bar-fill" style="width:${(idea.helpfulness_rating || 5) * 10}%;background:${rc}"></div></div>
-            <span style="font-size:.88rem;font-weight:800;color:${rc}">${idea.helpfulness_rating || 5}/10</span>
-            <span style="font-size:.7rem;color:#52525b;font-weight:500">(${getRatingLabel(idea.helpfulness_rating || 5)})</span>
-        </div>
-        <!-- Description -->
-        <div style="font-size:.86rem;color:#a1a1aa;line-height:1.75;white-space:pre-wrap;word-break:break-word;margin-bottom:${hasRemove ? '1rem' : '.85rem'}">${escHtml(idea.description)}</div>
-        <!-- What to Remove -->
-        ${hasRemove ? `
-        <div class="remove-box" style="margin-bottom:.85rem">
-            <div style="font-size:.73rem;font-weight:700;color:#f87171;margin-bottom:.3rem;display:flex;align-items:center;gap:.3rem">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                Requested Removal / Change
+        <h3 style="font-size:1.2rem;font-weight:800;color:#e4e4e7;margin-bottom:.65rem;line-height:1.3">${escHtml(idea.title)}</h3>
+        <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem">
+            <div class="avatar avatar-sm">${p.profile_pic ? `<img src="${p.profile_pic}" onerror="this.parentElement.textContent='${(p.display_name || 'U')[0].toUpperCase()}'">` : (p.display_name || 'U')[0].toUpperCase()}</div>
+            <div>
+                <span style="font-size:.82rem;font-weight:600;color:#e4e4e7">${escHtml(p.display_name || 'Unknown')}</span>
+                <span style="font-size:.72rem;color:#52525b"> · @${escHtml(p.username || 'user')} · ${getTimeAgo(idea.created_at)}</span>
             </div>
-            <p style="font-size:.82rem;color:#a1a1aa;line-height:1.65;white-space:pre-wrap;word-break:break-word">${escHtml(idea.what_to_remove)}</p>
-        </div>` : ''}
-        <!-- Actions -->
-        <div style="display:flex;align-items:center;gap:.75rem;padding-top:.5rem">
-            <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="toggleIdeaLike('${idea.id}', this);setTimeout(()=>openIdeaDetail('${idea.id}'),200)">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="${isLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg>
+        </div>
+        <div style="font-size:.88rem;color:#a1a1aa;line-height:1.7;white-space:pre-wrap;margin-bottom:1rem">${escHtml(idea.description)}</div>
+        ${idea.what_to_remove ? `<div class="remove-box" style="margin-bottom:1rem"><div style="font-size:.72rem;font-weight:700;color:#f87171;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem">Suggested Removal</div><p style="font-size:.82rem;color:#a1a1aa;line-height:1.6;white-space:pre-wrap">${escHtml(idea.what_to_remove)}</p></div>` : ''}
+        <div style="display:flex;align-items:center;gap:1rem;padding:.75rem 0;border-top:1px solid rgba(139,92,246,.08);border-bottom:1px solid rgba(139,92,246,.08)">
+            <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="toggleIdeaLike('${idea.id}', ${isLiked})">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="${isLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg>
                 ${idea.likes || 0}
             </button>
-            ${currentUser && idea.user_id === currentUser.id ? `
-            <select class="filter-select" style="min-width:130px;font-size:.72rem;padding:.3rem 1.8rem .3rem .55rem" onchange="updateIdeaStatus('${idea.id}', this.value)">
-                ${ideaStatuses.map(s => `<option value="${s}" ${idea.status === s ? 'selected' : ''}>${getStatusLabel(s)}</option>`).join('')}
-            </select>
-            <button class="btn-danger" style="font-size:.72rem;padding:.3rem .65rem" onclick="deleteIdea('${idea.id}')">Delete</button>
-            ` : ''}
+            <span style="font-size:.78rem;color:#52525b"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:.2rem"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>${idea.views || 0} views</span>
+            <div style="margin-left:auto;display:flex;align-items:center;gap:.4rem">
+                <span style="font-size:.72rem;color:#52525b">Helpfulness</span>
+                <div class="rating-bar-track" style="width:80px"><div class="rating-bar-fill" style="width:${ratingPercent}%;background:${ratingColor}"></div></div>
+                <span style="font-size:.85rem;font-weight:800;color:${ratingColor}">${idea.helpfulness_rating}<span style="font-size:.7rem;font-weight:500;color:#52525b">/10</span></span>
+            </div>
         </div>
     `;
 
     // Load replies
     loadIdeaReplies(ideaId);
+    document.getElementById('ideaDetailModal').classList.add('active');
 }
 
 function closeIdeaDetail() {
     document.getElementById('ideaDetailModal').classList.remove('active');
-    currentDetailIdeaId = null;
+    currentIdeaDetailId = null;
+    loadIdeas(); // Refresh to show updated views
 }
 
-// ===================== UPDATE IDEA STATUS =====================
-async function updateIdeaStatus(ideaId, newStatus) {
-    const { error } = await supabaseClient.from('ideas').update({ status: newStatus }).eq('id', ideaId);
-    if (error) { toast('Failed to update status', 'error'); }
-    else { toast('Status updated to ' + getStatusLabel(newStatus), 'success'); loadIdeas(); }
-}
-
-// ===================== LOAD REPLIES =====================
 async function loadIdeaReplies(ideaId) {
     const list = document.getElementById('ideaRepliesList');
     const heading = document.getElementById('repliesHeading');
@@ -1754,112 +1642,97 @@ async function loadIdeaReplies(ideaId) {
 
     const { data: replies, error } = await supabaseClient
         .from('idea_replies')
-        .select('*, profiles(username, display_name, profile_pic)')
+        .select('*, profiles:user_id(id, username, display_name, profile_pic)')
         .eq('idea_id', ideaId)
         .order('created_at', { ascending: true });
 
     if (error) {
-        list.innerHTML = '<div style="color:#f87171;font-size:.82rem;padding:.5rem">Failed to load replies</div>';
+        list.innerHTML = '<div style="color:#f87171;font-size:.82rem">Failed to load replies</div>';
         return;
     }
 
-    const r = replies || [];
-    heading.textContent = `Replies (${r.length})`;
+    heading.textContent = `Replies (${(replies || []).length})`;
 
-    if (r.length === 0) {
+    if (!replies || replies.length === 0) {
         list.innerHTML = '<div style="text-align:center;padding:1.5rem;color:#3f3f46;font-size:.82rem">No replies yet. Be the first to respond!</div>';
         return;
     }
 
-    list.innerHTML = r.map(reply => {
-        const rp = reply.profiles || {};
-        const ri = (rp.display_name || rp.username || '?').charAt(0).toUpperCase();
-        const rAvatar = rp.profile_pic
-            ? `<div class="avatar avatar-sm" style="overflow:hidden"><img src="${rp.profile_pic}" onerror="this.parentElement.textContent='${ri}'" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>`
-            : `<div class="avatar avatar-sm">${ri}</div>`;
-        const isOwn = currentUser && reply.user_id === currentUser.id;
-
+    list.innerHTML = replies.map(r => {
+        const rp = r.profiles || {};
         return `
         <div class="reply-bubble">
-            <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.45rem">
-                <div style="cursor:pointer;flex-shrink:0" onclick="closeIdeaDetail();goTo('profile','${rp.username || ''}')">${rAvatar}</div>
-                <div style="flex:1;min-width:0">
-                    <span style="font-size:.8rem;font-weight:600;color:#e4e4e7;cursor:pointer" onclick="closeIdeaDetail();goTo('profile','${rp.username || ''}')">${escHtml(rp.display_name || rp.username || 'Unknown')}</span>
-                    <span style="font-size:.66rem;color:#52525b;margin-left:.35rem">${getTimeAgo(reply.created_at)}</span>
-                </div>
-                ${isOwn ? `<button class="btn-ghost" style="font-size:.68rem;color:#52525b;padding:.15rem .4rem" onclick="deleteIdeaReply('${reply.id}')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>` : ''}
+            <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem">
+                <div class="avatar" style="width:26px;height:26px;font-size:.6rem">${rp.profile_pic ? `<img src="${rp.profile_pic}" onerror="this.parentElement.textContent='${(rp.display_name || 'U')[0].toUpperCase()}'">` : (rp.display_name || 'U')[0].toUpperCase()}</div>
+                <span style="font-size:.78rem;font-weight:600;color:#e4e4e7">${escHtml(rp.display_name || 'Unknown')}</span>
+                <span style="font-size:.68rem;color:#3f3f46">· ${getTimeAgo(r.created_at)}</span>
             </div>
-            <p style="font-size:.82rem;color:#a1a1aa;line-height:1.6;white-space:pre-wrap;word-break:break-word;padding-left:2.35rem">${escHtml(reply.content)}</p>
+            <p style="font-size:.83rem;color:#a1a1aa;line-height:1.55;white-space:pre-wrap;padding-left:2.15rem">${escHtml(r.content)}</p>
         </div>`;
     }).join('');
 }
 
-// ===================== SUBMIT REPLY =====================
 async function submitReply() {
-    if (!currentUser) { toast('Sign in to reply', 'error'); return; }
-    if (!currentDetailIdeaId) return;
+    if (!currentUser) { toast('Please sign in to reply', 'error'); return; }
+    if (!currentIdeaDetailId) return;
 
     const input = document.getElementById('replyInput');
     const content = input.value.trim();
-    if (!content) { toast('Write something first', 'error'); return; }
+    if (content.length < 1) { toast('Reply cannot be empty', 'error'); return; }
 
     const btn = document.getElementById('replySubmitBtn');
     btn.disabled = true;
 
-    const { error } = await supabaseClient.from('idea_replies').insert({
-        idea_id: currentDetailIdeaId,
+    // Insert reply
+    const { error: replyErr } = await supabaseClient.from('idea_replies').insert({
+        idea_id: currentIdeaDetailId,
         user_id: currentUser.id,
         content
     });
 
-    // Increment reply count
-    if (!error) {
-        const { data: idea } = await supabaseClient.from('ideas').select('reply_count').eq('id', currentDetailIdeaId).single();
-        if (idea) {
-            await supabaseClient.from('ideas').update({ reply_count: (idea.reply_count || 0) + 1 }).eq('id', currentDetailIdeaId);
-        }
+    if (replyErr) {
+        toast('Failed to post reply: ' + replyErr.message, 'error');
+        btn.disabled = false;
+        return;
     }
 
-    btn.disabled = false;
+    // Increment reply_count on the idea
+    const { data: idea } = await supabaseClient.from('ideas').select('reply_count').eq('id', currentIdeaDetailId).single();
+    if (idea) {
+        await supabaseClient.from('ideas').update({ reply_count: (idea.reply_count || 0) + 1 }).eq('id', currentIdeaDetailId);
+    }
+
     input.value = '';
-
-    if (error) { toast('Failed to reply: ' + error.message, 'error'); }
-    else { loadIdeaReplies(currentDetailIdeaId); loadIdeas(); }
+    btn.disabled = false;
+    loadIdeaReplies(currentIdeaDetailId);
 }
 
-// ===================== DELETE REPLY =====================
-async function deleteIdeaReply(replyId) {
-    if (!confirm('Delete this reply?')) return;
-    const { data: reply } = await supabaseClient.from('idea_replies').select('idea_id').eq('id', replyId).single();
-    const { error } = await supabaseClient.from('idea_replies').delete().eq('id', replyId);
-
-    if (!error && reply) {
-        const { data: idea } = await supabaseClient.from('ideas').select('reply_count').eq('id', reply.idea_id).single();
-        if (idea) {
-            await supabaseClient.from('ideas').update({ reply_count: Math.max(0, (idea.reply_count || 1) - 1) }).eq('id', reply.idea_id);
-        }
-    }
-
-    if (error) { toast('Failed to delete reply', 'error'); }
-    else if (currentDetailIdeaId) { loadIdeaReplies(currentDetailIdeaId); loadIdeas(); }
+// ===================== HELPERS =====================
+function escHtml(str) {
+    if (!str) return '';
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
 }
 
-// ===================== CHAR COUNTERS =====================
-document.addEventListener('DOMContentLoaded', () => {
-    const titleEl = document.getElementById('ideaTitle');
-    const descEl = document.getElementById('ideaDescription');
-    const removeEl = document.getElementById('ideaRemove');
+function getTimeAgo(dateStr) {
+    if (!dateStr) return '';
+    const now = new Date();
+    const d = new Date(dateStr);
+    const diff = Math.floor((now - d) / 1000);
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+    if (diff < 2592000) return Math.floor(diff / 86400) + 'd ago';
+    return d.toLocaleDateString();
+}
 
-    if (titleEl) titleEl.addEventListener('input', () => {
-        document.getElementById('ideaTitleCount').textContent = titleEl.value.length;
-    });
-    if (descEl) descEl.addEventListener('input', () => {
-        document.getElementById('ideaDescCount').textContent = descEl.value.length;
-    });
-    if (removeEl) removeEl.addEventListener('input', () => {
-        document.getElementById('ideaRemoveCount').textContent = removeEl.value.length;
-    });
-});
+// ===================== INIT IDEAS ON APP LOAD =====================
+// Call this when the app initializes (inside your auth state change handler)
+function initContributionsPage() {
+    populateSiteFilters();
+    loadIdeas();
+}
 </script>
 </body>
 </html>
