@@ -12,6 +12,29 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
+/* ============ CONTRIBUTIONS PAGE ============ */
+.rating-bar-track{width:60px;height:6px;border-radius:3px;background:rgba(255,255,255,.05);overflow:hidden;flex-shrink:0}
+.rating-bar-fill{height:100%;border-radius:3px;transition:width .3s}
+.idea-status{display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .55rem;border-radius:9999px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.status-open{background:rgba(96,165,250,.1);color:#60a5fa;border:1px solid rgba(96,165,250,.18)}
+.status-under_review{background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.18)}
+.status-planned{background:rgba(167,139,250,.1);color:#a78bfa;border:1px solid rgba(167,139,250,.18)}
+.status-implemented{background:rgba(74,222,128,.1);color:#4ade80;border:1px solid rgba(74,222,128,.18)}
+.status-declined{background:rgba(248,113,113,.1);color:#f87171;border:1px solid rgba(248,113,113,.18)}
+.filter-select{padding:.45rem 2rem .45rem .75rem;border-radius:.55rem;background:rgba(15,15,25,.8);border:1.5px solid rgba(139,92,246,.15);color:#a1a1aa;font-size:.78rem;font-family:'Inter',sans-serif;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .6rem center;cursor:pointer;transition:all .2s;min-width:120px}
+.filter-select:focus{outline:none;border-color:#8b5cf6;box-shadow:0 0 0 2px rgba(139,92,246,.12)}
+.filter-select option{background:#18182a;color:#e4e4e7}
+.idea-card{background:rgba(20,20,30,.6);border:1px solid rgba(139,92,246,.08);border-radius:1rem;padding:1.35rem;transition:all .3s;cursor:pointer}
+.idea-card:hover{border-color:rgba(139,92,246,.2);box-shadow:0 8px 32px rgba(139,92,246,.06);transform:translateY(-2px)}
+.reply-bubble{background:rgba(15,15,25,.6);border:1px solid rgba(139,92,246,.06);border-radius:.75rem;padding:.85rem 1rem}
+.trending-badge{display:inline-flex;align-items:center;gap:.2rem;padding:.12rem .45rem;border-radius:9999px;font-size:.6rem;font-weight:700;background:rgba(251,191,36,.12);color:#fbbf24;border:1px solid rgba(251,191,36,.2);text-transform:uppercase;letter-spacing:.04em}
+.stat-chip{display:flex;align-items:center;gap:.35rem;padding:.4rem .75rem;border-radius:.6rem;background:rgba(139,92,246,.05);border:1px solid rgba(139,92,246,.08);font-size:.76rem;color:#71717a}
+.stat-chip strong{color:#a78bfa;font-weight:700}
+input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:3px;background:rgba(255,255,255,.06);outline:none;transition:all .2s}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#8b5cf6);cursor:pointer;border:2px solid rgba(255,255,255,.15);box-shadow:0 2px 8px rgba(139,92,246,.3);transition:all .15s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15);box-shadow:0 2px 12px rgba(139,92,246,.5)}
+.remove-box{background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.1);border-radius:.65rem;padding:.75rem 1rem}
+@media(max-width:768px){.filter-row{flex-direction:column}.filter-select{min-width:100%}}
 body{font-family:'Inter',sans-serif;background:#09090b;color:#e4e4e7;overflow-x:hidden;min-height:100vh}
 ::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -185,6 +208,7 @@ textarea.input-field{resize:vertical;min-height:80px}
 <div style="padding:.6rem 0;flex:1">
 <button class="nav-btn active-nav" onclick="goTo('home')" data-nav="home"><i data-lucide="layout-grid" style="width:17px;height:17px"></i>Home</button>
 <button class="nav-btn" onclick="goTo('posts')" data-nav="posts"><i data-lucide="message-square" style="width:17px;height:17px"></i>Posts</button>
+<button class="nav-btn" onclick="goTo('contributions')" data-nav="contributions"><i data-lucide="lightbulb" style="width:17px;height:17px"></i>Contributions</button>
 <button class="nav-btn" onclick="goTo('users')" data-nav="users"><i data-lucide="users" style="width:17px;height:17px"></i>Users</button>
 <button class="nav-btn" onclick="goTo('settings')" data-nav="settings"><i data-lucide="settings" style="width:17px;height:17px"></i>Settings</button>
 <div class="divider" style="margin:.5rem 1rem"></div>
@@ -227,6 +251,62 @@ textarea.input-field{resize:vertical;min-height:80px}
 <div style="margin-bottom:1.5rem"><h2 style="font-size:1.3rem;font-weight:800;color:#e4e4e7">Explore Users</h2><p style="font-size:.82rem;color:#52525b;margin-top:.15rem">Find and connect with people</p></div>
 <div style="margin-bottom:1.25rem;max-width:400px;position:relative"><i data-lucide="search" style="width:16px;height:16px;position:absolute;left:.85rem;top:50%;transform:translateY(-50%);color:#52525b;pointer-events:none"></i><input type="text" class="input-field" id="userSearch" placeholder="Search by username or name..." style="padding-left:2.5rem" oninput="searchUsers(this.value)"></div>
 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem" id="usersGrid"></div>
+</div>
+
+<!-- CONTRIBUTIONS PAGE -->
+<div class="page" id="page-contributions">
+  <!-- Header -->
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem">
+    <div>
+      <h2 style="font-size:1.3rem;font-weight:800;color:#e4e4e7">Contributions</h2>
+      <p style="font-size:.82rem;color:#52525b;margin-top:.15rem">Share ideas to improve Epsilon sites</p>
+    </div>
+    <button class="btn-primary" onclick="openIdeaModal()"><i data-lucide="plus" style="width:16px;height:16px"></i>Submit Idea</button>
+  </div>
+
+  <!-- Stats Row -->
+  <div style="display:flex;gap:.6rem;margin-bottom:1.35rem;flex-wrap:wrap" id="ideaStatsRow">
+    <div class="stat-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Total <strong id="statTotal">0</strong></div>
+    <div class="stat-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Implemented <strong id="statImplemented">0</strong></div>
+    <div class="stat-chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg>Total Likes <strong id="statLikes">0</strong></div>
+  </div>
+
+  <!-- Search + Filters -->
+  <div style="display:flex;gap:.6rem;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center" class="filter-row">
+    <div style="position:relative;flex:1;min-width:200px">
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#52525b" stroke-width="2" style="position:absolute;left:.75rem;top:50%;transform:translateY(-50%);pointer-events:none"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" class="input-field" id="ideaSearch" placeholder="Search ideas..." style="padding-left:2.3rem;font-size:.82rem" oninput="debounceIdeaSearch(this.value)">
+    </div>
+    <select class="filter-select" id="filterSite" onchange="loadIdeas()">
+      <option value="All">All Sites</option>
+    </select>
+    <select class="filter-select" id="filterCategory" onchange="loadIdeas()">
+      <option value="All">All Categories</option>
+      <option value="Feature Request">Feature Request</option>
+      <option value="Improvement">Improvement</option>
+      <option value="Bug Fix">Bug Fix</option>
+      <option value="Removal">Removal</option>
+      <option value="Redesign">Redesign</option>
+      <option value="New Idea">New Idea</option>
+    </select>
+    <select class="filter-select" id="filterStatus" onchange="loadIdeas()">
+      <option value="All">All Status</option>
+      <option value="open">Open</option>
+      <option value="under_review">Under Review</option>
+      <option value="planned">Planned</option>
+      <option value="implemented">Implemented</option>
+      <option value="declined">Declined</option>
+    </select>
+    <select class="filter-select" id="filterSort" onchange="loadIdeas()">
+      <option value="newest">Newest</option>
+      <option value="most_liked">Most Liked</option>
+      <option value="most_discussed">Most Discussed</option>
+      <option value="highest_rated">Highest Rated</option>
+    </select>
+  </div>
+
+  <!-- Ideas Feed -->
+  <div style="display:flex;flex-direction:column;gap:1rem" id="ideasFeed"></div>
 </div>
 
 <!-- SETTINGS PAGE -->
@@ -287,6 +367,98 @@ textarea.input-field{resize:vertical;min-height:80px}
 <button class="btn-primary" style="width:100%;justify-content:center;margin-top:.5rem" onclick="submitPost()" id="postSubmitBtn">Publish Post</button>
 </div>
 </div>
+</div>
+
+<!-- SUBMIT IDEA MODAL -->
+<div class="modal-overlay" id="ideaModal">
+  <div class="modal-box" style="padding:1.75rem;max-width:560px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.35rem">
+      <h3 style="font-size:1.1rem;font-weight:700;color:#e4e4e7">Submit an Idea</h3>
+      <button onclick="closeIdeaModal()" class="btn-ghost" style="padding:.3rem"><i data-lucide="x" style="width:18px;height:18px"></i></button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.85rem">
+      <!-- Title -->
+      <div>
+        <label style="font-size:.73rem;font-weight:600;color:#71717a;display:block;margin-bottom:.3rem">Idea Title <span style="color:#f87171">*</span></label>
+        <input type="text" class="input-field" id="ideaTitle" placeholder="Brief summary of your idea" maxlength="120" required>
+        <div style="text-align:right;font-size:.62rem;color:#3f3f46;margin-top:.15rem"><span id="ideaTitleCount">0</span>/120</div>
+      </div>
+      <!-- Site Target -->
+      <div>
+        <label style="font-size:.73rem;font-weight:600;color:#71717a;display:block;margin-bottom:.3rem">Which site does this involve? <span style="color:#f87171">*</span></label>
+        <select class="input-field" id="ideaSiteTarget">
+          <option value="Overall">Overall (All Sites)</option>
+        </select>
+      </div>
+      <!-- Category -->
+      <div>
+        <label style="font-size:.73rem;font-weight:600;color:#71717a;display:block;margin-bottom:.3rem">Category <span style="color:#f87171">*</span></label>
+        <select class="input-field" id="ideaCategory">
+          <option value="Feature Request">Feature Request</option>
+          <option value="Improvement">Improvement</option>
+          <option value="Bug Fix">Bug Fix</option>
+          <option value="Removal">Removal</option>
+          <option value="Redesign">Redesign</option>
+          <option value="New Idea">New Idea</option>
+        </select>
+      </div>
+      <!-- Description -->
+      <div>
+        <label style="font-size:.73rem;font-weight:600;color:#71717a;display:block;margin-bottom:.3rem">Describe your idea <span style="color:#f87171">*</span></label>
+        <textarea class="input-field" id="ideaDescription" placeholder="Be as detailed as possible — what should change, how should it work, why would it help?" style="min-height:110px" maxlength="2000" required></textarea>
+        <div style="text-align:right;font-size:.62rem;color:#3f3f46;margin-top:.15rem"><span id="ideaDescCount">0</span>/2000</div>
+      </div>
+      <!-- Helpfulness Rating -->
+      <div>
+        <label style="font-size:.73rem;font-weight:600;color:#71717a;display:block;margin-bottom:.3rem">How much would this help you?</label>
+        <div style="padding:.5rem .25rem 0">
+          <input type="range" min="1" max="10" value="5" id="ideaRating" oninput="updateRatingPreview(this.value)">
+          <div style="display:flex;justify-content:space-between;margin-top:.35rem">
+            <span style="font-size:.65rem;color:#52525b">Not at all</span>
+            <span id="ratingPreviewValue" style="font-size:.9rem;font-weight:800;color:#a78bfa">5<span style="font-size:.7rem;font-weight:500;color:#52525b">/10</span></span>
+            <span style="font-size:.65rem;color:#52525b">Extremely</span>
+          </div>
+        </div>
+      </div>
+      <!-- What to Remove -->
+      <div>
+        <label style="font-size:.73rem;font-weight:600;color:#71717a;display:block;margin-bottom:.3rem">What should be removed or changed? <span style="color:#3f3f46;font-weight:400">(optional)</span></label>
+        <textarea class="input-field" id="ideaRemove" placeholder="Describe any features, elements, or behaviors that should be removed or changed to make room for this idea..." style="min-height:70px" maxlength="800"></textarea>
+        <div style="text-align:right;font-size:.62rem;color:#3f3f46;margin-top:.15rem"><span id="ideaRemoveCount">0</span>/800</div>
+      </div>
+      <!-- Submit -->
+      <button class="btn-primary" style="width:100%;justify-content:center;margin-top:.35rem" onclick="submitIdea()" id="ideaSubmitBtn">Submit Idea</button>
+    </div>
+  </div>
+</div>
+
+<!-- IDEA DETAIL MODAL -->
+<div class="modal-overlay" id="ideaDetailModal">
+  <div class="modal-box" style="padding:0;max-width:620px;max-height:88vh;display:flex;flex-direction:column">
+    <!-- Detail Header -->
+    <div style="padding:1.5rem 1.5rem 0;flex-shrink:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+        <h3 style="font-size:1rem;font-weight:700;color:#71717a">Idea Details</h3>
+        <button onclick="closeIdeaDetail()" class="btn-ghost" style="padding:.3rem"><i data-lucide="x" style="width:18px;height:18px"></i></button>
+      </div>
+      <div id="ideaDetailContent"></div>
+    </div>
+    <!-- Replies Section -->
+    <div style="flex:1;overflow-y:auto;padding:0 1.5rem" id="ideaRepliesWrap">
+      <div class="divider" style="margin:1rem 0"></div>
+      <h4 style="font-size:.88rem;font-weight:700;color:#e4e4e7;margin-bottom:.85rem" id="repliesHeading">Replies (0)</h4>
+      <div style="display:flex;flex-direction:column;gap:.65rem" id="ideaRepliesList"></div>
+    </div>
+    <!-- Reply Input -->
+    <div style="padding:1rem 1.5rem 1.5rem;border-top:1px solid rgba(139,92,246,.08);flex-shrink:0">
+      <div style="display:flex;gap:.5rem;align-items:flex-end">
+        <textarea class="input-field" id="replyInput" placeholder="Write a reply..." style="min-height:44px;max-height:120px;resize:none;flex:1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitReply()}"></textarea>
+        <button class="btn-primary" style="padding:.65rem .9rem;flex-shrink:0" onclick="submitReply()" id="replySubmitBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="m22 2-7 20-4-9-9-4z"/><path d="m22 2-11 11"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- CALL MODAL -->
@@ -663,6 +835,7 @@ function handleRoute() {
         case 'posts': loadPosts(); renderCategoryFilters(); break;
         case 'users': loadUsers(); break;
         case 'settings': loadSettings(); renderThemePicker(); break;
+        case 'contributions': populateSiteDropdowns(); loadIdeas(); break;
         case 'profile': if (currentUser) loadProfileById(currentUser.id); break;
     }
 }
@@ -1172,7 +1345,521 @@ document.getElementById('callModal').addEventListener('click', (e) => { if (e.ta
 
 // Start
 initApp();
-console.log("version 2")
+// ===================== CONTRIBUTIONS STATE =====================
+let ideaSearchTimeout = null;
+let currentDetailIdeaId = null;
+
+const ideaCategories = ['Feature Request', 'Improvement', 'Bug Fix', 'Removal', 'Redesign', 'New Idea'];
+const ideaStatuses = ['open', 'under_review', 'planned', 'implemented', 'declined'];
+
+// ===================== CONTRIBUTIONS HELPERS =====================
+function getRatingColor(r) {
+    if (r <= 3) return '#f87171';
+    if (r <= 5) return '#fb923c';
+    if (r <= 7) return '#fbbf24';
+    if (r <= 8) return '#a3e635';
+    return '#4ade80';
+}
+
+function getRatingLabel(r) {
+    if (r <= 2) return 'Low';
+    if (r <= 4) return 'Moderate';
+    if (r <= 6) return 'Good';
+    if (r <= 8) return 'High';
+    return 'Critical';
+}
+
+function getStatusClass(s) {
+    const map = { open: 'status-open', under_review: 'status-under_review', planned: 'status-planned', implemented: 'status-implemented', declined: 'status-declined' };
+    return map[s] || 'status-open';
+}
+
+function getStatusLabel(s) {
+    const map = { open: 'Open', under_review: 'Under Review', planned: 'Planned', implemented: 'Implemented', declined: 'Declined' };
+    return map[s] || s;
+}
+
+function isTrending(idea) {
+    if (!idea.created_at) return false;
+    const diff = Date.now() - new Date(idea.created_at).getTime();
+    const days = diff / (1000 * 60 * 60 * 24);
+    return days <= 7 && (idea.likes || 0) >= 5;
+}
+
+function populateSiteDropdowns() {
+    const targets = ['Overall', ...epsilonSites.map(s => s.name)];
+    ['filterSite', 'ideaSiteTarget'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const current = el.value;
+        const isFilter = id === 'filterSite';
+        el.innerHTML = (isFilter ? '<option value="All">All Sites</option>' : '') +
+            targets.map(t => `<option value="${escHtml(t)}">${escHtml(t)}</option>`).join('');
+        if (current) el.value = current;
+    });
+}
+
+function updateRatingPreview(val) {
+    const el = document.getElementById('ratingPreviewValue');
+    if (!el) return;
+    const c = getRatingColor(parseInt(val));
+    el.innerHTML = `${val}<span style="font-size:.7rem;font-weight:500;color:#52525b">/10</span>`;
+    el.style.color = c;
+}
+
+function debounceIdeaSearch(val) {
+    clearTimeout(ideaSearchTimeout);
+    ideaSearchTimeout = setTimeout(() => loadIdeas(), 300);
+}
+
+// ===================== LOAD IDEAS =====================
+async function loadIdeas() {
+    const feed = document.getElementById('ideasFeed');
+    feed.innerHTML = '<div style="text-align:center;padding:2.5rem;color:#52525b;font-size:.88rem">Loading ideas...</div>';
+
+    const search = (document.getElementById('ideaSearch')?.value || '').trim();
+    const site = document.getElementById('filterSite')?.value || 'All';
+    const category = document.getElementById('filterCategory')?.value || 'All';
+    const status = document.getElementById('filterStatus')?.value || 'All';
+    const sort = document.getElementById('filterSort')?.value || 'newest';
+
+    let query = supabaseClient
+        .from('ideas')
+        .select('*, profiles(username, display_name, profile_pic)')
+        .order('created_at', { ascending: false });
+
+    if (search) query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
+    if (site !== 'All') query = query.eq('site_target', site);
+    if (category !== 'All') query = query.eq('category', category);
+    if (status !== 'All') query = query.eq('status', status);
+
+    // Client-side sort for non-default sorts (since we fetched desc already)
+    const { data: ideas, error } = await query;
+
+    if (error) {
+        feed.innerHTML = `<div style="text-align:center;padding:2.5rem;color:#f87171;font-size:.88rem">Failed to load ideas</div>`;
+        return;
+    }
+
+    let sorted = ideas || [];
+    if (sort === 'most_liked') sorted.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+    else if (sort === 'most_discussed') sorted.sort((a, b) => (b.reply_count || 0) - (a.reply_count || 0));
+    else if (sort === 'highest_rated') sorted.sort((a, b) => (b.helpfulness_rating || 0) - (a.helpfulness_rating || 0));
+
+    // Load stats
+    loadIdeaStats();
+
+    if (sorted.length === 0) {
+        feed.innerHTML = `
+            <div style="text-align:center;padding:3.5rem 1rem;color:#52525b">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#3f3f46" stroke-width="1.5" style="margin:0 auto .75rem;display:block"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <p style="font-size:1rem;font-weight:600;margin-bottom:.35rem">No ideas found</p>
+                <p style="font-size:.82rem">Try adjusting your filters or be the first to contribute!</p>
+            </div>`;
+        return;
+    }
+
+    feed.innerHTML = sorted.map(idea => {
+        const a = idea.profiles || {};
+        const initials = (a.display_name || a.username || '?').charAt(0).toUpperCase();
+        const avatarHtml = a.profile_pic
+            ? `<div class="avatar avatar-sm" style="overflow:hidden"><img src="${a.profile_pic}" onerror="this.parentElement.textContent='${initials}'" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>`
+            : `<div class="avatar avatar-sm">${initials}</div>`;
+        const isLiked = currentUser && idea.liked_by && idea.liked_by.includes(currentUser.id);
+        const rc = getRatingColor(idea.helpfulness_rating || 5);
+        const hasRemove = idea.what_to_remove && idea.what_to_remove.trim().length > 0;
+        const trending = isTrending(idea);
+        const timeAgo = getTimeAgo(idea.created_at);
+
+        return `
+        <div class="idea-card" onclick="openIdeaDetail('${idea.id}')">
+            <!-- Top row: author + badges -->
+            <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem;flex-wrap:wrap">
+                <div style="display:flex;align-items:center;gap:.55rem;flex:1;min-width:0">
+                    <div style="cursor:pointer;flex-shrink:0" onclick="event.stopPropagation();goTo('profile','${a.username || ''}')">${avatarHtml}</div>
+                    <div style="min-width:0">
+                        <div style="font-size:.82rem;font-weight:600;color:#e4e4e7;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" onclick="event.stopPropagation();goTo('profile','${a.username || ''}')">${escHtml(a.display_name || a.username || 'Unknown')}</div>
+                        <div style="font-size:.66rem;color:#52525b">@${escHtml(a.username || 'user')} · ${timeAgo}</div>
+                    </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:.35rem;flex-shrink:0;flex-wrap:wrap">
+                    ${trending ? `<span class="trending-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>Trending</span>` : ''}
+                    <span class="idea-status ${getStatusClass(idea.status)}">${getStatusLabel(idea.status)}</span>
+                </div>
+            </div>
+
+            <!-- Title -->
+            <h3 style="font-size:1.02rem;font-weight:700;color:#e4e4e7;margin-bottom:.45rem;line-height:1.4">${escHtml(idea.title)}</h3>
+
+            <!-- Description (truncated) -->
+            <p style="font-size:.82rem;color:#a1a1aa;line-height:1.6;margin-bottom:.75rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">${escHtml(idea.description)}</p>
+
+            <!-- What to remove preview -->
+            ${hasRemove ? `
+            <div class="remove-box" style="margin-bottom:.75rem" onclick="event.stopPropagation()">
+                <div style="font-size:.68rem;font-weight:700;color:#f87171;margin-bottom:.25rem;display:flex;align-items:center;gap:.3rem">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                    Requested Removal
+                </div>
+                <p style="font-size:.76rem;color:#71717a;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${escHtml(idea.what_to_remove)}</p>
+            </div>` : ''}
+
+            <!-- Meta row -->
+            <div style="display:flex;align-items:center;gap:.85rem;flex-wrap:wrap">
+                <!-- Site badge -->
+                <span class="tag">${escHtml(idea.site_target)}</span>
+                <!-- Category badge -->
+                <span style="font-size:.68rem;font-weight:600;color:#52525b">${escHtml(idea.category)}</span>
+                <!-- Rating -->
+                <div style="display:flex;align-items:center;gap:.35rem">
+                    <div class="rating-bar-track"><div class="rating-bar-fill" style="width:${(idea.helpfulness_rating || 5) * 10}%;background:${rc}"></div></div>
+                    <span style="font-size:.7rem;font-weight:700;color:${rc}">${idea.helpfulness_rating || 5}/10</span>
+                </div>
+                <!-- Spacer -->
+                <div style="flex:1"></div>
+                <!-- Actions -->
+                <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="event.stopPropagation();toggleIdeaLike('${idea.id}', this)">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="${isLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg>
+                    ${idea.likes || 0}
+                </button>
+                <span style="font-size:.72rem;color:#52525b;display:flex;align-items:center;gap:.2rem">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    ${idea.reply_count || 0}
+                </span>
+                <span style="font-size:.68rem;color:#3f3f46">${idea.views || 0} views</span>
+                ${currentUser && idea.user_id === currentUser.id ? `<button class="btn-ghost" style="font-size:.72rem;color:#71717a;padding:.25rem .5rem" onclick="event.stopPropagation();deleteIdea('${idea.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>` : ''}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// ===================== IDEA STATS =====================
+async function loadIdeaStats() {
+    const { count: total } = await supabaseClient.from('ideas').select('id', { count: 'exact', head: true });
+    const { count: implemented } = await supabaseClient.from('ideas').select('id', { count: 'exact', head: true }).eq('status', 'implemented');
+    const { data: likesData } = await supabaseClient.from('ideas').select('likes');
+    const totalLikes = (likesData || []).reduce((sum, i) => sum + (i.likes || 0), 0);
+
+    const el1 = document.getElementById('statTotal');
+    const el2 = document.getElementById('statImplemented');
+    const el3 = document.getElementById('statLikes');
+    if (el1) el1.textContent = total || 0;
+    if (el2) el2.textContent = implemented || 0;
+    if (el3) el3.textContent = totalLikes || 0;
+}
+
+// ===================== SUBMIT IDEA =====================
+function openIdeaModal() {
+    if (!currentUser) { toast('Sign in to submit ideas', 'error'); return; }
+    populateSiteDropdowns();
+    document.getElementById('ideaTitle').value = '';
+    document.getElementById('ideaDescription').value = '';
+    document.getElementById('ideaSiteTarget').value = 'Overall';
+    document.getElementById('ideaCategory').value = 'Feature Request';
+    document.getElementById('ideaRating').value = 5;
+    document.getElementById('ideaRemove').value = '';
+    document.getElementById('ideaTitleCount').textContent = '0';
+    document.getElementById('ideaDescCount').textContent = '0';
+    document.getElementById('ideaRemoveCount').textContent = '0';
+    updateRatingPreview(5);
+    document.getElementById('ideaModal').classList.add('active');
+    setTimeout(() => document.getElementById('ideaTitle').focus(), 100);
+}
+
+function closeIdeaModal() {
+    document.getElementById('ideaModal').classList.remove('active');
+}
+
+async function submitIdea() {
+    const title = document.getElementById('ideaTitle').value.trim();
+    const description = document.getElementById('ideaDescription').value.trim();
+    const siteTarget = document.getElementById('ideaSiteTarget').value;
+    const category = document.getElementById('ideaCategory').value;
+    const rating = parseInt(document.getElementById('ideaRating').value);
+    const whatToRemove = document.getElementById('ideaRemove').value.trim();
+
+    if (!title || title.length < 3) { toast('Title must be at least 3 characters', 'error'); return; }
+    if (!description || description.length < 10) { toast('Description must be at least 10 characters', 'error'); return; }
+
+    const btn = document.getElementById('ideaSubmitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+
+    const { error } = await supabaseClient.from('ideas').insert({
+        user_id: currentUser.id,
+        title,
+        description,
+        site_target: siteTarget,
+        category,
+        helpfulness_rating: rating,
+        what_to_remove: whatToRemove || null,
+    });
+
+    btn.disabled = false;
+    btn.textContent = 'Submit Idea';
+
+    if (error) {
+        toast('Failed to submit: ' + error.message, 'error');
+    } else {
+        closeIdeaModal();
+        toast('Idea submitted successfully!', 'success');
+        loadIdeas();
+    }
+}
+
+// ===================== LIKE IDEA =====================
+async function toggleIdeaLike(ideaId, btn) {
+    if (!currentUser) { toast('Sign in to like ideas', 'error'); return; }
+    const { data: idea } = await supabaseClient.from('ideas').select('likes, liked_by').eq('id', ideaId).single();
+    if (!idea) return;
+
+    const likedBy = idea.liked_by || [];
+    const isLiked = likedBy.includes(currentUser.id);
+    let newLikes = idea.likes || 0;
+    let newLikedBy = [...likedBy];
+
+    if (isLiked) {
+        newLikedBy = newLikedBy.filter(id => id !== currentUser.id);
+        newLikes = Math.max(0, newLikes - 1);
+    } else {
+        newLikedBy.push(currentUser.id);
+        newLikes += 1;
+    }
+
+    await supabaseClient.from('ideas').update({ likes: newLikes, liked_by: newLikedBy }).eq('id', ideaId);
+    loadIdeas();
+}
+
+// ===================== DELETE IDEA =====================
+async function deleteIdea(ideaId) {
+    if (!confirm('Delete this idea? This cannot be undone.')) return;
+    const { error } = await supabaseClient.from('ideas').delete().eq('id', ideaId);
+    if (error) { toast('Failed to delete', 'error'); }
+    else {
+        toast('Idea deleted', 'success');
+        loadIdeas();
+        closeIdeaDetail();
+    }
+}
+
+// ===================== IDEA DETAIL MODAL =====================
+async function openIdeaDetail(ideaId) {
+    currentDetailIdeaId = ideaId;
+    document.getElementById('ideaDetailModal').classList.add('active');
+    document.getElementById('ideaRepliesList').innerHTML = '<div style="text-align:center;padding:1.5rem;color:#52525b;font-size:.82rem">Loading...</div>';
+    document.getElementById('replyInput').value = '';
+
+    // Increment views (fire and forget)
+    supabaseClient.rpc('increment_idea_views_fn', { idea_uuid: ideaId }).catch(() => {
+        // Fallback: manual increment if RPC doesn't exist
+        supabaseClient.from('ideas').select('views').eq('id', ideaId).single().then(({ data }) => {
+            if (data) supabaseClient.from('ideas').update({ views: (data.views || 0) + 1 }).eq('id', ideaId);
+        });
+    });
+
+    // Load idea
+    const { data: idea, error } = await supabaseClient
+        .from('ideas')
+        .select('*, profiles(username, display_name, profile_pic)')
+        .eq('id', ideaId)
+        .single();
+
+    if (error || !idea) {
+        document.getElementById('ideaDetailContent').innerHTML = '<div style="color:#f87171;padding:1rem">Failed to load idea</div>';
+        return;
+    }
+
+    const a = idea.profiles || {};
+    const initials = (a.display_name || a.username || '?').charAt(0).toUpperCase();
+    const avatarHtml = a.profile_pic
+        ? `<div class="avatar" style="overflow:hidden"><img src="${a.profile_pic}" onerror="this.parentElement.textContent='${initials}'" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>`
+        : `<div class="avatar">${initials}</div>`;
+    const isLiked = currentUser && idea.liked_by && idea.liked_by.includes(currentUser.id);
+    const rc = getRatingColor(idea.helpfulness_rating || 5);
+    const hasRemove = idea.what_to_remove && idea.what_to_remove.trim().length > 0;
+
+    document.getElementById('ideaDetailContent').innerHTML = `
+        <!-- Author + Status -->
+        <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:.55rem;flex:1;min-width:0">
+                <div style="cursor:pointer" onclick="closeIdeaDetail();goTo('profile','${a.username || ''}')">${avatarHtml}</div>
+                <div>
+                    <div style="font-size:.85rem;font-weight:600;color:#e4e4e7;cursor:pointer" onclick="closeIdeaDetail();goTo('profile','${a.username || ''}')">${escHtml(a.display_name || a.username || 'Unknown')}</div>
+                    <div style="font-size:.68rem;color:#52525b">@${escHtml(a.username || 'user')} · ${getTimeAgo(idea.created_at)} · ${idea.views || 0} views</div>
+                </div>
+            </div>
+            <span class="idea-status ${getStatusClass(idea.status)}">${getStatusLabel(idea.status)}</span>
+        </div>
+        <!-- Title -->
+        <h2 style="font-size:1.15rem;font-weight:800;color:#e4e4e7;margin-bottom:.6rem;line-height:1.4">${escHtml(idea.title)}</h2>
+        <!-- Badges -->
+        <div style="display:flex;gap:.35rem;margin-bottom:1rem;flex-wrap:wrap">
+            <span class="tag">${escHtml(idea.site_target)}</span>
+            <span class="tag">${escHtml(idea.category)}</span>
+        </div>
+        <!-- Rating -->
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;padding:.65rem .85rem;border-radius:.65rem;background:rgba(139,92,246,.04);border:1px solid rgba(139,92,246,.08)">
+            <span style="font-size:.76rem;color:#71717a;font-weight:500">Helpfulness:</span>
+            <div class="rating-bar-track" style="width:80px"><div class="rating-bar-fill" style="width:${(idea.helpfulness_rating || 5) * 10}%;background:${rc}"></div></div>
+            <span style="font-size:.88rem;font-weight:800;color:${rc}">${idea.helpfulness_rating || 5}/10</span>
+            <span style="font-size:.7rem;color:#52525b;font-weight:500">(${getRatingLabel(idea.helpfulness_rating || 5)})</span>
+        </div>
+        <!-- Description -->
+        <div style="font-size:.86rem;color:#a1a1aa;line-height:1.75;white-space:pre-wrap;word-break:break-word;margin-bottom:${hasRemove ? '1rem' : '.85rem'}">${escHtml(idea.description)}</div>
+        <!-- What to Remove -->
+        ${hasRemove ? `
+        <div class="remove-box" style="margin-bottom:.85rem">
+            <div style="font-size:.73rem;font-weight:700;color:#f87171;margin-bottom:.3rem;display:flex;align-items:center;gap:.3rem">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                Requested Removal / Change
+            </div>
+            <p style="font-size:.82rem;color:#a1a1aa;line-height:1.65;white-space:pre-wrap;word-break:break-word">${escHtml(idea.what_to_remove)}</p>
+        </div>` : ''}
+        <!-- Actions -->
+        <div style="display:flex;align-items:center;gap:.75rem;padding-top:.5rem">
+            <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="toggleIdeaLike('${idea.id}', this);setTimeout(()=>openIdeaDetail('${idea.id}'),200)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="${isLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg>
+                ${idea.likes || 0}
+            </button>
+            ${currentUser && idea.user_id === currentUser.id ? `
+            <select class="filter-select" style="min-width:130px;font-size:.72rem;padding:.3rem 1.8rem .3rem .55rem" onchange="updateIdeaStatus('${idea.id}', this.value)">
+                ${ideaStatuses.map(s => `<option value="${s}" ${idea.status === s ? 'selected' : ''}>${getStatusLabel(s)}</option>`).join('')}
+            </select>
+            <button class="btn-danger" style="font-size:.72rem;padding:.3rem .65rem" onclick="deleteIdea('${idea.id}')">Delete</button>
+            ` : ''}
+        </div>
+    `;
+
+    // Load replies
+    loadIdeaReplies(ideaId);
+}
+
+function closeIdeaDetail() {
+    document.getElementById('ideaDetailModal').classList.remove('active');
+    currentDetailIdeaId = null;
+}
+
+// ===================== UPDATE IDEA STATUS =====================
+async function updateIdeaStatus(ideaId, newStatus) {
+    const { error } = await supabaseClient.from('ideas').update({ status: newStatus }).eq('id', ideaId);
+    if (error) { toast('Failed to update status', 'error'); }
+    else { toast('Status updated to ' + getStatusLabel(newStatus), 'success'); loadIdeas(); }
+}
+
+// ===================== LOAD REPLIES =====================
+async function loadIdeaReplies(ideaId) {
+    const list = document.getElementById('ideaRepliesList');
+    const heading = document.getElementById('repliesHeading');
+    list.innerHTML = '<div style="text-align:center;padding:1.5rem;color:#52525b;font-size:.82rem">Loading replies...</div>';
+
+    const { data: replies, error } = await supabaseClient
+        .from('idea_replies')
+        .select('*, profiles(username, display_name, profile_pic)')
+        .eq('idea_id', ideaId)
+        .order('created_at', { ascending: true });
+
+    if (error) {
+        list.innerHTML = '<div style="color:#f87171;font-size:.82rem;padding:.5rem">Failed to load replies</div>';
+        return;
+    }
+
+    const r = replies || [];
+    heading.textContent = `Replies (${r.length})`;
+
+    if (r.length === 0) {
+        list.innerHTML = '<div style="text-align:center;padding:1.5rem;color:#3f3f46;font-size:.82rem">No replies yet. Be the first to respond!</div>';
+        return;
+    }
+
+    list.innerHTML = r.map(reply => {
+        const rp = reply.profiles || {};
+        const ri = (rp.display_name || rp.username || '?').charAt(0).toUpperCase();
+        const rAvatar = rp.profile_pic
+            ? `<div class="avatar avatar-sm" style="overflow:hidden"><img src="${rp.profile_pic}" onerror="this.parentElement.textContent='${ri}'" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>`
+            : `<div class="avatar avatar-sm">${ri}</div>`;
+        const isOwn = currentUser && reply.user_id === currentUser.id;
+
+        return `
+        <div class="reply-bubble">
+            <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.45rem">
+                <div style="cursor:pointer;flex-shrink:0" onclick="closeIdeaDetail();goTo('profile','${rp.username || ''}')">${rAvatar}</div>
+                <div style="flex:1;min-width:0">
+                    <span style="font-size:.8rem;font-weight:600;color:#e4e4e7;cursor:pointer" onclick="closeIdeaDetail();goTo('profile','${rp.username || ''}')">${escHtml(rp.display_name || rp.username || 'Unknown')}</span>
+                    <span style="font-size:.66rem;color:#52525b;margin-left:.35rem">${getTimeAgo(reply.created_at)}</span>
+                </div>
+                ${isOwn ? `<button class="btn-ghost" style="font-size:.68rem;color:#52525b;padding:.15rem .4rem" onclick="deleteIdeaReply('${reply.id}')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>` : ''}
+            </div>
+            <p style="font-size:.82rem;color:#a1a1aa;line-height:1.6;white-space:pre-wrap;word-break:break-word;padding-left:2.35rem">${escHtml(reply.content)}</p>
+        </div>`;
+    }).join('');
+}
+
+// ===================== SUBMIT REPLY =====================
+async function submitReply() {
+    if (!currentUser) { toast('Sign in to reply', 'error'); return; }
+    if (!currentDetailIdeaId) return;
+
+    const input = document.getElementById('replyInput');
+    const content = input.value.trim();
+    if (!content) { toast('Write something first', 'error'); return; }
+
+    const btn = document.getElementById('replySubmitBtn');
+    btn.disabled = true;
+
+    const { error } = await supabaseClient.from('idea_replies').insert({
+        idea_id: currentDetailIdeaId,
+        user_id: currentUser.id,
+        content
+    });
+
+    // Increment reply count
+    if (!error) {
+        const { data: idea } = await supabaseClient.from('ideas').select('reply_count').eq('id', currentDetailIdeaId).single();
+        if (idea) {
+            await supabaseClient.from('ideas').update({ reply_count: (idea.reply_count || 0) + 1 }).eq('id', currentDetailIdeaId);
+        }
+    }
+
+    btn.disabled = false;
+    input.value = '';
+
+    if (error) { toast('Failed to reply: ' + error.message, 'error'); }
+    else { loadIdeaReplies(currentDetailIdeaId); loadIdeas(); }
+}
+
+// ===================== DELETE REPLY =====================
+async function deleteIdeaReply(replyId) {
+    if (!confirm('Delete this reply?')) return;
+    const { data: reply } = await supabaseClient.from('idea_replies').select('idea_id').eq('id', replyId).single();
+    const { error } = await supabaseClient.from('idea_replies').delete().eq('id', replyId);
+
+    if (!error && reply) {
+        const { data: idea } = await supabaseClient.from('ideas').select('reply_count').eq('id', reply.idea_id).single();
+        if (idea) {
+            await supabaseClient.from('ideas').update({ reply_count: Math.max(0, (idea.reply_count || 1) - 1) }).eq('id', reply.idea_id);
+        }
+    }
+
+    if (error) { toast('Failed to delete reply', 'error'); }
+    else if (currentDetailIdeaId) { loadIdeaReplies(currentDetailIdeaId); loadIdeas(); }
+}
+
+// ===================== CHAR COUNTERS =====================
+document.addEventListener('DOMContentLoaded', () => {
+    const titleEl = document.getElementById('ideaTitle');
+    const descEl = document.getElementById('ideaDescription');
+    const removeEl = document.getElementById('ideaRemove');
+
+    if (titleEl) titleEl.addEventListener('input', () => {
+        document.getElementById('ideaTitleCount').textContent = titleEl.value.length;
+    });
+    if (descEl) descEl.addEventListener('input', () => {
+        document.getElementById('ideaDescCount').textContent = descEl.value.length;
+    });
+    if (removeEl) removeEl.addEventListener('input', () => {
+        document.getElementById('ideaRemoveCount').textContent = removeEl.value.length;
+    });
+});
 </script>
 </body>
 </html>
