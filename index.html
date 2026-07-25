@@ -1733,6 +1733,79 @@ function initContributionsPage() {
     populateSiteFilters();
     loadIdeas();
 }
+  (function(){
+  /* ── Populate the "Which site" dropdowns from epsilonSites ── */
+  function hydrateSiteDropdowns(){
+    const targets = [
+      document.getElementById('filterSite'),
+      document.getElementById('ideaSiteTarget')
+    ];
+    targets.forEach(function(sel){
+      if(!sel || sel.options.length > 1) return;          // already populated
+      epsilonSites.forEach(function(s){
+        var o = document.createElement('option');
+        o.value = s.name;
+        o.textContent = s.name;
+        sel.appendChild(o);
+      });
+    });
+  }
+
+  /* ── Safe wrapper: calls loadIdeas only when it actually exists ── */
+  function tryLoadIdeas(){
+    if(typeof loadIdeas === 'function'){
+      hydrateSiteDropdowns();
+      loadIdeas();
+    } else {
+      /* loadIdeas not parsed yet – retry shortly */
+      setTimeout(tryLoadIdeas, 60);
+    }
+  }
+
+  /* ── 1. Patch goTo so every navigation to 'contributions' fetches ideas ── */
+  var _goTo = window.goTo;
+  window.goTo = function(page, param){
+    if(_goTo) _goTo(page, param);
+    if(page === 'contributions') tryLoadIdeas();
+  };
+
+  /* ── 2. MutationObserver fallback: catch any show/active toggle we miss ── */
+  var contribPage = document.getElementById('page-contributions');
+  if(contribPage){
+    var obs = new MutationObserver(function(mutations){
+      mutations.forEach(function(m){
+        if(m.type === 'attributes' && m.attributeName === 'class'){
+          if(contribPage.classList.contains('active')) tryLoadIdeas();
+        }
+      });
+    });
+    obs.observe(contribPage, { attributes: true });
+  }
+
+  /* ── 3. If the user lands directly on #contributions or it's already active ── */
+  if(contribPage && contribPage.classList.contains('active')){
+    tryLoadIdeas();
+  }
+
+  /* ── 4. Hash-change catch for direct-link / refresh scenarios ── */
+  window.addEventListener('hashchange', function(){
+    if(window.location.hash === '#contributions' ||
+       (contribPage && contribPage.classList.contains('active'))){
+      tryLoadIdeas();
+    }
+  });
+
+  /* ── 5. After auth resolves the app becomes visible — re-check ── */
+  var appEl = document.getElementById('app');
+  if(appEl){
+    var appObs = new MutationObserver(function(){
+      if(appEl.style.display !== 'none'){
+        if(contribPage && contribPage.classList.contains('active')) tryLoadIdeas();
+      }
+    });
+    appObs.observe(appEl, { attributes: true, attributeFilter: ['style'] });
+  }
+})();
 </script>
 </body>
 </html>
