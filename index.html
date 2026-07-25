@@ -327,20 +327,64 @@ let localStream = null;
 let currentCategory = 'All';
 
 // ===================== DATA =====================
-const epsilonSites = [
-    { name: 'Epsilon Panel', desc: 'Order websites, track progress, manage your business', url: 'https://epsilonpanel.vercel.app', img: 'https://picsum.photos/seed/epsilonpanel/600/400', tags: ['Dashboard', 'Business'] },
-    { name: 'Savanna Bites', desc: 'Modern restaurant website with online ordering and menu showcase', url: 'https://savannabites.co.ke', img: 'https://picsum.photos/seed/savanna/600/400', tags: ['Restaurant', 'Food'] },
-    { name: 'TechVault Kenya', desc: 'Tech accessories e-commerce store with product filtering', url: 'https://techvault.co.ke', img: 'https://picsum.photos/seed/techvault/600/400', tags: ['E-Commerce', 'Tech'] },
-    { name: 'GreenLeaf Wellness', desc: 'Healthcare clinic with booking system and patient portal', url: 'https://greenleaf.ke', img: 'https://picsum.photos/seed/greenleaf/600/400', tags: ['Healthcare', 'Booking'] },
-    { name: 'Apex Academy', desc: 'Education platform with courses, schedules, and enrollment', url: 'https://apexacademy.ke', img: 'https://picsum.photos/seed/apexacad/600/400', tags: ['Education', 'LMS'] },
-    { name: 'Nairobi Homes', desc: 'Real estate listing with property search and virtual tours', url: 'https://nairobihomes.co.ke', img: 'https://picsum.photos/seed/nairobihomes/600/400', tags: ['Real Estate', 'Search'] },
-    { name: 'PixelCraft Studio', desc: 'Creative agency portfolio with animations and case studies', url: 'https://pixelcraft.studio', img: 'https://picsum.photos/seed/pixelcraft/600/400', tags: ['Portfolio', 'Creative'] },
-    { name: 'FinEdge Consult', desc: 'Financial advisory with calculators and contact forms', url: 'https://finedge.co.ke', img: 'https://picsum.photos/seed/finedge/600/400', tags: ['Finance', 'Corporate'] },
-    { name: 'AfroChic Boutique', desc: 'Fashion e-commerce with lookbook and seamless checkout', url: 'https://afrochic.co.ke', img: 'https://picsum.photos/seed/afrochic/600/400', tags: ['E-Commerce', 'Fashion'] },
-    { name: 'MotoHub KE', desc: 'Automotive service center with booking and tracking', url: 'https://motohub.co.ke', img: 'https://picsum.photos/seed/motohub/600/400', tags: ['Automotive', 'Booking'] },
-    { name: 'HarvestConnect', desc: 'Agri-tech platform linking farmers to markets', url: 'https://harvestconnect.ke', img: 'https://picsum.photos/seed/harvestconnect/600/400', tags: ['AgriTech', 'Marketplace'] },
-    { name: 'LuxeStay Hotels', desc: 'Luxury hotel booking with room galleries and reservations', url: 'https://luxestay.co.ke', img: 'https://picsum.photos/seed/luxestay/600/400', tags: ['Hospitality', 'Booking'] },
-];
+const epsilonSites =[
+  {
+    "name": "Epsilon Panel",
+    "desc": "Order websites, track progress, manage your business",
+    "url": "https://epsilonpanel.vercel.app",
+    "img": "https://picsum.photos/seed/epsilonpanel/600/400",
+    "tags": ["Dashboard", "Business"]
+  },
+  {
+    "name": "Epsilon Sports",
+    "desc": "Track scores, stats, and live sports updates",
+    "url": "https://epsilon-sports.vercel.app",
+    "img": "https://picsum.photos/seed/epsilonsports/600/400",
+    "tags": ["Sports", "Orange Theme"]
+  },
+  {
+    "name": "Epsilon Motor",
+    "desc": "The ultimate hub for car enthusiasts",
+    "url": "https://epsilon-motor.vercel.app",
+    "img": "https://picsum.photos/seed/epsilonmotor/600/400",
+    "tags": ["Automotive", "Grey Theme"]
+  },
+  {
+    "name": "Epsilon Learn",
+    "desc": "Interactive learning and education platform",
+    "url": "https://epsilon-learn.vercel.app",
+    "img": "https://picsum.photos/seed/epsilonlearn/600/400",
+    "tags": ["Education", "Green Theme"]
+  },
+  {
+    "name": "Epsilon Azure",
+    "desc": "Business management system (BMS) and ERP platform",
+    "url": "https://epsilon-azure.vercel.app",
+    "img": "https://picsum.photos/seed/epsilonaproxi/600/400",
+    "tags": ["ERP", "Blue Theme"]
+  },
+  {
+    "name": "Epsilon Heckle",
+    "desc": "Gaming portal and interactive community",
+    "url": "https://epsilon-heckle.vercel.app",
+    "img": "https://picsum.photos/seed/epsilonheckle/600/400",
+    "tags": ["Gaming", "Red Theme"]
+  },
+  {
+    "name": "Epsilon Editz",
+    "desc": "Media editing software and tools",
+    "url": "https://epsilon-editz.vercel.app",
+    "img": "https://picsum.photos/seed/epsiloneditz/600/400",
+    "tags": ["Media", "Yellow Theme"]
+  },
+  {
+    "name": "Neote Language",
+    "desc": "Custom programming language compiled to JavaScript",
+    "url": "https://epsilon-neote.vercel.app",
+    "img": "https://picsum.photos/seed/neote/600/400",
+    "tags": ["Compiler", "Purple Theme"]
+  },
+]
 
 const themes = [
     { name: 'purple', color: '#8b5cf6' },
