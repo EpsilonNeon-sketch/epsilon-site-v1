@@ -1806,6 +1806,85 @@ function initContributionsPage() {
     appObs.observe(appEl, { attributes: true, attributeFilter: ['style'] });
   }
 })();
+// ============ EPSILON TRAFFIC TRACKER ============
+// Put this on EVERY site. Change `cw` to the site name.
+// Must be placed AFTER the Supabase client is created as `supabaseClient`.
+
+var cw = "Epsilon Hub"; // <-- CHANGE THIS PER SITE
+
+(function(_cw) {
+  var _sid = null;
+  var _t0 = Date.now();
+
+  // Insert a session row
+  function _start(email, uid) {
+    if (_sid) return;
+    supabaseClient.from('site_sessions').insert({
+      user_id: uid || null,
+      email: email || null,
+      website: _cw,
+      user_agent: navigator.userAgent,
+      is_online: true
+    }).then(function(r) {
+      if (r.data && r.data.length) _sid = r.data[0].id;
+    });
+  }
+
+  // Update row with end time + duration
+  function _end() {
+    if (!_sid) return;
+    var dur = Math.round((Date.now() - _t0) / 1000);
+    supabaseClient.from('site_sessions').update({
+      ended_at: new Date().toISOString(),
+      duration_secs: dur,
+      is_online: false
+    }).eq('id', _sid).then(function() { _sid = null; });
+  }
+
+  // Heartbeat every 60s — confirms they're still online
+  function _heartbeat() {
+    if (!_sid) return;
+    supabaseClient.from('site_sessions').update({
+      is_online: true
+    }).eq('id', _sid);
+  }
+
+  // Listen for auth state changes to know who just signed in/up
+  supabaseClient.auth.onAuthStateChange(function(event, session) {
+    if (session && session.user) {
+      _start(session.user.email, session.user.id);
+    } else if (event === 'SIGNED_OUT') {
+      _end();
+    }
+  });
+
+  // If already logged in when page loads (persisted session), start immediately
+  (function _checkExisting() {
+    supabaseClient.auth.getSession().then(function(r) {
+      if (r.data && r.data.session && r.data.session.user) {
+        _start(r.data.session.user.email, r.data.session.user.id);
+      }
+    });
+  })();
+
+  // End session on tab close / navigate away / go invisible
+  window.addEventListener('beforeunload', _end);
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'hidden') _end();
+    else if (document.visibilityState === 'visible') {
+      // Re-open session if user came back
+      supabaseClient.auth.getSession().then(function(r) {
+        if (r.data && r.data.session && r.data.session.user && !_sid) {
+          _t0 = Date.now();
+          _start(r.data.session.user.email, r.data.session.user.id);
+        }
+      });
+    }
+  });
+
+  setInterval(_heartbeat, 60000);
+
+})(cw);
 </script>
 </body>
 </html>
