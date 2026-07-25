@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Epsilon Hub</title>
 <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="manifest" href="manifest.json">
 <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -2474,6 +2475,14 @@ Rules: Keep answers short and to the point. Always use clear examples and refere
             });
         })();
     </script>
-   
+   <script>
+     if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then((reg) => console.log('SW registered:', reg.scope))
+      .catch((err) => console.warn('SW registration failed:', err));
+  });
+}
+   </script>
 </body>
 </html>
